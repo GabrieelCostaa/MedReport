@@ -1,0 +1,24 @@
+{
+  "name": "opme-platform",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w @opme/web",
+    "dev:api": "docker compose up -d && (cd services/api && uvicorn main:app --reload)",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "build:web": "npm run build -w @opme/web",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  },
+  "packageManager": "npm@10.2.0",
+  "engines": {
+    "node": ">=18"
+  }
+}

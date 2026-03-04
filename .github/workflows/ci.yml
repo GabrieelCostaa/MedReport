@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build:web
+
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: opme
+          POSTGRES_PASSWORD: opme_test
+          POSTGRES_DB: opme
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U opme -d opme"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql+asyncpg://opme:opme_test@localhost:5432/opme
+      SECRET_KEY: test-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: services/api/requirements.txt
+      - run: pip install -r services/api/requirements.txt
+      - run: cd services/api && PYTHONPATH=. python -c "
+from app.db.init_db import main
+import asyncio
+asyncio.run(main())
+"
+      - run: cd services/api && PYTHONPATH=. uvicorn main:app --host 0.0.0.0 --port 8000 &
+      - run: sleep 3 && curl -s http://localhost:8000/health | grep -q '"status":"ok"'
