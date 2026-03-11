@@ -128,11 +128,22 @@ class ReportPipeline:
                 await on_progress(step, label)
 
         logger.info("Pipeline iniciado: session=%s, product=%s", session_id, product.nome)
-        await _emit("researching", "Pesquisando evidências científicas...")
+        await _emit("researching", f"Consultando base de evidências para CID {cid}...")
 
         session.clinical_evidences = await _fetch_clinical_evidences(db, cid, product.id)
-        session.pubmed_evidences = await _fetch_pubmed_evidences(db, cid, product.nome, diagnostico)
+        n_internal = len(session.clinical_evidences)
+        if n_internal > 0:
+            await _emit("researching", f"{n_internal} evidência(s) interna(s) verificada(s) encontrada(s)")
+        else:
+            await _emit("researching", "Nenhuma evidência interna pré-validada para este CID")
 
+        await _emit("researching", "Pesquisando artigos indexados no PubMed...")
+        session.pubmed_evidences = await _fetch_pubmed_evidences(db, cid, product.nome, diagnostico)
+        n_pubmed = len(session.pubmed_evidences)
+        if n_pubmed > 0:
+            await _emit("researching", f"{n_pubmed} artigo(s) científico(s) relevante(s) identificado(s)")
+
+        await _emit("researching", "Analisando contexto clínico e identificando lacunas...")
         research_result = await research(product, diagnostico, cid, template, db=db)
         session.research_result = research_result
         session.medico_inputs["cid"] = cid
@@ -202,7 +213,10 @@ class ReportPipeline:
                 await on_progress(step, label)
 
         session.step = "writing"
-        await _emit("writing", "Redigindo justificativa técnica...")
+        n_ev = len(session.clinical_evidences) + len(session.pubmed_evidences)
+        await _emit("writing", f"Redigindo justificativa técnica para {session.product.nome}...")
+        if n_ev > 0:
+            await _emit("writing", f"Fundamentando com {n_ev} evidências científicas...")
         logger.info("Pipeline redação: session=%s", session.session_id)
 
         draft = await write_justification(
@@ -217,8 +231,11 @@ class ReportPipeline:
         if draft.token_usage:
             session.usage.add(draft.token_usage)
 
+        word_count = len((draft.justificativa_completa or "").split())
+        await _emit("writing", f"Redação concluída — {word_count} palavras geradas")
+
         session.step = "auditing"
-        await _emit("auditing", "Auditando texto com especialista...")
+        await _emit("auditing", f"Confrontando dados técnicos de {session.product.nome} com base oficial...")
         logger.info("Pipeline auditoria: session=%s", session.session_id)
 
         audit_result = await audit(draft, session.product, clinical_evidences=session.clinical_evidences)
@@ -226,8 +243,14 @@ class ReportPipeline:
         if audit_result.token_usage:
             session.usage.add(audit_result.token_usage)
 
+        corrections = sum(1 for a in audit_result.audit_log if a.tipo == "correcao")
+        if corrections > 0:
+            await _emit("auditing", f"{corrections} correção(ões) aplicada(s) para conformidade")
+        else:
+            await _emit("auditing", "Dados técnicos verificados — sem divergências")
+
         session.step = "validating"
-        await _emit("validating", "Validação hard-coded de dados técnicos...")
+        await _emit("validating", "Executando validação determinística de conformidade...")
         logger.info("Pipeline validação hard-coded: session=%s", session.session_id)
 
         validation = validate_technical_data(

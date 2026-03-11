@@ -173,8 +173,8 @@ async def start_report_stream(
     async def event_stream():
         progress_queue: asyncio.Queue = asyncio.Queue()
 
-        async def on_progress(step: str, label: str):
-            await progress_queue.put({"event": "step", "step": step, "label": label})
+        async def on_progress(step: str, message: str):
+            await progress_queue.put({"event": "step", "step": step, "message": message})
 
         async def run_pipeline():
             pipeline_result = await ReportPipeline.start(
@@ -247,8 +247,8 @@ async def answer_stream(
     async def event_stream():
         progress_queue: asyncio.Queue = asyncio.Queue()
 
-        async def on_progress(step: str, label: str):
-            await progress_queue.put({"event": "step", "step": step, "label": label})
+        async def on_progress(step: str, message: str):
+            await progress_queue.put({"event": "step", "step": step, "message": message})
 
         async def run_pipeline():
             pipeline_result = await ReportPipeline.answer(

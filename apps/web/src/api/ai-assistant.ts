@@ -131,7 +131,7 @@ export const aiAssistantApi = {
                 if (eventType === 'done') {
                   onDone(parsed as PipelineResult);
                 } else {
-                  onStep(parsed.step || '', parsed.label || '');
+                  onStep(parsed.step || '', parsed.message || '');
                 }
               } catch { /* skip malformed */ }
             }
@@ -220,7 +220,7 @@ export const aiAssistantApi = {
                 } else if (eventType === 'error') {
                   onError(new Error(parsed.error || 'Pipeline error'));
                 } else {
-                  onStep(parsed.step || '', parsed.label || '');
+                  onStep(parsed.step || '', parsed.message || '');
                 }
               } catch { /* skip malformed */ }
             }

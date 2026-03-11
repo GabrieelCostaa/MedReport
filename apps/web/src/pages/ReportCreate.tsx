@@ -49,109 +49,132 @@ const STEPS = [
   { title: 'Revisão & PDF', description: 'Checklist e download' },
 ];
 
-const PIPELINE_STEPS: Record<string, { label: string; icon: string; number: number }> = {
-  researching: { label: 'Pesquisando evidências científicas...', icon: '🔍', number: 1 },
-  writing: { label: 'Redigindo justificativa técnica...', icon: '✍️', number: 2 },
-  auditing: { label: 'Auditando precisão e conformidade...', icon: '🛡️', number: 3 },
-  validating: { label: 'Validando dados técnicos...', icon: '✓', number: 4 },
-};
-
-const blink = keyframes`
+const cursorBlink = keyframes`
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 `;
 
-const fadeOut = keyframes`
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(-8px); }
-`;
-
-function PipelineProgress({ currentStep }: { currentStep: string }) {
-  const [displayedText, setDisplayedText] = useState('');
-  const [isErasing, setIsErasing] = useState(false);
-  const [completedSteps, setCompletedSteps] = useState<string[]>([]);
-  const prevStepRef = useRef(currentStep);
+function TypewriterLine({ text, onComplete }: { text: string; onComplete?: () => void }) {
+  const [displayed, setDisplayed] = useState('');
+  const completeRef = useRef(false);
 
   useEffect(() => {
-    if (!currentStep || !PIPELINE_STEPS[currentStep]) return;
-
-    if (prevStepRef.current !== currentStep && prevStepRef.current) {
-      setCompletedSteps((prev) =>
-        prev.includes(prevStepRef.current) ? prev : [...prev, prevStepRef.current]
-      );
-      setIsErasing(true);
-      const eraseTimer = setTimeout(() => {
-        setDisplayedText('');
-        setIsErasing(false);
-        prevStepRef.current = currentStep;
-      }, 350);
-      return () => clearTimeout(eraseTimer);
-    }
-
-    prevStepRef.current = currentStep;
-    const fullText = PIPELINE_STEPS[currentStep].label;
-    if (isErasing) return;
-
-    let i = displayedText.length;
-    if (i >= fullText.length) return;
-
+    setDisplayed('');
+    completeRef.current = false;
+    let i = 0;
     const timer = setInterval(() => {
       i++;
-      setDisplayedText(fullText.slice(0, i));
-      if (i >= fullText.length) clearInterval(timer);
-    }, 35);
-
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) {
+        clearInterval(timer);
+        if (!completeRef.current) {
+          completeRef.current = true;
+          onComplete?.();
+        }
+      }
+    }, 22);
     return () => clearInterval(timer);
-  }, [currentStep, displayedText, isErasing]);
-
-  const step = PIPELINE_STEPS[currentStep];
-  if (!step) return null;
+  }, [text, onComplete]);
 
   return (
-    <Box py={10} maxW="md" mx="auto" textAlign="center">
-      {/* Completed steps */}
-      {completedSteps.length > 0 && (
-        <HStack justify="center" gap={3} mb={6}>
-          {completedSteps.map((s) => {
-            const info = PIPELINE_STEPS[s];
-            return info ? (
-              <HStack key={s} bg="green.50" px={3} py={1} borderRadius="full" border="1px solid" borderColor="green.200"
-                sx={{ animation: `${fadeInUp} 0.3s ease both` }}>
-                <Text fontSize="xs" color="green.600">✓ {info.icon}</Text>
-              </HStack>
-            ) : null;
-          })}
-        </HStack>
-      )}
+    <Text fontSize="sm" color="gray.600" lineHeight="tall" display="inline">
+      {displayed}
+      <Box as="span" display="inline-block" w="1.5px" h="14px" bg="green.500" ml="1px"
+        verticalAlign="text-bottom" sx={{ animation: `${cursorBlink} 0.7s step-end infinite` }} />
+    </Text>
+  );
+}
 
-      {/* Step counter */}
-      <Text fontSize="xs" color="gray.400" mb={3} fontWeight="medium" letterSpacing="wider" textTransform="uppercase">
-        Etapa {step.number} de 4
-      </Text>
+function PipelineProgress({ messages }: { messages: string[] }) {
+  const [typingIdx, setTypingIdx] = useState(0);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-      {/* Icon */}
-      <Text fontSize="3xl" mb={3}
-        sx={{ animation: `${fadeInUp} 0.4s ease both` }} key={currentStep + '-icon'}>
-        {step.icon}
-      </Text>
+  useEffect(() => {
+    setTypingIdx(Math.max(0, messages.length - 1));
+  }, [messages.length]);
 
-      {/* Typewriter text */}
-      <Box
-        minH="28px"
-        sx={isErasing ? { animation: `${fadeOut} 0.3s ease both` } : undefined}
-      >
-        <Text fontSize="lg" fontWeight="semibold" color="gray.700" display="inline">
-          {displayedText}
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [typingIdx, messages.length]);
+
+  const completedMessages = messages.slice(0, typingIdx);
+  const currentMessage = messages[typingIdx] || '';
+
+  return (
+    <Box py={6} maxW="2xl" mx="auto">
+      <HStack mb={4} gap={2}>
+        <Box w="8px" h="8px" borderRadius="full" bg="green.400"
+          sx={{ animation: `${cursorBlink} 1.2s ease infinite` }} />
+        <Text fontSize="xs" color="gray.400" fontWeight="medium" textTransform="uppercase" letterSpacing="wider">
+          Processando
         </Text>
-        <Box as="span" display="inline-block" w="2px" h="20px" bg="blue.500" ml="2px" verticalAlign="text-bottom"
-          sx={{ animation: `${blink} 0.8s infinite` }} />
-      </Box>
+      </HStack>
 
-      {/* Subtle loading bar */}
-      <Box mt={6} mx="auto" maxW="200px" h="3px" bg="gray.100" borderRadius="full" overflow="hidden">
-        <Box h="100%" bg="blue.400" borderRadius="full"
-          w={`${(step.number / 4) * 100}%`}
-          transition="width 0.6s ease" />
+      <VStack align="stretch" gap={0} pl={4} borderLeft="2px solid" borderColor="gray.100">
+        {completedMessages.map((msg, i) => (
+          <Text key={i} fontSize="sm" color="gray.400" lineHeight="tall" py="2px"
+            sx={{ animation: `${fadeInUp} 0.2s ease both` }}>
+            {msg}
+          </Text>
+        ))}
+        {currentMessage && (
+          <Box py="2px">
+            <TypewriterLine
+              text={currentMessage}
+              onComplete={() => {
+                if (typingIdx < messages.length - 1) {
+                  setTypingIdx((p) => p + 1);
+                }
+              }}
+            />
+          </Box>
+        )}
+        <Box ref={bottomRef} />
+      </VStack>
+    </Box>
+  );
+}
+
+function TextReveal({ text, onComplete }: { text: string; onComplete: () => void }) {
+  const words = text.split(/(\s+)/);
+  const [visibleCount, setVisibleCount] = useState(0);
+  const doneRef = useRef(false);
+
+  useEffect(() => {
+    setVisibleCount(0);
+    doneRef.current = false;
+    const timer = setInterval(() => {
+      setVisibleCount((prev) => {
+        const next = prev + 4;
+        if (next >= words.length) {
+          clearInterval(timer);
+          if (!doneRef.current) {
+            doneRef.current = true;
+            setTimeout(onComplete, 400);
+          }
+          return words.length;
+        }
+        return next;
+      });
+    }, 25);
+    return () => clearInterval(timer);
+  }, [text, words.length, onComplete]);
+
+  return (
+    <Box py={6} maxW="3xl" mx="auto">
+      <Text fontSize="xs" color="gray.400" fontWeight="medium" textTransform="uppercase"
+        letterSpacing="wider" mb={3}>
+        Redigindo justificativa
+      </Text>
+      <Box p={4} border="1px solid" borderColor="gray.200" borderRadius="md" bg="white"
+        minH="200px" maxH="400px" overflowY="auto">
+        <Text fontSize="sm" color="gray.700" whiteSpace="pre-wrap" lineHeight="tall">
+          {words.slice(0, visibleCount).join('')}
+          {visibleCount < words.length && (
+            <Box as="span" display="inline-block" w="1.5px" h="14px" bg="green.500" ml="1px"
+              verticalAlign="text-bottom" sx={{ animation: `${cursorBlink} 0.7s step-end infinite` }} />
+          )}
+        </Text>
       </Box>
     </Box>
   );
@@ -324,10 +347,13 @@ export default function ReportCreate() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [loadingProducts, setLoadingProducts] = useState(false);
+  const productDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Step 3: IA
   const [pipelineLoading, setPipelineLoading] = useState(false);
   const [pipelineStep, setPipelineStep] = useState('');
+  const [pipelineMessages, setPipelineMessages] = useState<string[]>([]);
+  const [textRevealing, setTextRevealing] = useState(false);
   const [pipelineResult, setPipelineResult] = useState<PipelineResult | null>(null);
   const [questions, setQuestions] = useState<PipelineQuestion[]>([]);
   const [questionAnswers, setQuestionAnswers] = useState<Record<string, string>>({});
@@ -375,6 +401,12 @@ export default function ReportCreate() {
     }
   }, []);
 
+  const handleProductSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+    if (productDebounceRef.current) clearTimeout(productDebounceRef.current);
+    productDebounceRef.current = setTimeout(() => searchProducts(value), 300);
+  }, [searchProducts]);
+
   useEffect(() => {
     searchProducts('');
   }, [searchProducts]);
@@ -407,6 +439,7 @@ export default function ReportCreate() {
     if (!selectedProduct) return;
     setPipelineLoading(true);
     setPipelineStep('researching');
+    setPipelineMessages([]);
     setActiveStep(2);
 
     aiAssistantApi.startReportStream(
@@ -419,11 +452,26 @@ export default function ReportCreate() {
         health_plan: healthPlan,
         especialidade,
       },
-      (step) => setPipelineStep(step),
+      (step, message) => {
+        setPipelineStep(step);
+        if (message) setPipelineMessages((prev) => [...prev, message]);
+      },
       (result) => {
-        handlePipelineResult(result);
         setPipelineLoading(false);
         setPipelineStep('');
+        if (result.step === 'done' && result.justificativa) {
+          setPipelineResult(result);
+          setSessionId(result.session_id);
+          setTextRevealing(true);
+          setJustificativaOriginal(result.justificativa);
+          setChecklist(result.checklist || {});
+          setApproved(result.aprovado || false);
+          if ((result as unknown as Record<string, unknown>).audit_summary) {
+            setAuditSummary((result as unknown as Record<string, unknown>).audit_summary as Record<string, unknown>);
+          }
+        } else {
+          handlePipelineResult(result);
+        }
       },
       () => {
         toast({ title: 'Erro ao iniciar assistente', status: 'error' });
@@ -477,16 +525,32 @@ export default function ReportCreate() {
   const submitAnswers = async () => {
     setPipelineLoading(true);
     setPipelineStep('writing');
+    setPipelineMessages([]);
     setQuestions([]);
 
     aiAssistantApi.answerStream(
       sessionId,
       questionAnswers,
-      (step) => setPipelineStep(step),
+      (step, message) => {
+        setPipelineStep(step);
+        if (message) setPipelineMessages((prev) => [...prev, message]);
+      },
       (result) => {
-        handlePipelineResult(result);
         setPipelineLoading(false);
         setPipelineStep('');
+        if (result.step === 'done' && result.justificativa) {
+          setPipelineResult(result);
+          setSessionId(result.session_id);
+          setTextRevealing(true);
+          setJustificativaOriginal(result.justificativa);
+          setChecklist(result.checklist || {});
+          setApproved(result.aprovado || false);
+          if ((result as unknown as Record<string, unknown>).audit_summary) {
+            setAuditSummary((result as unknown as Record<string, unknown>).audit_summary as Record<string, unknown>);
+          }
+        } else {
+          handlePipelineResult(result);
+        }
       },
       () => {
         toast({ title: 'Erro ao enviar respostas', status: 'error' });
@@ -595,18 +659,13 @@ export default function ReportCreate() {
           </FormControl>
           <Divider />
           <FormControl>
-            <FormLabel>Buscar material OPME</FormLabel>
-            <HStack>
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Nome ou linha do produto"
-                onKeyDown={(e) => e.key === 'Enter' && searchProducts(searchQuery)}
-              />
-              <Button onClick={() => searchProducts(searchQuery)} isLoading={loadingProducts} variant="outline">
-                Buscar
-              </Button>
-            </HStack>
+            <FormLabel>Material OPME</FormLabel>
+            <Input
+              value={searchQuery}
+              onChange={(e) => handleProductSearchChange(e.target.value)}
+              placeholder="Digite para buscar o produto..."
+            />
+            {loadingProducts && <Spinner size="xs" color="green.400" mt={1} />}
           </FormControl>
 
           {products.length === 0 && !loadingProducts && (
@@ -655,12 +714,24 @@ export default function ReportCreate() {
       {/* Step 3: IA & Edição */}
       {activeStep === 2 && (
         <VStack gap={4} align="stretch" maxW="3xl">
+          {/* Fase 1: Progresso do pipeline */}
           {pipelineLoading && (
-            <PipelineProgress currentStep={pipelineStep} />
+            <PipelineProgress messages={pipelineMessages} />
+          )}
+
+          {/* Fase 2: Texto sendo escrito ao vivo */}
+          {!pipelineLoading && textRevealing && pipelineResult?.justificativa && (
+            <TextReveal
+              text={pipelineResult.justificativa}
+              onComplete={() => {
+                setTextRevealing(false);
+                setJustificativa(pipelineResult?.justificativa || '');
+              }}
+            />
           )}
 
           {/* Perguntas A/B/C */}
-          {!pipelineLoading && questions.length > 0 && !justificativa && (
+          {!pipelineLoading && !textRevealing && questions.length > 0 && !justificativa && (
             <Box>
               <Alert status="info" mb={4}>
                 <AlertIcon />
@@ -695,8 +766,8 @@ export default function ReportCreate() {
             </Box>
           )}
 
-          {/* Resultado: Justificativa + Checklist */}
-          {!pipelineLoading && justificativa && (
+          {/* Fase 3: Resultado editável */}
+          {!pipelineLoading && !textRevealing && justificativa && (
             <Box>
               <Heading size="sm" mb={3}>Justificativa Técnica (editável)</Heading>
               <Textarea
