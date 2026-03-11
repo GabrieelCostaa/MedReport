@@ -6,8 +6,11 @@ from uuid import UUID
 from typing import Optional
 from datetime import datetime
 
+import asyncio
+import json as json_mod
+
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
@@ -133,6 +136,77 @@ async def start_report(
     return pipeline_result
 
 
+@router.post("/start-report-stream")
+async def start_report_stream(
+    body: StartReportIn,
+    user_id: str = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    SSE: Inicia pipeline com eventos de progresso em tempo real.
+    Retorna Server-Sent Events com cada etapa do pipeline.
+    """
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    result = await db.execute(
+        select(Product).where(Product.id == UUID(body.product_id))
+    )
+    product = result.scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail="Produto não encontrado")
+
+    template_result = await db.execute(
+        select(ReportTemplate).where(ReportTemplate.produto_id == product.id).limit(1)
+    )
+    template = template_result.scalar_one_or_none()
+
+    medico_inputs = {
+        "paciente_nome": body.paciente_nome,
+        "cid": body.cid,
+        "diagnostico": body.diagnostico,
+        "surgery_description": body.surgery_description or "",
+        "health_plan": body.health_plan or "",
+        "especialidade": body.especialidade or "",
+    }
+
+    async def event_stream():
+        progress_queue: asyncio.Queue = asyncio.Queue()
+
+        async def on_progress(step: str, label: str):
+            await progress_queue.put({"event": "step", "step": step, "label": label})
+
+        async def run_pipeline():
+            pipeline_result = await ReportPipeline.start(
+                product=product,
+                template=template,
+                diagnostico=body.diagnostico,
+                cid=body.cid,
+                medico_inputs=medico_inputs,
+                db=db,
+                on_progress=on_progress,
+            )
+            if pipeline_result.get("step") == "done":
+                report = await _save_report(db, user_id, product, body, pipeline_result)
+                pipeline_result["report_id"] = str(report.id)
+            await progress_queue.put({"event": "done", "data": pipeline_result})
+
+        task = asyncio.create_task(run_pipeline())
+
+        while True:
+            msg = await progress_queue.get()
+            event_type = msg.pop("event", "step")
+            if event_type == "done":
+                yield f"event: done\ndata: {json_mod.dumps(msg.get('data', {}))}\n\n"
+                break
+            else:
+                yield f"event: step\ndata: {json_mod.dumps(msg)}\n\n"
+
+        await task
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
+
+
 @router.post("/answer")
 async def answer_questions(
     body: AnswerIn,
@@ -156,6 +230,57 @@ async def answer_questions(
         pipeline_result["report_id"] = str(report.id)
 
     return pipeline_result
+
+
+@router.post("/answer-stream")
+async def answer_stream(
+    body: AnswerIn,
+    user_id: str = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    SSE: Recebe respostas A/B/C e avança pipeline com eventos de progresso.
+    """
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    async def event_stream():
+        progress_queue: asyncio.Queue = asyncio.Queue()
+
+        async def on_progress(step: str, label: str):
+            await progress_queue.put({"event": "step", "step": step, "label": label})
+
+        async def run_pipeline():
+            pipeline_result = await ReportPipeline.answer(
+                body.session_id, body.answers, on_progress=on_progress,
+            )
+            if pipeline_result.get("error"):
+                await progress_queue.put({"event": "error", "data": pipeline_result})
+                return
+            if pipeline_result.get("step") == "done":
+                session = ReportPipeline.get_session(body.session_id)
+                if session:
+                    report = await _save_report_from_session(db, user_id, session, pipeline_result)
+                    pipeline_result["report_id"] = str(report.id)
+            await progress_queue.put({"event": "done", "data": pipeline_result})
+
+        task = asyncio.create_task(run_pipeline())
+
+        while True:
+            msg = await progress_queue.get()
+            event_type = msg.pop("event", "step")
+            if event_type == "done":
+                yield f"event: done\ndata: {json_mod.dumps(msg.get('data', {}))}\n\n"
+                break
+            elif event_type == "error":
+                yield f"event: error\ndata: {json_mod.dumps(msg.get('data', {}))}\n\n"
+                break
+            else:
+                yield f"event: step\ndata: {json_mod.dumps(msg)}\n\n"
+
+        await task
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
 
 
 class GenerateIn(BaseModel):
@@ -360,6 +485,50 @@ async def quick_checklist(
         "approved": approved,
         "checklist": checklist,
     }
+
+
+# ============================================================================
+# Learning Loop — Captura de Edições
+# ============================================================================
+
+class SaveEditIn(BaseModel):
+    report_id: str
+    original_text: str
+    edited_text: str
+    especialidade: Optional[str] = None
+
+
+@router.post("/save-edit")
+async def save_edit(
+    body: SaveEditIn,
+    user_id: str = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """Captura diferença entre texto IA e edição do médico para aprendizagem futura."""
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    if body.original_text == body.edited_text:
+        return {"saved": False, "reason": "no_changes"}
+
+    from app.services.diff_engine import compute_structured_diff
+    from app.db.models import ReportEdit
+
+    diff_result = compute_structured_diff(body.original_text, body.edited_text)
+
+    edit = ReportEdit(
+        report_id=UUID(body.report_id),
+        user_id=UUID(user_id),
+        especialidade=body.especialidade,
+        original_text=body.original_text,
+        edited_text=body.edited_text,
+        diff_json=diff_result["diff"],
+        edit_type=diff_result["edit_type"],
+    )
+    db.add(edit)
+    await db.commit()
+
+    return {"saved": True, "edit_type": diff_result["edit_type"], "changes_count": diff_result["changes_count"]}
 
 
 # ============================================================================

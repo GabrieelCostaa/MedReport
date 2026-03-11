@@ -265,7 +265,19 @@
   <strong>Referências Bibliográficas:</strong>
   <ul>
     {% for ref in referencias %}
-    <li>{{ ref }}</li>
+    <li>
+      {% if ref is mapping %}
+        {{ ref.texto }}
+        {% if ref.link %}
+          <a href="{{ ref.link }}" style="color:#1a4d8f;text-decoration:none;font-size:8pt;">[Verificar]</a>
+        {% endif %}
+        {% if ref.qr_base64 %}
+          <img src="data:image/png;base64,{{ ref.qr_base64 }}" width="36" height="36" style="vertical-align:middle;margin-left:4px;" />
+        {% endif %}
+      {% else %}
+        {{ ref }}
+      {% endif %}
+    </li>
     {% endfor %}
   </ul>
 </div>

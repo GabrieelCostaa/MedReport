@@ -33,8 +33,14 @@ import {
   Select,
 } from '@chakra-ui/react';
 import { productsApi, type Product } from '../api/products';
-import { aiAssistantApi, type PipelineResult, type PipelineQuestion, type ChecklistItem, type PipelineUsage } from '../api/ai-assistant';
+import { aiAssistantApi, type PipelineResult, type PipelineQuestion, type ChecklistItem, type PipelineUsage, type AuditLogEntry, type ReferenceItem } from '../api/ai-assistant';
 import { evidencesApi, type EvidencesPreview } from '../api/evidences';
+import { keyframes } from '@emotion/react';
+
+const fadeInUp = keyframes`
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 const STEPS = [
   { title: 'CID & Diagnóstico', description: 'Busca automática de evidências' },
@@ -42,6 +48,169 @@ const STEPS = [
   { title: 'IA & Edição', description: 'Justificativa técnica' },
   { title: 'Revisão & PDF', description: 'Checklist e download' },
 ];
+
+const PIPELINE_STEPS: Record<string, { label: string; icon: string; number: number }> = {
+  researching: { label: 'Pesquisando evidências científicas...', icon: '🔍', number: 1 },
+  writing: { label: 'Redigindo justificativa técnica...', icon: '✍️', number: 2 },
+  auditing: { label: 'Auditando precisão e conformidade...', icon: '🛡️', number: 3 },
+  validating: { label: 'Validando dados técnicos...', icon: '✓', number: 4 },
+};
+
+const blink = keyframes`
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+`;
+
+const fadeOut = keyframes`
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-8px); }
+`;
+
+function PipelineProgress({ currentStep }: { currentStep: string }) {
+  const [displayedText, setDisplayedText] = useState('');
+  const [isErasing, setIsErasing] = useState(false);
+  const [completedSteps, setCompletedSteps] = useState<string[]>([]);
+  const prevStepRef = useRef(currentStep);
+
+  useEffect(() => {
+    if (!currentStep || !PIPELINE_STEPS[currentStep]) return;
+
+    if (prevStepRef.current !== currentStep && prevStepRef.current) {
+      setCompletedSteps((prev) =>
+        prev.includes(prevStepRef.current) ? prev : [...prev, prevStepRef.current]
+      );
+      setIsErasing(true);
+      const eraseTimer = setTimeout(() => {
+        setDisplayedText('');
+        setIsErasing(false);
+        prevStepRef.current = currentStep;
+      }, 350);
+      return () => clearTimeout(eraseTimer);
+    }
+
+    prevStepRef.current = currentStep;
+    const fullText = PIPELINE_STEPS[currentStep].label;
+    if (isErasing) return;
+
+    let i = displayedText.length;
+    if (i >= fullText.length) return;
+
+    const timer = setInterval(() => {
+      i++;
+      setDisplayedText(fullText.slice(0, i));
+      if (i >= fullText.length) clearInterval(timer);
+    }, 35);
+
+    return () => clearInterval(timer);
+  }, [currentStep, displayedText, isErasing]);
+
+  const step = PIPELINE_STEPS[currentStep];
+  if (!step) return null;
+
+  return (
+    <Box py={10} maxW="md" mx="auto" textAlign="center">
+      {/* Completed steps */}
+      {completedSteps.length > 0 && (
+        <HStack justify="center" gap={3} mb={6}>
+          {completedSteps.map((s) => {
+            const info = PIPELINE_STEPS[s];
+            return info ? (
+              <HStack key={s} bg="green.50" px={3} py={1} borderRadius="full" border="1px solid" borderColor="green.200"
+                sx={{ animation: `${fadeInUp} 0.3s ease both` }}>
+                <Text fontSize="xs" color="green.600">✓ {info.icon}</Text>
+              </HStack>
+            ) : null;
+          })}
+        </HStack>
+      )}
+
+      {/* Step counter */}
+      <Text fontSize="xs" color="gray.400" mb={3} fontWeight="medium" letterSpacing="wider" textTransform="uppercase">
+        Etapa {step.number} de 4
+      </Text>
+
+      {/* Icon */}
+      <Text fontSize="3xl" mb={3}
+        sx={{ animation: `${fadeInUp} 0.4s ease both` }} key={currentStep + '-icon'}>
+        {step.icon}
+      </Text>
+
+      {/* Typewriter text */}
+      <Box
+        minH="28px"
+        sx={isErasing ? { animation: `${fadeOut} 0.3s ease both` } : undefined}
+      >
+        <Text fontSize="lg" fontWeight="semibold" color="gray.700" display="inline">
+          {displayedText}
+        </Text>
+        <Box as="span" display="inline-block" w="2px" h="20px" bg="blue.500" ml="2px" verticalAlign="text-bottom"
+          sx={{ animation: `${blink} 0.8s infinite` }} />
+      </Box>
+
+      {/* Subtle loading bar */}
+      <Box mt={6} mx="auto" maxW="200px" h="3px" bg="gray.100" borderRadius="full" overflow="hidden">
+        <Box h="100%" bg="blue.400" borderRadius="full"
+          w={`${(step.number / 4) * 100}%`}
+          transition="width 0.6s ease" />
+      </Box>
+    </Box>
+  );
+}
+
+function AuditLogHumanized({ entries }: { entries: AuditLogEntry[] }) {
+  if (!entries || entries.length === 0) return null;
+
+  const humanize = (entry: AuditLogEntry): { icon: string; color: string; message: string; badge: string } => {
+    const campo = entry.campo.replace(/_/g, ' ');
+    if (entry.tipo === 'correcao' || entry.tipo === 'hard_validation') {
+      return {
+        icon: '🛡️',
+        color: 'orange',
+        message: entry.original && entry.corrigido
+          ? `Corrigimos ${campo} de "${entry.original}" para "${entry.corrigido}" para evitar glosa`
+          : entry.motivo,
+        badge: 'Proteção',
+      };
+    }
+    return {
+      icon: '✓',
+      color: 'green',
+      message: entry.motivo || `${campo} verificado`,
+      badge: 'Verificação',
+    };
+  };
+
+  return (
+    <Box mt={4} p={3} bg="orange.50" borderRadius="md" border="1px solid" borderColor="orange.200">
+      <HStack mb={3}>
+        <Text fontSize="lg">🛡️</Text>
+        <Text fontWeight="bold" fontSize="sm" color="orange.800">Proteções Aplicadas</Text>
+      </HStack>
+      <VStack align="stretch" gap={2}>
+        {entries.map((entry, i) => {
+          const h = humanize(entry);
+          return (
+            <Box key={i} p={2} bg="white" borderRadius="md" border="1px solid" borderColor="orange.100"
+              sx={{ animation: `${fadeInUp} 0.3s ease ${i * 0.1}s both` }}>
+              <HStack justify="space-between" mb={1}>
+                <Badge colorScheme={h.color} fontSize="2xs">{h.badge}</Badge>
+                <Text fontSize="2xs" color="gray.400">{entry.campo}</Text>
+              </HStack>
+              <Text fontSize="xs" color="gray.700">{h.message}</Text>
+              {entry.original && entry.corrigido && entry.tipo !== 'hard_validation' && (
+                <HStack mt={1} gap={2} fontSize="2xs">
+                  <Text color="red.500" textDecoration="line-through">{entry.original}</Text>
+                  <Text color="gray.400">→</Text>
+                  <Text color="green.600" fontWeight="bold">{entry.corrigido}</Text>
+                </HStack>
+              )}
+            </Box>
+          );
+        })}
+      </VStack>
+    </Box>
+  );
+}
 
 function HardValidationBox({ auditSummary }: { auditSummary: Record<string, unknown> | null }) {
   if (!auditSummary || !auditSummary.hard_validation) return null;
@@ -158,10 +327,12 @@ export default function ReportCreate() {
 
   // Step 3: IA
   const [pipelineLoading, setPipelineLoading] = useState(false);
+  const [pipelineStep, setPipelineStep] = useState('');
   const [pipelineResult, setPipelineResult] = useState<PipelineResult | null>(null);
   const [questions, setQuestions] = useState<PipelineQuestion[]>([]);
   const [questionAnswers, setQuestionAnswers] = useState<Record<string, string>>({});
   const [justificativa, setJustificativa] = useState('');
+  const [justificativaOriginal, setJustificativaOriginal] = useState('');
   const [sessionId, setSessionId] = useState('');
 
   // Step 4: Checklist (reativo)
@@ -235,9 +406,11 @@ export default function ReportCreate() {
   const startPipeline = async () => {
     if (!selectedProduct) return;
     setPipelineLoading(true);
+    setPipelineStep('researching');
     setActiveStep(2);
-    try {
-      const result = await aiAssistantApi.startReport({
+
+    aiAssistantApi.startReportStream(
+      {
         product_id: selectedProduct.id,
         paciente_nome: pacienteNome,
         cid,
@@ -245,13 +418,19 @@ export default function ReportCreate() {
         surgery_description: surgeryDescription,
         health_plan: healthPlan,
         especialidade,
-      });
-      handlePipelineResult(result);
-    } catch (e) {
-      toast({ title: 'Erro ao iniciar assistente', status: 'error' });
-    } finally {
-      setPipelineLoading(false);
-    }
+      },
+      (step) => setPipelineStep(step),
+      (result) => {
+        handlePipelineResult(result);
+        setPipelineLoading(false);
+        setPipelineStep('');
+      },
+      () => {
+        toast({ title: 'Erro ao iniciar assistente', status: 'error' });
+        setPipelineLoading(false);
+        setPipelineStep('');
+      },
+    );
   };
 
   const handlePipelineResult = (result: PipelineResult) => {
@@ -260,7 +439,9 @@ export default function ReportCreate() {
     if (result.step === 'questions' && result.questions) {
       setQuestions(result.questions);
     } else if (result.step === 'done') {
-      setJustificativa(result.justificativa || '');
+      const text = result.justificativa || '';
+      setJustificativa(text);
+      setJustificativaOriginal(text);
       setChecklist(result.checklist || {});
       setApproved(result.aprovado || false);
       if ((result as unknown as Record<string, unknown>).audit_summary) {
@@ -271,13 +452,16 @@ export default function ReportCreate() {
 
   const runQuickCheck = useCallback(async (text: string) => {
     try {
+      const refs = (pipelineResult?.referencias || []).map((r) =>
+        typeof r === 'string' ? r : (r as ReferenceItem).texto || ''
+      );
       const res = await aiAssistantApi.quickCheck({
         justificativa_ia: text,
         diagnostico,
         falha_terapeutica: pipelineResult?.falha_terapeutica || '',
         risco_nao_realizacao: pipelineResult?.risco_nao_realizacao || '',
         base_legal_ans: pipelineResult?.base_legal || '',
-        referencias_bib: pipelineResult?.referencias || [],
+        referencias_bib: refs,
       });
       setChecklist(res.checklist);
       setApproved(res.approved);
@@ -292,14 +476,24 @@ export default function ReportCreate() {
 
   const submitAnswers = async () => {
     setPipelineLoading(true);
-    try {
-      const result = await aiAssistantApi.answer(sessionId, questionAnswers);
-      handlePipelineResult(result);
-    } catch {
-      toast({ title: 'Erro ao enviar respostas', status: 'error' });
-    } finally {
-      setPipelineLoading(false);
-    }
+    setPipelineStep('writing');
+    setQuestions([]);
+
+    aiAssistantApi.answerStream(
+      sessionId,
+      questionAnswers,
+      (step) => setPipelineStep(step),
+      (result) => {
+        handlePipelineResult(result);
+        setPipelineLoading(false);
+        setPipelineStep('');
+      },
+      () => {
+        toast({ title: 'Erro ao enviar respostas', status: 'error' });
+        setPipelineLoading(false);
+        setPipelineStep('');
+      },
+    );
   };
 
   const handleRegenerate = async () => {
@@ -462,11 +656,7 @@ export default function ReportCreate() {
       {activeStep === 2 && (
         <VStack gap={4} align="stretch" maxW="3xl">
           {pipelineLoading && (
-            <Box textAlign="center" py={12}>
-              <Spinner size="xl" color="green.500" thickness="4px" />
-              <Text mt={4} color="gray.600">O assistente está gerando a justificativa técnica...</Text>
-              <Text fontSize="sm" color="gray.400" mt={2}>Pipeline: Pesquisador → Redator → Auditor</Text>
-            </Box>
+            <PipelineProgress currentStep={pipelineStep} />
           )}
 
           {/* Perguntas A/B/C */}
@@ -519,37 +709,48 @@ export default function ReportCreate() {
               {pipelineResult?.referencias && pipelineResult.referencias.length > 0 && (
                 <Box mt={4} p={3} bg="blue.50" borderRadius="md">
                   <Text fontWeight="bold" fontSize="sm" mb={2}>Referências Bibliográficas</Text>
-                  {pipelineResult.referencias.map((ref, i) => (
-                    <Text key={i} fontSize="xs" color="gray.700">{i + 1}. {ref}</Text>
-                  ))}
+                  {pipelineResult.referencias.map((ref, i) => {
+                    const isRich = typeof ref === 'object' && ref !== null;
+                    const texto = isRich ? (ref as ReferenceItem).texto : (ref as string);
+                    const link = isRich ? (ref as ReferenceItem).link : undefined;
+                    const doi = isRich ? (ref as ReferenceItem).doi : undefined;
+                    return (
+                      <HStack key={i} align="start" gap={1}>
+                        <Text fontSize="xs" color="gray.700" flex={1}>
+                          {i + 1}. {texto}
+                          {doi && <Text as="span" color="gray.400" fontSize="2xs"> DOI: {doi}</Text>}
+                        </Text>
+                        {link && (
+                          <Button as="a" href={link} target="_blank" rel="noopener" size="xs" variant="ghost"
+                            colorScheme="blue" fontSize="2xs" minW="auto" h="auto" p={1}>
+                            Verificar
+                          </Button>
+                        )}
+                      </HStack>
+                    );
+                  })}
                 </Box>
               )}
 
               {pipelineResult?.audit_log && pipelineResult.audit_log.length > 0 && (
-                <Box mt={4} p={3} bg="orange.50" borderRadius="md">
-                  <Text fontWeight="bold" fontSize="sm" mb={2}>Log de Auditoria (Agente C)</Text>
-                  {pipelineResult.audit_log.map((entry, i) => (
-                    <Text key={i} fontSize="xs" color="gray.700">
-                      [{entry.tipo}] {entry.campo}: {entry.motivo}
-                    </Text>
-                  ))}
-                </Box>
+                <AuditLogHumanized entries={pipelineResult.audit_log} />
               )}
 
               <Divider my={4} />
 
               <Heading size="sm" mb={3}>Checklist de Saída (6 itens obrigatórios)</Heading>
               <VStack align="stretch" gap={1}>
-                {Object.entries(checklist).map(([key, value]) => {
+                {Object.entries(checklist).map(([key, value], idx) => {
                   const isOk = typeof value === 'boolean' ? value : (value as ChecklistItem)?.ok;
                   const label = typeof value === 'object' && value !== null && 'label' in value
                     ? (value as ChecklistItem).label
                     : key.replace(/_/g, ' ');
                   return (
-                    <HStack key={key}>
-                      <Badge colorScheme={isOk ? 'green' : 'red'} fontSize="xs" minW="20px" textAlign="center">
+                    <HStack key={key} sx={{ animation: `${fadeInUp} 0.3s ease ${idx * 0.15}s both` }}>
+                      <Box w="22px" h="22px" borderRadius="full" display="flex" alignItems="center" justifyContent="center"
+                        bg={isOk ? 'green.500' : 'red.500'} color="white" fontSize="xs" fontWeight="bold" flexShrink={0}>
                         {isOk ? '✓' : '✗'}
-                      </Badge>
+                      </Box>
                       <Text fontSize="sm" color={isOk ? 'gray.700' : 'red.600'} fontWeight={isOk ? 'normal' : 'semibold'}>
                         {label}
                       </Text>
@@ -572,7 +773,17 @@ export default function ReportCreate() {
                 <Button variant="outline" onClick={handleRegenerate} isLoading={pipelineLoading}>
                   Regenerar
                 </Button>
-                <Button colorScheme="green" onClick={() => setActiveStep(3)}>
+                <Button colorScheme="green" onClick={() => {
+                  if (justificativaOriginal && justificativa !== justificativaOriginal && pipelineResult?.report_id) {
+                    aiAssistantApi.saveEdit({
+                      report_id: pipelineResult.report_id,
+                      original_text: justificativaOriginal,
+                      edited_text: justificativa,
+                      especialidade: especialidade || undefined,
+                    }).catch(() => {});
+                  }
+                  setActiveStep(3);
+                }}>
                   Próximo: Revisão & PDF
                 </Button>
               </HStack>

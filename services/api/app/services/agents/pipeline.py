@@ -18,6 +18,50 @@ from .token_tracker import PipelineUsage
 logger = logging.getLogger(__name__)
 
 
+def _enrich_references(
+    refs: list[str],
+    pubmed_evidences: list[dict],
+    clinical_evidences: list[dict],
+) -> list[dict]:
+    """Enriquece referências com DOI, PMID e links verificáveis."""
+    pubmed_by_author = {}
+    for ev in (pubmed_evidences or []):
+        key = ev.get("autor", "").lower().split()[0] if ev.get("autor") else ""
+        if key:
+            pubmed_by_author[key] = ev
+
+    enriched = []
+    for ref_text in refs:
+        ref_lower = ref_text.lower()
+        item = {"texto": ref_text, "source": "internal"}
+
+        for ev in (pubmed_evidences or []):
+            autor = ev.get("autor", "").lower()
+            if autor and autor in ref_lower:
+                item["pmid"] = ev.get("pmid", "")
+                item["doi"] = ev.get("doi", "")
+                item["source"] = "pubmed"
+                if ev.get("pmid"):
+                    item["link"] = f"https://pubmed.ncbi.nlm.nih.gov/{ev['pmid']}/"
+                elif ev.get("doi"):
+                    item["link"] = f"https://doi.org/{ev['doi']}"
+                break
+
+        if "link" not in item:
+            for ev in (clinical_evidences or []):
+                autor = ev.get("autor", "").lower()
+                if autor and autor in ref_lower:
+                    doi = ev.get("doi", "")
+                    if doi:
+                        item["doi"] = doi
+                        item["link"] = f"https://doi.org/{doi}"
+                    break
+
+        enriched.append(item)
+
+    return enriched
+
+
 @dataclass
 class PipelineSession:
     """Estado de uma sessão do pipeline multi-agente."""
@@ -63,6 +107,7 @@ class ReportPipeline:
         cid: str,
         medico_inputs: dict,
         db: Optional[AsyncSession] = None,
+        on_progress=None,
     ) -> dict:
         """
         Inicia pipeline: executa Agente A (Pesquisador).
@@ -78,7 +123,12 @@ class ReportPipeline:
         session.step = "researching"
         cls._sessions[session_id] = session
 
+        async def _emit(step, label):
+            if on_progress:
+                await on_progress(step, label)
+
         logger.info("Pipeline iniciado: session=%s, product=%s", session_id, product.nome)
+        await _emit("researching", "Pesquisando evidências científicas...")
 
         session.clinical_evidences = await _fetch_clinical_evidences(db, cid, product.id)
         session.pubmed_evidences = await _fetch_pubmed_evidences(db, cid, product.nome, diagnostico)
@@ -110,10 +160,10 @@ class ReportPipeline:
                 "especialidade": research_result.especialidade_detectada,
             }
 
-        return await cls._generate(session)
+        return await cls._generate(session, on_progress=on_progress)
 
     @classmethod
-    async def answer(cls, session_id: str, answers: dict) -> dict:
+    async def answer(cls, session_id: str, answers: dict, on_progress=None) -> dict:
         """
         Recebe respostas A/B/C do médico e avança o pipeline.
         """
@@ -141,13 +191,18 @@ class ReportPipeline:
                 "questions": session.pending_questions,
             }
 
-        return await cls._generate(session)
+        return await cls._generate(session, on_progress=on_progress)
 
     @classmethod
-    async def _generate(cls, session: PipelineSession) -> dict:
+    async def _generate(cls, session: PipelineSession, on_progress=None) -> dict:
         """Executa Agente B (Redator) -> Agente C (Auditor) -> Camada 4 (Validador Hard-Coded)."""
 
+        async def _emit(step: str, label: str):
+            if on_progress:
+                await on_progress(step, label)
+
         session.step = "writing"
+        await _emit("writing", "Redigindo justificativa técnica...")
         logger.info("Pipeline redação: session=%s", session.session_id)
 
         draft = await write_justification(
@@ -163,6 +218,7 @@ class ReportPipeline:
             session.usage.add(draft.token_usage)
 
         session.step = "auditing"
+        await _emit("auditing", "Auditando texto com especialista...")
         logger.info("Pipeline auditoria: session=%s", session.session_id)
 
         audit_result = await audit(draft, session.product, clinical_evidences=session.clinical_evidences)
@@ -170,8 +226,8 @@ class ReportPipeline:
         if audit_result.token_usage:
             session.usage.add(audit_result.token_usage)
 
-        # Camada 4: Validador Hard-Coded (Python puro, sem IA)
         session.step = "validating"
+        await _emit("validating", "Validação hard-coded de dados técnicos...")
         logger.info("Pipeline validação hard-coded: session=%s", session.session_id)
 
         validation = validate_technical_data(
@@ -215,6 +271,14 @@ class ReportPipeline:
             session.session_id, final_approved, validation.aprovado,
         )
 
+        enriched_refs = _enrich_references(
+            audit_result.referencias_validadas,
+            session.pubmed_evidences,
+            session.clinical_evidences,
+        )
+
+        await _emit("done", "Relatório finalizado")
+
         return {
             "session_id": session.session_id,
             "step": "done",
@@ -241,7 +305,7 @@ class ReportPipeline:
                     "entities_found": len(validation.entities_found),
                 },
             },
-            "referencias": audit_result.referencias_validadas,
+            "referencias": enriched_refs,
             "diagnostico_resumo": draft.diagnostico_resumo,
             "falha_terapeutica": draft.falha_terapeutica,
             "risco_nao_realizacao": draft.risco_nao_realizacao,

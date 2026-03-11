@@ -157,6 +157,7 @@ class ClinicalEvidence(Base):
     ano = Column(String(10), nullable=True)
     tipo = Column(String(50), nullable=True)  # meta-analise | rct | revisao | coorte
     relevancia = Column(String(20), default="alta")  # alta | media | baixa
+    doi = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
 
@@ -177,6 +178,21 @@ class PubmedCache(Base):
     article_type = Column(String(50), nullable=True)
     doi = Column(String(255), nullable=True)
     relevance_score = Column(String(10), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+
+class ReportEdit(Base):
+    """Captura edições do médico sobre texto gerado pela IA para aprendizagem."""
+    __tablename__ = "report_edits"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    report_id = Column(UUID(), ForeignKey("reports.id"), nullable=False, index=True)
+    user_id = Column(UUID(), ForeignKey("users.id"), nullable=False, index=True)
+    especialidade = Column(String(100), nullable=True)
+    original_text = Column(Text, nullable=False)
+    edited_text = Column(Text, nullable=False)
+    diff_json = Column(JSON, nullable=True)
+    edit_type = Column(String(50), nullable=True)  # terminology | structure | addition | removal
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
 

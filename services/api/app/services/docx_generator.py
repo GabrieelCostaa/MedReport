@@ -32,6 +32,27 @@ def _set_cell_shading(cell, color_hex: str):
     shading.append(shd)
 
 
+def _add_hyperlink(doc, paragraph, url, text):
+    """Adds a clickable hyperlink to a paragraph in a docx document."""
+    part = doc.part
+    r_id = part.relate_to(url, "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", is_external=True)
+    hyperlink = paragraph._element.makeelement(qn("w:hyperlink"), {qn("r:id"): r_id})
+    run_elem = paragraph._element.makeelement(qn("w:r"), {})
+    rPr = run_elem.makeelement(qn("w:rPr"), {})
+    rStyle = rPr.makeelement(qn("w:rStyle"), {qn("w:val"): "Hyperlink"})
+    rPr.append(rStyle)
+    color_elem = rPr.makeelement(qn("w:color"), {qn("w:val"): "1A4D8F"})
+    rPr.append(color_elem)
+    sz = rPr.makeelement(qn("w:sz"), {qn("w:val"): "16"})
+    rPr.append(sz)
+    run_elem.append(rPr)
+    t_elem = run_elem.makeelement(qn("w:t"), {})
+    t_elem.text = text
+    run_elem.append(t_elem)
+    hyperlink.append(run_elem)
+    paragraph._element.append(hyperlink)
+
+
 def _add_run(paragraph, text, bold=False, size=11, color=DARK, font_name="Calibri"):
     run = paragraph.add_run(text)
     run.bold = bold
@@ -226,7 +247,15 @@ def generate_docx_bytes(
         for ref in referencias:
             p_ref = doc.add_paragraph()
             p_ref.paragraph_format.space_after = Pt(2)
-            _add_run(p_ref, f"■ {ref}", size=9, color=GRAY)
+            if isinstance(ref, dict):
+                texto = ref.get("texto", str(ref))
+                link = ref.get("link", "")
+                _add_run(p_ref, f"■ {texto}", size=9, color=GRAY)
+                if link:
+                    _add_run(p_ref, f" ", size=9, color=GRAY)
+                    _add_hyperlink(doc, p_ref, link, "[Verificar]")
+            else:
+                _add_run(p_ref, f"■ {ref}", size=9, color=GRAY)
 
     # ── CHECKLIST ──
     if checklist:

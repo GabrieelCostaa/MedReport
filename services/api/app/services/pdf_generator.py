@@ -2,6 +2,8 @@
 Serviço de geração de PDF para relatórios OPME.
 Usa Jinja2 + WeasyPrint para converter HTML template em PDF profissional.
 """
+import base64
+import io
 import os
 import logging
 import uuid
@@ -34,6 +36,41 @@ def _split_paragraphs(text: str) -> list[str]:
     return paragraphs
 
 
+def _generate_qr_base64(url: str) -> str:
+    """Gera QR code em base64 PNG para uma URL."""
+    try:
+        import qrcode
+        qr = qrcode.QRCode(version=1, box_size=4, border=1)
+        qr.add_data(url)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        return base64.b64encode(buf.getvalue()).decode()
+    except ImportError:
+        logger.warning("qrcode library not installed, skipping QR generation")
+        return ""
+    except Exception as e:
+        logger.warning("QR generation failed: %s", e)
+        return ""
+
+
+def _prepare_references_for_pdf(referencias: list) -> list:
+    """Prepara referências com QR codes para o template PDF."""
+    if not referencias:
+        return []
+    prepared = []
+    for ref in referencias:
+        if isinstance(ref, dict):
+            item = dict(ref)
+            if item.get("link"):
+                item["qr_base64"] = _generate_qr_base64(item["link"])
+            prepared.append(item)
+        else:
+            prepared.append(ref)
+    return prepared
+
+
 def generate_pdf_bytes(
     justificativa: str,
     paciente_nome: str,
@@ -43,7 +80,7 @@ def generate_pdf_bytes(
     convenio: str = "",
     especialidade: str = "",
     codigo_tuss: str = "",
-    referencias: list[str] = None,
+    referencias: list = None,
     checklist: dict = None,
     medico_nome: str = "",
     medico_crm: str = "",
@@ -72,7 +109,7 @@ def generate_pdf_bytes(
         especialidade=especialidade or "",
         codigo_tuss=codigo_tuss or "",
         justificativa_paragrafos=_split_paragraphs(justificativa),
-        referencias=referencias or [],
+        referencias=_prepare_references_for_pdf(referencias or []),
         checklist=checklist,
         medico_nome=medico_nome,
         medico_crm=medico_crm,
