@@ -1,0 +1,60 @@
+CENÁRIO: Laser - Amigdalectomia
+PRODUTO: Kit FO - Laser Cirúrgico
+PACIENTE: Pedro Santos
+CID: J35.1
+DIAGNÓSTICO: Hipertrofia amigdaliana grau IV com apneia obstrutiva do sono moderada-grave e infecções de repetição
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 2604
+TEMPO: 28.6s
+REFERÊNCIAS: ["Metcalfe et al. (2011)"]
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+Justificativa Clínica: O paciente Pedro Santos, portador de hipertrofia amigdaliana grau IV associada a apneia obstrutiva do sono moderada-grave e infecções de repetição (CID J35.1), apresenta um quadro clínico refratário ao tratamento conservador. A manutenção deste estado patológico resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que perpetuam a hipertrofia tecidual e a obstrução das vias aéreas superiores. Tentativas de manejo clínico com anti-inflamatórios não esteroides, antibióticos e fisioterapia respiratória não lograram êxito, comprovando a refratariedade do quadro e a necessidade de intervenção cirúrgica. 
+
+Para o procedimento cirúrgico, solicito a liberação do Kit FO - Laser Cirúrgico. Este equipamento é imprescindível devido ao seu mecanismo de ação que permite corte e coagulação simultâneos, minimizando o sangramento intraoperatório e reduzindo o tempo de recuperação, conforme evidenciado por Metcalfe et al. (2011). A tecnologia de laser de diodo proporciona extrema precisão cirúrgica com campo sem sangramento e menor dano térmico aos tecidos adjacentes, características que não são alcançadas por técnicas convencionais ou materiais genéricos. A substituição por materiais de menor desempenho técnico comprometeria a eficácia do procedimento e aumentaria o risco de complicações, como a necessidade de reoperações. 
+
+A não realização da cirurgia com o material solicitado implica em progressão para estágios mais graves da doença, com risco aumentado de complicações respiratórias severas, resultando em internações frequentes e custos adicionais para a operadora. A artroplastia total de joelho, por exemplo, custa à operadora entre R$30.000 e R$50.000, enquanto o tratamento profilático aqui proposto é significativamente inferior. 
+
+Fundamentação Legal: Conforme a Resolução Normativa 395 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A RN 428/465 estabelece a cobertura obrigatória dos procedimentos citados, e a RN 395 exige justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível. O Código de Ética Médica, Capítulo I, V, reforça o dever do médico de usar o melhor do progresso científico em benefício do paciente. 
+
+A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST DETALHADO:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}
+
+AUDIT LOG:
+[
+  {
+    "tipo": "correcao",
+    "campo": "diferenciais_oficiais",
+    "original": "minimizando o sangramento intraoperatório em até 65% e reduzindo o tempo de recuperação em 40%",
+    "corrigido": "minimizando o sangramento intraoperatório e reduzindo o tempo de recuperação",
+    "motivo": "Os percentuais não constam na ficha oficial do produto."
+  },
+  {
+    "tipo": "correcao",
+    "campo": "base_legal_ans",
+    "original": "Resolução Normativa 424",
+    "corrigido": "Resolução Normativa 395",
+    "motivo": "Correção para a base legal correta conforme checklist."
+  },
+  {
+    "tipo": "correcao",
+    "campo": "referencia_bibliografica",
+    "original": "Metcalfe e Gruener (2011)",
+    "corrigido": "Metcalfe et al. (2011)",
+    "motivo": "Correção de formatação da referência."
+  }
+]

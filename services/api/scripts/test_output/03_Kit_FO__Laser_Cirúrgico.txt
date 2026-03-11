@@ -1,0 +1,45 @@
+CENÁRIO: Laser - Hipertrofia de Cornetos
+PRODUTO: Kit FO - Laser Cirúrgico
+PACIENTE: João Oliveira
+CID: J34.3
+DIAGNÓSTICO: Hipertrofia de cornetos nasais inferiores bilaterais refratária a tratamento clínico
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 1990
+TEMPO: 29.6s
+REFERÊNCIAS: ["Janda et al., 2001"]
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+Justificativa Clinica O paciente João Oliveira, apresenta hipertrofia de cornetos nasais inferiores bilaterais refratária ao tratamento clínico, conforme CID J34.3. A manutenção deste quadro sem intervenção cirúrgica adequada perpetua um ambiente inflamatório crônico, potencializando a obstrução nasal e comprometendo a qualidade de vida do paciente, com risco de evolução para apneia obstrutiva do sono e suas complicações cardiovasculares associadas, como infartos e AVCs. Solicito, portanto, a liberação do Kit FO - Laser Cirúrgico para a realização de turbinoplastia assistida por laser de diodo, conforme códigos TUSS 30501458 e 30501113, procedimentos de cobertura mínima obrigatória pela ANS. O uso do laser de diodo 980/1470 nm é imperativo, pois permite corte e coagulação simultâneos, reduzindo a formação de crostas, eliminando a necessidade de tamponamento nasal e permitindo recuperação em regime de Day Clinic. Diferente de técnicas convencionais, o laser de diodo minimiza o dano térmico aos tecidos adjacentes, garantindo alta precisão cirúrgica e menor tempo de recuperação, conforme indicado na literatura. A negativa deste procedimento pode resultar em progressão para condições mais graves, exigindo intervenções de maior custo e morbidade. A artroplastia total de joelho, por exemplo, custa à operadora entre R$30.000 e R$50.000, enquanto o custo do material aqui solicitado é significativamente inferior. Conforme Resolução Normativa da ANS 424, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME, sendo a cobertura obrigatória conforme RN 428/465. Caso haja negativa, solicito justificativa por escrito conforme RN 395. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST DETALHADO:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}
+
+AUDIT LOG:
+[
+  {
+    "tipo": "correcao",
+    "campo": "diferenciais_oficiais",
+    "original": "O uso do laser de diodo 980/1470 nm é imperativo, pois permite corte e coagulação simultâneos, reduzindo a formação de crostas, eliminando a necessidade de tamponamento nasal e permitindo recuperação em regime de Day Clinic, conforme evidenciado por Janda P, et al., 2001.",
+    "corrigido": "O uso do Kit FO - Laser Cirúrgico é imperativo, pois permite corte e coagulação simultâneos, reduzindo a formação de crostas, eliminando a necessidade de tamponamento nasal e permitindo recuperação em regime de Day Clinic.",
+    "motivo": "Ajuste para alinhar com os diferenciais oficiais do produto."
+  },
+  {
+    "tipo": "validacao",
+    "campo": "referencia_bibliografica",
+    "original": "Janda P, et al., 2001",
+    "corrigido": "Janda et al., 2001",
+    "motivo": "Referência válida conforme lista de autores conhecidos do produto."
+  }
+]

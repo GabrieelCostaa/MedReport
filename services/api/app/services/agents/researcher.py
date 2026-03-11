@@ -7,8 +7,18 @@ import logging
 from dataclasses import dataclass, field
 from typing import Optional
 
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.config import settings
+from app.db.models import ClinicalEvidence
 from .prompts import RESEARCHER_SYSTEM
+from .token_tracker import TokenUsage, extract_usage
+
+__all__ = [
+    "research", "ResearchResult", "GapQuestion", "Evidence",
+    "_fetch_clinical_evidences", "_fetch_pubmed_evidences",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +35,13 @@ class GapQuestion:
     secao: str
     pergunta: str
     opcoes: list[dict] = field(default_factory=list)
+    prioridade: str = "critica"  # critica | fortalecimento
+
+
+# Lacunas sem as quais o relatório é glosado
+CRITICAL_GAPS = {"falha_terapeutica", "risco_nao_realizacao", "diagnostico"}
+# Lacunas que fortalecem mas não são obrigatórias
+STRENGTHENING_GAPS = {"citacao_recente", "estudo_adicional", "dado_complementar"}
 
 
 @dataclass
@@ -32,9 +49,11 @@ class ResearchResult:
     evidencias: list[Evidence] = field(default_factory=list)
     referencias: list[str] = field(default_factory=list)
     lacunas: list[GapQuestion] = field(default_factory=list)
+    dicas_ia: list[dict] = field(default_factory=list)
     sugestao_tuss: Optional[str] = None
     especialidade_detectada: Optional[str] = None
     raw_response: Optional[str] = None
+    token_usage: Optional[TokenUsage] = None
 
 
 def _build_product_context(product) -> str:
@@ -60,12 +79,53 @@ def _build_product_context(product) -> str:
     return "\n".join(parts)
 
 
-async def research(product, diagnostico: str, cid: str, template=None) -> ResearchResult:
+async def _fetch_clinical_evidences(db: Optional[AsyncSession], cid: str, product_id) -> list[dict]:
+    """Busca evidências pré-validadas no banco por CID + produto."""
+    if not db or not cid:
+        return []
+    try:
+        stmt = select(ClinicalEvidence).where(
+            ClinicalEvidence.cid == cid.strip().upper(),
+            ClinicalEvidence.product_id == product_id,
+        ).order_by(ClinicalEvidence.relevancia)
+        result = await db.execute(stmt)
+        rows = result.scalars().all()
+        return [
+            {
+                "snippet": r.snippet,
+                "autor": r.autor,
+                "referencia_completa": r.referencia_completa or f"{r.autor} ({r.ano})",
+                "ano": r.ano,
+                "tipo": r.tipo,
+            }
+            for r in rows
+        ]
+    except Exception as e:
+        logger.warning("Falha ao buscar clinical_evidences: %s", e)
+        return []
+
+
+async def _fetch_pubmed_evidences(db: Optional[AsyncSession], cid: str, product_name: str, diagnostico: str) -> list[dict]:
+    """Busca evidências do PubMed (cache progressivo)."""
+    if not db or not cid:
+        return []
+    try:
+        from app.services.pubmed_service import get_evidences_for_cid
+        return await get_evidences_for_cid(db, cid, product_name, diagnostico)
+    except Exception as e:
+        logger.warning("Falha ao buscar PubMed evidences: %s", e)
+        return []
+
+
+async def research(product, diagnostico: str, cid: str, template=None, db: Optional[AsyncSession] = None) -> ResearchResult:
     """
     Executa pesquisa sobre a patologia e o produto.
     Retorna evidências, referências e lacunas que precisam de input do médico.
     """
     product_context = _build_product_context(product)
+
+    db_evidences = await _fetch_clinical_evidences(db, cid, product.id)
+    pubmed_evidences = await _fetch_pubmed_evidences(db, cid, product.nome, diagnostico)
 
     system_prompt = RESEARCHER_SYSTEM.format(product_context=product_context)
 
@@ -74,6 +134,33 @@ async def research(product, diagnostico: str, cid: str, template=None) -> Resear
         f"CID: {cid}\n"
         f"Material OPME solicitado: {product.nome}\n"
     )
+
+    if db_evidences:
+        user_message += "\n--- EVIDÊNCIAS INTERNAS PRÉ-VALIDADAS (VERIFICADAS) ---\n"
+        user_message += "USE ESTAS EVIDÊNCIAS OBRIGATORIAMENTE no relatório. São dados verificados.\n\n"
+        for i, ev in enumerate(db_evidences, 1):
+            user_message += (
+                f"[Evidência Interna {i}] ({ev['tipo'] or 'estudo'})\n"
+                f"  Autor: {ev['autor']}\n"
+                f"  Ano: {ev['ano']}\n"
+                f"  Snippet: {ev['snippet']}\n"
+                f"  Referência: {ev['referencia_completa']}\n\n"
+            )
+
+    if pubmed_evidences:
+        user_message += "\n--- EVIDÊNCIAS PUBMED (artigos científicos indexados) ---\n"
+        user_message += "Use estas evidências para ENRIQUECER o relatório com referências adicionais.\n\n"
+        offset = len(db_evidences)
+        for i, ev in enumerate(pubmed_evidences[:10], 1):
+            user_message += (
+                f"[PubMed {offset + i}] ({ev.get('tipo', 'article')}) PMID: {ev.get('pmid', '')}\n"
+                f"  Autor: {ev['autor']}\n"
+                f"  Ano: {ev['ano']}\n"
+                f"  Journal: {ev.get('journal', '')}\n"
+                f"  Resumo: {ev['snippet'][:300]}\n"
+                f"  Referência: {ev.get('referencia_completa', '')}\n\n"
+            )
+
     if template:
         user_message += f"\nTemplate de referência disponível: {template.nome}\n"
         if template.referencias_padrao:
@@ -95,7 +182,26 @@ async def research(product, diagnostico: str, cid: str, template=None) -> Resear
         )
 
         raw = response.choices[0].message.content
+        usage = extract_usage(response, "Pesquisador")
         data = json.loads(raw)
+
+        all_lacunas = []
+        for l in data.get("lacunas", []):
+            secao = l.get("secao", "")
+            prioridade = l.get("prioridade", "critica" if secao in CRITICAL_GAPS else "fortalecimento")
+            all_lacunas.append(GapQuestion(
+                secao=secao,
+                pergunta=l.get("pergunta", ""),
+                opcoes=l.get("opcoes", []),
+                prioridade=prioridade,
+            ))
+
+        critical_lacunas = [l for l in all_lacunas if l.prioridade == "critica"]
+        strengthening_lacunas = [l for l in all_lacunas if l.prioridade == "fortalecimento"]
+
+        dicas_ia = data.get("dicas_ia", [])
+        for sl in strengthening_lacunas:
+            dicas_ia.append({"tipo": "sugestao", "texto": sl.pergunta})
 
         return ResearchResult(
             evidencias=[
@@ -107,17 +213,12 @@ async def research(product, diagnostico: str, cid: str, template=None) -> Resear
                 for e in data.get("evidencias", [])
             ],
             referencias=data.get("referencias_bibliograficas", []),
-            lacunas=[
-                GapQuestion(
-                    secao=l.get("secao", ""),
-                    pergunta=l.get("pergunta", ""),
-                    opcoes=l.get("opcoes", []),
-                )
-                for l in data.get("lacunas", [])
-            ],
+            lacunas=critical_lacunas,
+            dicas_ia=dicas_ia,
             sugestao_tuss=data.get("sugestao_tuss"),
             especialidade_detectada=data.get("especialidade_detectada"),
             raw_response=raw,
+            token_usage=usage,
         )
 
     except Exception as e:

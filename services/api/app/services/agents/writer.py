@@ -10,6 +10,7 @@ from typing import Optional
 from app.core.config import settings
 from .prompts import WRITER_SYSTEM
 from .researcher import ResearchResult
+from .token_tracker import TokenUsage, extract_usage
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +24,7 @@ class DraftReport:
     base_legal: str = ""
     referencias: list[str] = field(default_factory=list)
     raw_response: Optional[str] = None
+    token_usage: Optional[TokenUsage] = None
 
 
 def _build_product_facts(product) -> str:
@@ -53,6 +55,12 @@ def _build_template_context(template) -> str:
         parts.append(f"Modelo de referência:\n{template.template_corpo}")
     if template.bases_legais:
         parts.append(f"Bases legais: {json.dumps(template.bases_legais)}")
+    exemplos = getattr(template, 'exemplos_aprovados', None)
+    if exemplos:
+        ranked = sorted(exemplos, key=len, reverse=True)[:3]
+        parts.append("\nEXEMPLOS DE RELATÓRIOS JÁ APROVADOS POR CONVÊNIOS (copie este estilo EXATAMENTE):")
+        for i, ex in enumerate(ranked, 1):
+            parts.append(f"--- Exemplo Aprovado {i} ---\n{ex}")
     return "\n".join(parts) or "Tom científico formal."
 
 
@@ -61,6 +69,8 @@ async def write_justification(
     product,
     template,
     medico_inputs: dict,
+    clinical_evidences: list[dict] | None = None,
+    pubmed_evidences: list[dict] | None = None,
 ) -> DraftReport:
     """
     Redige a justificativa técnica com base na pesquisa, produto e inputs do médico.
@@ -68,9 +78,38 @@ async def write_justification(
     product_facts = _build_product_facts(product)
     template_context = _build_template_context(template)
 
-    evidence_text = "\n".join(
+    evidence_parts = []
+
+    if clinical_evidences:
+        evidence_parts.append("=== EVIDÊNCIAS INTERNAS VERIFICADAS (use OBRIGATORIAMENTE, cite AUTOR e ANO) ===")
+        for i, ev in enumerate(clinical_evidences, 1):
+            evidence_parts.append(
+                f"[Interna {i}] Autor: {ev['autor']} | Ano: {ev['ano']} | Tipo: {ev.get('tipo', 'estudo')}\n"
+                f"    Snippet: {ev['snippet']}\n"
+                f"    Citação: ({ev['autor']} et al., {ev['ano']})"
+            )
+
+    if pubmed_evidences:
+        evidence_parts.append("\n=== EVIDÊNCIAS PUBMED (cite AUTOR, ANO e PMID) ===")
+        offset = len(clinical_evidences or [])
+        for i, ev in enumerate(pubmed_evidences[:10], 1):
+            evidence_parts.append(
+                f"[PubMed {offset + i}] Autor: {ev['autor']} | Ano: {ev['ano']} | "
+                f"PMID: {ev.get('pmid', '')} | Tipo: {ev.get('tipo', 'article')}\n"
+                f"    Journal: {ev.get('journal', '')}\n"
+                f"    Resumo: {ev['snippet'][:300]}\n"
+                f"    Referência completa: {ev.get('referencia_completa', '')}\n"
+                f"    Citação: ({ev['autor']} et al., {ev['ano']})"
+            )
+
+    researcher_evidence = "\n".join(
         f"- {e.texto} (Ref: {e.referencia})" for e in research.evidencias
-    ) or "Nenhuma evidência adicional encontrada pelo pesquisador."
+    )
+    if researcher_evidence:
+        evidence_parts.append("\n=== EVIDÊNCIAS DO PESQUISADOR ===")
+        evidence_parts.append(researcher_evidence)
+
+    evidence_text = "\n".join(evidence_parts) or "Nenhuma evidência adicional encontrada pelo pesquisador."
 
     medico_text = "\n".join(
         f"- {k}: {v}" for k, v in medico_inputs.items() if v
@@ -111,6 +150,7 @@ async def write_justification(
         )
 
         raw = response.choices[0].message.content
+        usage = extract_usage(response, "Redator")
         data = json.loads(raw)
 
         return DraftReport(
@@ -121,6 +161,7 @@ async def write_justification(
             base_legal=data.get("base_legal", ""),
             referencias=data.get("referencias", []),
             raw_response=raw,
+            token_usage=usage,
         )
 
     except Exception as e:

@@ -1,0 +1,36 @@
+CENÁRIO: 01 Lipedema - Laser 1210nm
+PRODUTO: Kit FO - Laser Cirúrgico
+PACIENTE: Carla Monteiro
+CID: E88.2
+DIAGNÓSTICO: Lipedema grau II bilateral de membros inferiores com dor crônica, edema refratário à drenagem linfática e impacto funcional significativo. Falha terapêutica com compressão elástica e fisioterapia por 24 meses.
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 2748
+TEMPO: 29.9s
+REFERÊNCIAS: ["Valente et al. (2024)"]
+AUTORES ESPERADOS: {"Valente": true}
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+Justificativa Clínica: A paciente Carla Monteiro, portadora de lipedema grau II bilateral dos membros inferiores, apresenta dor crônica e edema refratário à drenagem linfática, resultando em impacto funcional significativo. O tratamento conservador, incluindo compressão elástica e fisioterapia, foi exaurido ao longo de 24 meses sem sucesso, evidenciando a refratariedade do quadro clínico. A manutenção deste estado inflamatório crônico, sem intervenção adequada, perpetua um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, como IL-1β e TNF-α, acelerando a apoptose dos adipócitos e a degradação da matriz extracelular, conforme descrito por Valente et al. (2024). 
+
+Justificativa Técnica e Superioridade do Material: O Kit FO - Laser Cirúrgico é imprescindível para a abordagem cirúrgica do lipedema, oferecendo extrema precisão com corte e coagulação simultâneos, minimizando o dano térmico aos tecidos adjacentes. Diferente de técnicas convencionais, o laser cirúrgico proporciona um campo operatório sem sangramento, reduzindo o tempo cirúrgico e promovendo uma recuperação mais rápida, possibilitando tratamento em regime de Day Clinic. O laser de diodo com emissão de 980 nm e 1470 nm, como demonstrado por Valente et al. (2024), reduz significativamente a perda sanguínea e a dor pós-operatória, com retorno mais rápido às atividades normais. 
+
+Risco da Não Realização e Impacto Financeiro: A não realização do procedimento com o Kit FO - Laser Cirúrgico pode levar à progressão do lipedema para estágios mais graves, aumentando a morbidade e a necessidade de intervenções futuras de maior custo, como lipoaspirações convencionais ou até cirurgias de reconstrução. A negativa de cobertura resultará em custos adicionais para a operadora, considerando a potencial necessidade de internações prolongadas e tratamentos mais invasivos. 
+
+Fundamentação Legal: Conforme a Resolução Normativa 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME necessários. A RN 428/465 estabelece a cobertura obrigatória dos procedimentos citados. Ademais, a RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas. O Código de Ética Médica, Cap. I, V, reforça que compete ao médico usar o melhor do progresso científico em benefício do paciente. 
+
+Fechamento Checkmate: A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}

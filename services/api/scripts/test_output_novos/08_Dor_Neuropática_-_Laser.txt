@@ -1,0 +1,28 @@
+CENÁRIO: 08 Dor Neuropática - Laser
+PRODUTO: Kit FO - Laser Cirúrgico
+PACIENTE: Helena Martins
+CID: G62.9
+DIAGNÓSTICO: Polineuropatia periférica com dor neuropática crônica refratária a gabapentina e pregabalina. Indicação de fotobiomodulação com laser para controle de dor e neuromodulação.
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 2342
+TEMPO: 58.7s
+REFERÊNCIAS: ["Simunovic, 1996"]
+AUTORES ESPERADOS: {"Andrade": false, "Cotler": false}
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+Justificativa Clínica: A paciente Helena Martins, portadora de polineuropatia periférica com dor neuropática crônica refratária a gabapentina e pregabalina (CID G62.9), apresenta quadro clínico de intensa dor neuropática, sem resposta adequada aos tratamentos conservadores. A manutenção deste quadro sem intervenção adequada resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, exacerbando a sensibilização periférica e central, o que leva à progressão da dor neuropática e à potencial perda funcional irreversível. A fotobiomodulação com laser infravermelho é indicada para o controle da dor e neuromodulação, sendo o Kit FO - Laser Cirúrgico essencial para a realização deste procedimento. O mecanismo de ação do laser de diodo permite corte e coagulação simultâneos, com extrema precisão cirúrgica e menor dano térmico aos tecidos adjacentes, promovendo analgesia sustentada através da hiperpolarização da membrana nervosa e modulação da liberação de substâncias álgicas (Simunovic, 1996). Comparado a alternativas genéricas, o laser cirúrgico oferece superioridade técnica, garantindo uma recuperação mais rápida e menor tempo de internação, possibilitando a classificação de Day Clinic. A não realização do procedimento pode resultar em progressão da doença para estágios mais graves, com maior morbidade e custos associados a internações prolongadas e procedimentos de maior complexidade. A artroplastia total de joelho, por exemplo, custa à operadora entre R$30.000 e R$50.000, enquanto o tratamento profilático aqui proposto é significativamente inferior a este custo. Conforme a RN 395 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME necessários. A RN 428/465 garante a cobertura obrigatória dos procedimentos citados, e a RN 395 exige justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível. O Código de Ética Médica reforça o uso do melhor progresso científico em benefício do paciente. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}

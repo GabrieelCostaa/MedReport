@@ -1,0 +1,36 @@
+RELATÓRIOS APROVADOS - Pasta de Ingestão
+=========================================
+
+Coloque aqui os 20 relatórios que seu parceiro enviou.
+
+FORMATOS ACEITOS:
+  - .pdf
+  - .docx
+  - .txt
+  - .doc
+
+DICA DE NOMEAÇÃO (opcional, ajuda na classificação automática):
+  - adhesion_relatorio_01.pdf
+  - opus_viscossuplementacao_joelho.docx
+  - parafuso_lca_reconstrucao.pdf
+  - tela_hernia_inguinal.pdf
+
+Se o nome do arquivo contém o nome do produto, o sistema
+classifica automaticamente. Caso contrário, ele vai tentar
+detectar pelo conteúdo do texto.
+
+COMO RODAR A INGESTÃO:
+  cd services/api
+  python scripts/ingest_reports.py
+
+O QUE O SCRIPT FAZ:
+  1. Lê cada arquivo e extrai o texto
+  2. Identifica o produto OPME pelo conteúdo
+  3. Extrai parágrafos significativos (>100 chars)
+  4. Extrai referências bibliográficas
+  5. Salva como "exemplos_aprovados" nos templates do banco
+  6. Gera log em _ingestao_log.json
+
+DEPENDÊNCIAS (instale se for ler PDF/DOCX):
+  pip install PyMuPDF       # para PDFs
+  pip install python-docx   # para DOCX

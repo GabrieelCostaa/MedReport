@@ -1,0 +1,140 @@
+[
+  {
+    "cenario": "01 Lipedema - Laser 1210nm",
+    "status": "OK",
+    "chars": 1648,
+    "checklist": "5/6",
+    "tempo": "31.1s",
+    "aprovado": true,
+    "autores": {
+      "Valente": true
+    },
+    "autores_ok": true,
+    "arquivo": "scripts/test_output_novos/01_Lipedema_-_Laser_1210nm.docx"
+  },
+  {
+    "cenario": "02 Lipedema - Kit LP-CT",
+    "status": "OK",
+    "chars": 2432,
+    "checklist": "6/6",
+    "tempo": "31.6s",
+    "aprovado": true,
+    "autores": {
+      "Valente": true
+    },
+    "autores_ok": true,
+    "arquivo": "scripts/test_output_novos/02_Lipedema_-_Kit_LP-CT.docx"
+  },
+  {
+    "cenario": "03 OA Joelho - Enxerto Composto/SVF",
+    "status": "OK",
+    "chars": 2597,
+    "checklist": "6/6",
+    "tempo": "39.2s",
+    "aprovado": true,
+    "autores": {
+      "Sadri": true,
+      "Anil": true,
+      "Berman": true
+    },
+    "autores_ok": true,
+    "arquivo": "scripts/test_output_novos/03_OA_Joelho_-_Enxerto_Composto_SVF.docx"
+  },
+  {
+    "cenario": "04 OA Joelho - Opus HA Alto Peso",
+    "status": "REVIEW",
+    "chars": 2088,
+    "checklist": "6/6",
+    "tempo": "32.5s",
+    "aprovado": false,
+    "autores": {
+      "Altman": true,
+      "Anil": false
+    },
+    "autores_ok": false,
+    "arquivo": "scripts/test_output_novos/04_OA_Joelho_-_Opus_HA_Alto_Peso.docx"
+  },
+  {
+    "cenario": "05 Úlcera Vascular - Enxerto Composto SVF",
+    "status": "OK",
+    "chars": 2964,
+    "checklist": "6/6",
+    "tempo": "41.2s",
+    "aprovado": true,
+    "autores": {
+      "Teixeira": true,
+      "Bora": true
+    },
+    "autores_ok": true,
+    "arquivo": "scripts/test_output_novos/05_Úlcera_Vascular_-_Enxerto_Composto_SVF.docx"
+  },
+  {
+    "cenario": "06 Pé Diabético - SVF",
+    "status": "OK",
+    "chars": 1830,
+    "checklist": "5/6",
+    "tempo": "38.5s",
+    "aprovado": true,
+    "autores": {
+      "Zhao": true,
+      "Özkan": true
+    },
+    "autores_ok": true,
+    "arquivo": "scripts/test_output_novos/06_Pé_Diabético_-_SVF.docx"
+  },
+  {
+    "cenario": "07 Rec Mama - Enxertia SVF",
+    "status": "OK",
+    "chars": 2805,
+    "checklist": "6/6",
+    "tempo": "37.8s",
+    "aprovado": true,
+    "autores": {
+      "Centurión": true,
+      "Tan": true
+    },
+    "autores_ok": true,
+    "arquivo": "scripts/test_output_novos/07_Rec_Mama_-_Enxertia_SVF.docx"
+  },
+  {
+    "cenario": "08 Dor Neuropática - Laser",
+    "status": "OK",
+    "chars": 2990,
+    "checklist": "6/6",
+    "tempo": "38.6s",
+    "aprovado": true,
+    "autores": {
+      "Andrade": true,
+      "Cotler": false
+    },
+    "autores_ok": false,
+    "arquivo": "scripts/test_output_novos/08_Dor_Neuropática_-_Laser.docx"
+  },
+  {
+    "cenario": "09 Dor Musculoesquelética - LLLT",
+    "status": "OK",
+    "chars": 2763,
+    "checklist": "6/6",
+    "tempo": "38.3s",
+    "aprovado": true,
+    "autores": {
+      "Cotler": true,
+      "Simunovic": true
+    },
+    "autores_ok": true,
+    "arquivo": "scripts/test_output_novos/09_Dor_Musculoesquelética_-_LLLT.docx"
+  },
+  {
+    "cenario": "10 Rejuvenescimento - Laser 1210nm",
+    "status": "OK",
+    "chars": 2833,
+    "checklist": "6/6",
+    "tempo": "49.7s",
+    "aprovado": true,
+    "autores": {
+      "Centurión": true
+    },
+    "autores_ok": true,
+    "arquivo": "scripts/test_output_novos/10_Rejuvenescimento_-_Laser_1210nm.docx"
+  }
+]

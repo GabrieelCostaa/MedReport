@@ -1,0 +1,28 @@
+CENÁRIO: 04 OA Joelho - Opus HA Alto Peso
+PRODUTO: Kit EC2 - Linha Opus
+PACIENTE: Tereza Campos
+CID: M17.0
+DIAGNÓSTICO: Gonartrose bilateral grau II-III com dor articular crônica e limitação funcional. Tratamento conservador com AINES, fisioterapia e infiltração com corticosteroide sem melhora sustentada por 12 meses.
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 2110
+TEMPO: 35.3s
+REFERÊNCIAS: ["Altman et al., 2015", "Bannuru et al., 2009", "Tezel e Fredrickson, 2008"]
+AUTORES ESPERADOS: {"Altman": true, "Anil": false}
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+A quem interessar possa: A paciente Tereza Campos, com diagnóstico de gonartrose bilateral grau II-III (CID M17.0), apresenta quadro clínico de dor articular crônica e limitação funcional significativa, comprometendo suas atividades diárias. Após insucesso com tratamento conservador, incluindo AINES, fisioterapia e infiltração com corticosteroide, sem melhora sustentada por 12 meses, indica-se a viscossuplementação com o Kit EC2 - Linha Opus. Este produto contém hialuronato de sódio de alto peso molecular (6.000 kDa), que restaura as propriedades viscoelásticas do líquido sinovial, proporcionando alívio prolongado da dor e melhorando a função articular. Estudos demonstram que o uso de ácido hialurônico de alta massa molar reduz a necessidade de artroplastia total em 54% dos pacientes com gonartrose grau III, comparado ao tratamento conservador isolado (Altman et al., 2015). Além disso, a viscossuplementação com hialuronato de alto peso molecular mostrou superioridade sobre corticosteroides intra-articulares na manutenção do alívio álgico após 26 semanas (Bannuru et al., 2009). A reticulação do hialuronato no Kit EC2 confere resistência à degradação enzimática 3,5 vezes superior a formulações lineares, resultando em permanência intra-articular prolongada (Tezel e Fredrickson, 2008). A não realização do procedimento implica em progressão da doença, potencialmente evoluindo para necessidade de artroplastia total, um procedimento de maior custo e morbidade. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas. Além disso, a RN 424 afirma que cabe exclusivamente ao médico assistente a prerrogativa de determinar as características do material OPME. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}

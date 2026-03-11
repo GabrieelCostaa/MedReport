@@ -1,0 +1,67 @@
+CENÁRIO: Opus - Condropatia Patelar
+PRODUTO: Kit EC2 - Linha Opus
+PACIENTE: Luciana Ferreira
+CID: M17.0
+DIAGNÓSTICO: Condropatia patelar grau III-IV com lesão condral focal e falha de tratamento conservador prolongado por 18 meses
+APROVADO: True
+CHECKLIST: 5/6
+CARACTERES: 2534
+TEMPO: 39.6s
+REFERÊNCIAS: []
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+A quem interessar possa: A paciente Luciana Ferreira, com diagnóstico de gonartrose (CID M17.0), apresenta quadro clínico de osteoartrite de joelho com dor significativa e limitação funcional que compromete suas atividades diárias. Após insucesso com tratamento conservador, incluindo anti-inflamatórios não esteroidais (AINEs), fisioterapia cinesioterapêutica e infiltrações, o quadro permanece refratário, evidenciando a progressão da doença e a necessidade de intervenção com OPME. A manutenção do quadro inflamatório crônico, sem a devida intervenção, resulta em ambiente bioquímico hostil dominado por citocinas pró-inflamatórias (IL-1β, TNF-α), acelerando a apoptose dos condrócitos e a degradação irreversível da matriz extracelular. 
+
+Indica-se a viscossuplementação com o Kit EC2 - Linha Opus, que contém hialuronato de sódio de alto peso molecular (6.000 kDa), proporcionando restauração da viscoelasticidade do líquido sinovial e alívio prolongado da dor. Diferente de formulações lineares, o produto apresenta reticulação polimérica tridimensional (cross-linking), que cria uma barreira física e química à degradação enzimática, garantindo permanência intra-articular prolongada. Estudos demonstram que hialuronatos com reticulação apresentam resistência à degradação enzimática 3,5 vezes superior a formulações lineares, resultando em maior tempo de permanência articular. 
+
+A não realização do procedimento implica em progressão da doença para estágio mais grave, com potencial necessidade de artroplastia total de joelho, cujo custo à operadora varia entre R$30.000 e R$50.000, significativamente superior ao custo do material aqui solicitado. 
+
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas. Cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME), conforme a RN 424. Os procedimentos citados são de cobertura mínima obrigatória pela ANS, de acordo com a RN 428/465. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica Cap. I, V. 
+
+A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST DETALHADO:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": false
+}
+
+AUDIT LOG:
+[
+  {
+    "tipo": "validacao",
+    "campo": "peso_molecular",
+    "original": "6.000 kDa",
+    "corrigido": "6.000 kDa",
+    "motivo": "Conforme ficha oficial do produto."
+  },
+  {
+    "tipo": "validacao",
+    "campo": "concentracao",
+    "original": "10 mg/mL de hialuronato de sódio",
+    "corrigido": "10 mg/mL de hialuronato de sódio",
+    "motivo": "Conforme ficha oficial do produto."
+  },
+  {
+    "tipo": "validacao",
+    "campo": "nome_oficial",
+    "original": "Kit EC2 - Linha Opus",
+    "corrigido": "Kit EC2 - Linha Opus",
+    "motivo": "Conforme ficha oficial do produto."
+  },
+  {
+    "tipo": "validacao",
+    "campo": "diferenciais_oficiais",
+    "original": "Restauração da viscoelasticidade do líquido sinovial e alívio prolongado da dor.",
+    "corrigido": "Restauração da viscoelasticidade do líquido sinovial e alívio prolongado da dor.",
+    "motivo": "Conforme ficha oficial do produto."
+  }
+]

@@ -1,0 +1,28 @@
+CENÁRIO: 02 Lipedema - Kit LP-CT
+PRODUTO: Kit LP-CT - Lipedema
+PACIENTE: Patrícia Duarte
+CID: E88.2
+DIAGNÓSTICO: Lipedema grau I bilateral com deposição anormal de gordura subcutânea em membros inferiores, dor à palpação e limitação de mobilidade. Falha com tratamento conservador prolongado.
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 2208
+TEMPO: 33.1s
+REFERÊNCIAS: ["Sadri et al., 2023", "Valente et al., 2024"]
+AUTORES ESPERADOS: {"Valente": true}
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+A paciente Patrícia Duarte, portadora de lipedema grau I bilateral (CID E88.2), apresenta deposição anormal de gordura subcutânea nos membros inferiores, associada a dor à palpação e significativa limitação de mobilidade. Após exaustivas tentativas de manejo conservador, incluindo fisioterapia cinesioterapêutica e uso de meias de compressão, o quadro clínico persiste refratário, evidenciando a necessidade de intervenção cirúrgica. A manutenção deste estado inflamatório crônico, sem intervenção apropriada, promove um ambiente bioquímico hostil, exacerbado por citocinas pró-inflamatórias, que aceleram a apoptose de células adiposas e a degradação da matriz extracelular, culminando em deterioração funcional progressiva (Sadri et al., 2023). Para a correção eficaz das comorbidades e a redução dos riscos de recidiva, é imperativo o uso do Kit LP-CT - Lipedema, que utiliza a técnica One STEP. Este kit proporciona extração segura do tecido adiposo patológico com baixo trauma tecidual e celular. A técnica promove a preservação da histologia dos adipócitos e reduz a quantidade de tecido conjuntivo na amostra, minimizando riscos associados e estimulando a reparação tecidual (Valente et al., 2024). A substituição deste material por opções de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. A negativa deste procedimento pode resultar na progressão da dor e limitação de mobilidade, com potencial necessidade de intervenções futuras de maior complexidade e custo para a operadora. Conforme a RN 395 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME necessários. Ademais, a RN 465 estabelece a cobertura obrigatória dos procedimentos solicitados, e a RN 395 exige justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas. O Código de Ética Médica, Capítulo I, V, reforça o compromisso do médico em utilizar o melhor do progresso científico em benefício do paciente. Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}

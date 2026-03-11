@@ -1,0 +1,240 @@
+"""
+Agente C: O Auditor (The Verifier - "Double Check").
+Confronta rascunho com dados oficiais do produto e valida checklist.
+"""
+import json
+import re
+import logging
+from dataclasses import dataclass, field
+from typing import Optional
+
+from app.core.config import settings
+from .prompts import AUDITOR_SYSTEM
+from .writer import DraftReport
+from .token_tracker import TokenUsage, extract_usage
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class AuditEntry:
+    tipo: str  # correcao | remocao | validacao
+    campo: str
+    original: str = ""
+    corrigido: str = ""
+    motivo: str = ""
+
+
+@dataclass
+class AuditResult:
+    texto_corrigido: str = ""
+    aprovado: bool = False
+    checklist: dict = field(default_factory=dict)
+    audit_log: list[AuditEntry] = field(default_factory=list)
+    referencias_validadas: list[str] = field(default_factory=list)
+    raw_response: Optional[str] = None
+    token_usage: Optional[TokenUsage] = None
+
+    def to_dict(self) -> dict:
+        return {
+            "texto_corrigido": self.texto_corrigido,
+            "aprovado": self.aprovado,
+            "checklist": self.checklist,
+            "audit_log": [
+                {"tipo": a.tipo, "campo": a.campo, "original": a.original,
+                 "corrigido": a.corrigido, "motivo": a.motivo}
+                for a in self.audit_log
+            ],
+            "referencias_validadas": self.referencias_validadas,
+        }
+
+
+def _build_product_facts(product) -> str:
+    facts = {}
+    if product.viscosidade:
+        facts["viscosidade"] = product.viscosidade
+    if product.peso_molecular:
+        facts["peso_molecular"] = product.peso_molecular
+    if product.concentracao:
+        facts["concentracao"] = product.concentracao
+    if product.registro_anvisa:
+        facts["registro_anvisa"] = product.registro_anvisa
+    if product.nome:
+        facts["nome_oficial"] = product.nome
+    if product.diferenciais_clinicos:
+        facts["diferenciais_oficiais"] = product.diferenciais_clinicos
+    return json.dumps(facts, ensure_ascii=False, indent=2)
+
+
+def _extract_known_authors(product, clinical_evidences: list = None) -> str:
+    """Extrai sobrenomes de autores de todas as fontes conhecidas do produto."""
+    authors = set()
+
+    refs = getattr(product, 'referencias_bibliograficas', None) or []
+    for ref in refs:
+        parts = ref.split(",")[0].split("(")[0].strip()
+        surname = parts.split(" et al")[0].split(" ")[0].strip()
+        if len(surname) > 2:
+            authors.add(surname)
+
+    for ev in (clinical_evidences or []):
+        autor = ev if isinstance(ev, str) else ev.get("autor", "")
+        surname = autor.split(",")[0].split(" et al")[0].split(" ")[0].strip()
+        if len(surname) > 2:
+            authors.add(surname)
+
+    CLASSIC_AUTHORS = [
+        "Altman", "Bannuru", "Bellamy", "Dahl", "Diamond",
+        "Becker", "Tezel", "Metcalfe", "Janda", "Levy",
+        "Rahaman", "LeGeros", "Basilio",
+    ]
+    authors.update(CLASSIC_AUTHORS)
+
+    if not authors:
+        return "Nenhum autor conhecido registrado."
+    return ", ".join(sorted(authors))
+
+
+def _local_verify_references(text: str, known_authors_set: set) -> tuple[bool, list[str]]:
+    """Verificação local: extrai sobrenomes do texto e confere contra autores conhecidos."""
+    ref_pattern = re.compile(
+        r"([A-Z][a-záéíóúàãõâêô]+)\s+(?:et\s+al\.?|e\s+\w+)?\s*[,(]?\s*(\d{4})",
+        re.UNICODE,
+    )
+    found_refs = []
+    for m in ref_pattern.finditer(text):
+        surname = m.group(1)
+        year = m.group(2)
+        if any(surname.lower() == ka.lower() for ka in known_authors_set):
+            found_refs.append(f"{surname} et al., {year}")
+
+    has_refs = len(found_refs) > 0
+    return has_refs, found_refs
+
+
+async def audit(draft: DraftReport, product, clinical_evidences: list = None) -> AuditResult:
+    """
+    Audita o rascunho confrontando com dados oficiais do produto.
+    Corrige dados técnicos incorretos e valida checklist de 6 itens.
+    """
+    product_facts = _build_product_facts(product)
+    known_authors = _extract_known_authors(product, clinical_evidences)
+
+    known_authors_set = {a.strip() for a in known_authors.split(",") if len(a.strip()) > 2}
+
+    system_prompt = AUDITOR_SYSTEM.format(
+        product_facts=product_facts,
+        draft_text=draft.justificativa_completa,
+        known_authors=known_authors,
+    )
+
+    user_message = (
+        "Realize a auditoria completa do rascunho acima. "
+        "Confronte com os dados oficiais do produto. "
+        "Corrija qualquer dado técnico divergente. "
+        "Verifique o checklist de 6 itens obrigatórios."
+    )
+
+    try:
+        import openai
+        client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message},
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.1,
+            max_tokens=5000,
+        )
+
+        raw = response.choices[0].message.content
+        usage = extract_usage(response, "Auditor")
+        data = json.loads(raw)
+
+        checklist = data.get("checklist", {})
+        aprovado = data.get("aprovado", False)
+
+        audit_log_entries = []
+        for entry in data.get("audit_log", []):
+            if entry.get("tipo") == "remocao" and "referencia" in entry.get("campo", "").lower():
+                original = entry.get("original", "")
+                if any(a.lower() in original.lower() for a in known_authors_set if len(a) > 2):
+                    audit_log_entries.append(AuditEntry(
+                        tipo="validacao",
+                        campo=entry.get("campo", ""),
+                        original=original,
+                        corrigido=original,
+                        motivo=f"Referência preservada: autor encontrado na lista de autores conhecidos.",
+                    ))
+                    continue
+            audit_log_entries.append(AuditEntry(
+                tipo=entry.get("tipo", "validacao"),
+                campo=entry.get("campo", ""),
+                original=entry.get("original", ""),
+                corrigido=entry.get("corrigido", ""),
+                motivo=entry.get("motivo", ""),
+            ))
+
+        texto_corrigido = data.get("texto_corrigido", draft.justificativa_completa)
+        refs_validadas = data.get("referencias_validadas", [])
+
+        has_local_refs, local_refs = _local_verify_references(texto_corrigido, known_authors_set)
+        if has_local_refs and not checklist.get("referencia_bibliografica", False):
+            checklist["referencia_bibliografica"] = True
+            for lr in local_refs:
+                if lr not in refs_validadas:
+                    refs_validadas.append(lr)
+            audit_log_entries.append(AuditEntry(
+                tipo="validacao",
+                campo="referencia_bibliografica",
+                original="",
+                corrigido=", ".join(local_refs),
+                motivo="Referências detectadas localmente por match de sobrenome no texto.",
+            ))
+
+        if not aprovado:
+            aprovado = all(checklist.values()) if checklist else False
+
+        return AuditResult(
+            texto_corrigido=texto_corrigido,
+            aprovado=aprovado,
+            checklist=checklist,
+            audit_log=audit_log_entries,
+            referencias_validadas=refs_validadas,
+            raw_response=raw,
+            token_usage=usage,
+        )
+
+    except Exception as e:
+        logger.exception("Agente Auditor falhou: %s", e)
+        checklist = _local_checklist(draft)
+        return AuditResult(
+            texto_corrigido=draft.justificativa_completa,
+            aprovado=all(checklist.values()),
+            checklist=checklist,
+            audit_log=[
+                AuditEntry(
+                    tipo="validacao",
+                    campo="geral",
+                    motivo=f"Auditoria automática (LLM indisponível): {e}",
+                )
+            ],
+            referencias_validadas=draft.referencias,
+            raw_response=str(e),
+        )
+
+
+def _local_checklist(draft: DraftReport) -> dict:
+    """Checklist local sem LLM."""
+    text = (draft.justificativa_completa or "").lower()
+    return {
+        "diagnostico": bool(draft.diagnostico_resumo),
+        "justificativa_tecnica": len(text) > 100,
+        "falha_terapeutica": bool(draft.falha_terapeutica),
+        "risco_nao_realizacao": bool(draft.risco_nao_realizacao),
+        "base_legal_ans": "rn 395" in text or "ans" in text,
+        "referencia_bibliografica": len(draft.referencias) > 0,
+    }

@@ -1,0 +1,45 @@
+CENÁRIO: 03 OA Joelho - Enxerto Composto/SVF
+PRODUTO: Kit EC2 - Enxerto Composto
+PACIENTE: Ricardo Souza
+CID: M17.0
+DIAGNÓSTICO: Gonartrose bilateral grau III Kellgren-Lawrence com dor crônica, derrame articular recorrente e falha de viscossuplementação com HA convencional. Indicação de terapia com fração vascular estromal (SVF) autóloga.
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 2680
+TEMPO: 41.5s
+REFERÊNCIAS: ["Nguyen et al., 2015", "Sadri et al., 2023"]
+AUTORES ESPERADOS: {"Sadri": true, "Anil": false, "Berman": false}
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+Relatório Médico Complementar
+
+Paciente: Ricardo Souza
+Convênio: SulAmérica
+
+Prezado(a) Auditor(a),
+
+O paciente Ricardo Souza, portador de gonartrose bilateral grau III segundo Kellgren-Lawrence (CID M17.0), apresenta quadro clínico de dor crônica severa, derrame articular recorrente e falha de tratamentos conservadores, incluindo viscossuplementação com ácido hialurônico (HA) convencional. A manutenção do quadro inflamatório crônico, sem a devida intervenção, resulta em ambiente bioquímico hostil dominado por citocinas pró-inflamatórias (IL-1β, TNF-α), acelerando a apoptose dos condrócitos e a degradação irreversível da matriz extracelular. O insucesso das tentativas conservadoras (AINEs, fisioterapia cinesioterapêutica, infiltrações) comprova a refratariedade do quadro, sendo a progressão para intervenção com OPME não apenas indicada, mas mandatória para evitar desfecho catastrófico.
+
+Solicito a liberação do Kit EC2 - Enxerto Composto, que contém células do estroma vascular (SVF), fundamentais para a reparação tecidual. Este material é insubstituível devido ao seu mecanismo de ação superior. A SVF, uma coleção heterogênea de células do tecido adiposo, incluindo MSCs, células precursoras endoteliais, células T regulatórias, macrófagos, pericitos e pré-adipócitos, confere potencial regenerativo comparativamente eficaz ao das ADSCs cultivadas, com a vantagem de disponibilidade imediata no ponto de atendimento (Nguyen et al., 2015). Diferente de hialuronatos lineares ou de baixo peso, a SVF demonstrou, em estudos, regeneração da cartilagem articular por RM e redução dramática de marcadores inflamatórios (Sadri et al., 2023).
+
+A negativa deste procedimento resultará em progressão da doença para estágio mais grave, potencialmente necessitando de artroplastia total, cujo custo à operadora varia entre R$30.000 e R$50.000, significativamente superior ao custo do material aqui solicitado. A intervenção profilática proposta é, portanto, economicamente vantajosa e clinicamente necessária.
+
+Fundamentação Legal: Conforme a RN 395 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, em conformidade com a RN 395.
+
+A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional.
+
+Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}

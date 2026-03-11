@@ -105,6 +105,7 @@ class ReportTemplate(Base):
     template_corpo = Column(Text, nullable=True)
     bases_legais = Column(JSON, nullable=True)
     referencias_padrao = Column(JSON, nullable=True)
+    exemplos_aprovados = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
 
@@ -141,6 +142,42 @@ class Report(Base):
     signed_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class ClinicalEvidence(Base):
+    """Evidências científicas pré-validadas por CID x Produto. O Pesquisador busca aqui antes de tudo."""
+    __tablename__ = "clinical_evidences"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    cid = Column(String(20), nullable=False, index=True)
+    product_id = Column(UUID(), ForeignKey("products.id"), nullable=False, index=True)
+    snippet = Column(Text, nullable=False)
+    autor = Column(String(255), nullable=False)
+    referencia_completa = Column(Text, nullable=True)
+    ano = Column(String(10), nullable=True)
+    tipo = Column(String(50), nullable=True)  # meta-analise | rct | revisao | coorte
+    relevancia = Column(String(20), default="alta")  # alta | media | baixa
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+
+class PubmedCache(Base):
+    """Cache permanente de artigos PubMed buscados via E-utilities."""
+    __tablename__ = "pubmed_cache"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    pmid = Column(String(20), unique=True, nullable=False, index=True)
+    cid = Column(String(20), nullable=False, index=True)
+    search_term = Column(String(500), nullable=False)
+    title = Column(Text, nullable=False)
+    authors = Column(Text, nullable=False)
+    first_author = Column(String(255), nullable=False)
+    year = Column(String(10), nullable=False)
+    journal = Column(String(500), nullable=True)
+    abstract = Column(Text, nullable=True)
+    article_type = Column(String(50), nullable=True)
+    doi = Column(String(255), nullable=True)
+    relevance_score = Column(String(10), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
 
 class TussTerm(Base):

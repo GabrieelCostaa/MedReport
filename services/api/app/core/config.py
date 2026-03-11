@@ -13,6 +13,13 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
     INGEST_API_KEY: str = ""  # Token para RPA/robôs enviarem cotações (opcional)
 
+    # PubMed E-utilities
+    PUBMED_API_KEY: str = ""
+    PUBMED_CACHE_TTL_DAYS: int = 180
+    PUBMED_MAX_RESULTS: int = 10
+    PUBMED_TIMEOUT_SECONDS: int = 5
+    PUBMED_ENABLED: bool = True
+
     class Config:
         env_file = ".env"
 

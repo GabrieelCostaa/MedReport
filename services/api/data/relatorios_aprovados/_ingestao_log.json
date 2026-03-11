@@ -1,0 +1,468 @@
+{
+  "data_processamento": "2026-03-04T23:48:58.104540",
+  "arquivos_processados": 53,
+  "log": [
+    {
+      "arquivo": "Justificativa de uso OPUS 2F - Ceará.docx",
+      "status": "processado",
+      "caracteres": 6599,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Linha Opus"
+    },
+    {
+      "arquivo": "Justificativa de uso OPUS 2F - convenios.docx",
+      "status": "processado",
+      "caracteres": 2501,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Linha Opus"
+    },
+    {
+      "arquivo": "Justificativa de uso OPUS 2F.docx",
+      "status": "processado",
+      "caracteres": 2935,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Linha Opus"
+    },
+    {
+      "arquivo": "Justificativa de uso OPUS 3F - convenios.docx",
+      "status": "processado",
+      "caracteres": 2969,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Linha Opus"
+    },
+    {
+      "arquivo": "Justificativa de uso OPUS 3F.docx",
+      "status": "processado",
+      "caracteres": 3387,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Linha Opus"
+    },
+    {
+      "arquivo": "Justificativa de uso OPUS LIGHT.docx",
+      "status": "processado",
+      "caracteres": 2214,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Linha Opus"
+    },
+    {
+      "arquivo": "Justificativa de uso OPUS.docx",
+      "status": "processado",
+      "caracteres": 6093,
+      "paragrafos": 1,
+      "referencias": 1,
+      "produto": "Kit EC2 - Linha Opus"
+    },
+    {
+      "arquivo": "LEIA-ME.txt",
+      "status": "processado",
+      "caracteres": 1036,
+      "paragrafos": 4,
+      "referencias": 0,
+      "produto": "Kit EC2 - Linha Opus"
+    },
+    {
+      "arquivo": "Relatorio Adhesion - Figado..docx",
+      "status": "processado",
+      "caracteres": 2438,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Adhesion STP+"
+    },
+    {
+      "arquivo": "Relatorio Laser Neurocirurgia.docx",
+      "status": "processado",
+      "caracteres": 2673,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório ATM (1).docx",
+      "status": "processado",
+      "caracteres": 3194,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Adhesion  PERICARDIECTOMIA (1).docx",
+      "status": "processado",
+      "caracteres": 3599,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Adhesion STP+"
+    },
+    {
+      "arquivo": "Relatório Adhesion Esvaziamento Cervical.docx",
+      "status": "processado",
+      "caracteres": 3533,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Adhesion STP+"
+    },
+    {
+      "arquivo": "Relatório Adhesion Esvaziamento axilar.docx",
+      "status": "processado",
+      "caracteres": 3558,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Adhesion STP+"
+    },
+    {
+      "arquivo": "Relatório Adhesion Fistula .docx",
+      "status": "processado",
+      "caracteres": 3531,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Adhesion STP+"
+    },
+    {
+      "arquivo": "Relatório Adhesion Geral.docx",
+      "status": "processado",
+      "caracteres": 2826,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Adhesion STP+"
+    },
+    {
+      "arquivo": "Relatório Adhesion Tenorrafia Mão.docx",
+      "status": "processado",
+      "caracteres": 3957,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Adhesion STP+"
+    },
+    {
+      "arquivo": "Relatório Adhesion joelho.docx",
+      "status": "processado",
+      "caracteres": 2978,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Adhesion STP+"
+    },
+    {
+      "arquivo": "Relatório Amigdalectomia.docx",
+      "status": "processado",
+      "caracteres": 2318,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Biossilex (1).docx",
+      "status": "processado",
+      "caracteres": 4221,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Biossilex - Biovidro"
+    },
+    {
+      "arquivo": "Relatório Cirúrgico EC2- Urologia - Doença de Peyronie.docx",
+      "status": "processado",
+      "caracteres": 2144,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Enxerto Composto"
+    },
+    {
+      "arquivo": "Relatório Cirúrgico EC2- Urologia - Estenose.docx",
+      "status": "processado",
+      "caracteres": 2151,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Enxerto Composto"
+    },
+    {
+      "arquivo": "Relatório Cirúrgico EC2- Urologia - disfunção erétil.docx",
+      "status": "processado",
+      "caracteres": 2133,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Enxerto Composto"
+    },
+    {
+      "arquivo": "Relatório Complementar - para reavaliação....docx",
+      "status": "processado",
+      "caracteres": 8008,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Enxerto Composto"
+    },
+    {
+      "arquivo": "Relatório Estapedo (1).docx",
+      "status": "processado",
+      "caracteres": 2814,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Hipófise (1).docx",
+      "status": "processado",
+      "caracteres": 3618,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Justificativa de Solicitação do Laser para  Desobistrução Bronquica.docx",
+      "status": "processado",
+      "caracteres": 2763,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Justificativa de Solicitação do Laser para Lesão Benigna de Laringe..docx",
+      "status": "processado",
+      "caracteres": 2427,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Justificativa de Solicitação do Laser para Lesão Recidivante Vegetante..docx",
+      "status": "processado",
+      "caracteres": 1421,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Justificativa de Solicitação do Laser para Lesão de Traqueia.docx",
+      "status": "processado",
+      "caracteres": 2756,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Justificativa de Solicitação do Laser para Lesão tumoral de oro faringe e palato.docx",
+      "status": "processado",
+      "caracteres": 2546,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Justificativa de Solicitação do Laser para Lesão tumoral de oro faringe.docx",
+      "status": "processado",
+      "caracteres": 2623,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Justificativa de Solicitação do Laser para Lesão tumoral de prega vocal.docx",
+      "status": "processado",
+      "caracteres": 2598,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Lipedema.docx",
+      "status": "processado",
+      "caracteres": 4059,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit LP-CT - Lipedema"
+    },
+    {
+      "arquivo": "Relatório Médico  Polipo nasal, Cauterização (5).docx",
+      "status": "processado",
+      "caracteres": 4164,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Médico Adeno-amigdalectomia.docx",
+      "status": "processado",
+      "caracteres": 3356,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Médico Dacriocistorrinostomia.docx",
+      "status": "processado",
+      "caracteres": 2483,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Médico Glossectomia.doc",
+      "status": "vazio",
+      "caracteres": 0
+    },
+    {
+      "arquivo": "Relatório Médico Sinusectomia - Turbinectomia (1).docx",
+      "status": "processado",
+      "caracteres": 2241,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Médico Turbinoplastia, Cauterização (5).docx",
+      "status": "processado",
+      "caracteres": 4164,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Opus Geral.docx",
+      "status": "processado",
+      "caracteres": 2588,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Linha Opus"
+    },
+    {
+      "arquivo": "Relatório PLDD (1).docx",
+      "status": "processado",
+      "caracteres": 3693,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Papilomatose.docx",
+      "status": "processado",
+      "caracteres": 2670,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Ressecção de Hemangioma Nasal (1).docx",
+      "status": "processado",
+      "caracteres": 2576,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Rizotomia (1).docx",
+      "status": "processado",
+      "caracteres": 2803,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    },
+    {
+      "arquivo": "Relatório Tireóide e Cauterização Qualquer Técnica.doc",
+      "status": "vazio",
+      "caracteres": 0
+    },
+    {
+      "arquivo": "Relatório Vita Estruturado (1).docx",
+      "status": "processado",
+      "caracteres": 3362,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Vitagraft - Enxerto Bifásico"
+    },
+    {
+      "arquivo": "Relatório Vita Granulos (1).docx",
+      "status": "processado",
+      "caracteres": 2639,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Vitagraft - Enxerto Bifásico"
+    },
+    {
+      "arquivo": "Relatório enxerto composto - kit EC necrose avascular.docx",
+      "status": "processado",
+      "caracteres": 2613,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Enxerto Composto"
+    },
+    {
+      "arquivo": "Relatório enxerto composto - kit EC.docx",
+      "status": "processado",
+      "caracteres": 2613,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Enxerto Composto"
+    },
+    {
+      "arquivo": "Relatório enxerto composto-2.docx",
+      "status": "processado",
+      "caracteres": 2665,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit EC2 - Enxerto Composto"
+    },
+    {
+      "arquivo": "Relatório paciente justificativa para negativa.docx",
+      "status": "processado",
+      "caracteres": 5864,
+      "paragrafos": 2,
+      "referencias": 0,
+      "produto": "Kit EC2 - Enxerto Composto"
+    },
+    {
+      "arquivo": "Relatório tumores de cranio (1).docx",
+      "status": "processado",
+      "caracteres": 3791,
+      "paragrafos": 1,
+      "referencias": 0,
+      "produto": "Kit FO - Laser Cirúrgico"
+    }
+  ],
+  "classificados": {
+    "Kit EC2 - Linha Opus": [
+      "A quem interessar possa: A terapia do tratamento da dor associada à osteoartrite ou artrose, tem entre seus objetivos duas funções muito importantes, que estão diretamente ligadas aos efeitos clínicos esperados pelas características do hialuronato de sódio na terapia proposta, neste caso específico o produto solicitado é feito com uma reticulação (cross link) moderna e mais amigável ao corpo, e sua composição traz o fato que em laboratório, se conseguiu manipular e manter na mesma seringa até o momento da aplicação com total estabilidade do produto, dois pesos moleculares diferentes sendo alto e médio peso. Com essa faceta esse produto tem características anti-inflamatórias e pode ser usado em artroscopias ou uso direto em clínicas para o melhor e mais rápido efeito no controle e tratamento da dor associada à osteoartrite e artrose além de oferecer excelente durabilidade de no mínimo 6 meses com o peso molecular de referência próximo ao peso do liquido sinovial humano que é de 5,4 mega daltons. Essa durabilidade auxilia na lubrificação mais adequada e prolongada da articulação bem como a a indução de reparação da mesma. Para o melhor resultado clinico faz-se necessário lançarmos mão de técnicas e novas tecnologias que temos acesso. O produto que atualmente optamos em usar é o OPUS 2F, que é sintetizado para obtenção do hialuronato de sódio com uma concentração 1,5% deste composto. Seu uso tem entre suas aplicações mais rotineiras a visco suplementação das articulações tanto em terapias ambulatoriais quanto no intra-operatório em pacientes de artroscopia para minimizar os riscos de novas lesões na articulação em pacientes submetidos à esse procedimento, bem como formações artrofibroses que elevam os custos no pós operatório. A viscosidade dinâmica é maior que 120 pascal o que confere a ele a ideal lubrificação e por um tempo maior e mais adequado como já citado. Outra importante característica desse hialuronato de sódio é o fato de ele receber um cross link feito por um composto bem mais moderno e que evita irritações na articulações. Há ainda uma importante característica do Opus 2F por ser um produto totalmente livre de proteínas aviárias que podem levar à sinovite. Para referendar tais características vale demonstrar referencias bibliográficas que ajudam a demonstrar a importância de tais características como segue: A concentração de ácido hialurônico no organismo varia principalmente de acordo com a predominância de casos associados a desgaste na articulação. No corpo humano essa concentração varia de 1,09 -1,20 g/L em articulações contendo artrite reumatóide, e em articulações normais de 1,45 – 3,12 g/L (DAHL et al., 1985; DE BOULLE et al., 2013) O peso molecular do hialuronato de sódio, proveniente de diferentes fontes é altamente variável no intervalo, o que foi por nós escolhido tem peso de 5.4 mega daltons por estar mais próximo da característica fisiológica do liquido sinovial humano . Em articulações com artrite reumatóide o ácido hialurônico se apresenta com baixo peso molecular (1,2 – 4,5 MDa), já em articulações de indivíduos jovens é encontrado no intervalo de 1,6 – 10,9 MDa (DAHL et al., 1985). Quanto mais próximo de um equilíbrio entre estes extremos teremos uma terapia mais versátil e duradoura. De acordo com o aumento da cadeia através das ligações cruzadas, tem-se consequentemente o aumento do peso molecular que irá variar de acordo com os sítios ativos da cadeia que sofreram reação. MECANISMO DE AÇÃO As células sinoviais podem produzir várias citocinas e enzimas associadas a osteoartrite, como a interleucina (IL)-1β, IL-6, IL-8, fator inibidor de leucemia (LIF), fator de necrose tumoral (TNF)- α, enzima de conversão de TNF-α (TACE), matriz metaloproteinase (MMP)-1, MMP-2, MMP-3, MMP-9, MMP-13, inibidor de tecido metaloproteinase (TIMP)-1, TIMP-2, agrecanase-1, agrecanase-2, indutor de síntese do óxido nítrico (iNOS) e ciclooxigenase (COX)-2 como descreve (WANG et al., 2006). Nas células sinoviais o IL-1 são os genes inflamatórios, e naturalmente seguem o processo descrito por WANG et al, 2006, ocorrendo a ativação AP-1, NK-kB, que são os agentes responsáveis pela inflamação e levando ao aumento IL-1, IL-6, IL-8, TNF- α, iNOS, COX-2. No processo de viscossuplementação com a utilização do ácido hialurônico como também está descrito por esse mesmo autor, ocorre uma supressão da fosforilação de JNK, p38, NK-kB, essas alterações moleculares inativam AP-1 e NK-kB, e os genes inflamatórios são regulados negativamente (IL-1, IL-6, IL-8, TNF- α, iNOS, COX-2), proporcionando assim uma redução da resposta pró-inflamatória e consequentemente um aumento da resposta anti-inflamatória como também descrevem (ALTMAN et al., 2019; ALTMAN; DASA; TAKEUCHI, 2018). O ácido hialurônico está associado principalmente a proteção de tecidos articulares por meio da redução de apoptose de condrócitos e aumento da proliferação de condrócitos, melhoria da síntese de proteoglicano / glicosaminoglicano, a qual pode atrasar a progressão da osteoartrite, além de efeito anti-inflamatório por meio da supressão de IL-6, benefícios mecânicos por meio da lubrificação direta da cápsula articular e efeitos analgésicos por meio da redução da atividade iônica ativada por estiramento do canal mecanossensível (SZEIMIES et al., 2009)(BHANDARI et al., 2017). CrossLinking mais modernos O termo ligações cruzadas ou reticulação polimérica ou crosslinking é um processo que ocorre quando cadeias poliméricas lineares ou ramificadas são interligadas por ligações covalentes, num processo que resulta em polímeros tridimensionais de alta massa molar. Com a presença da reticulação, a estrutura molecular se torna mais rígida, devido a mudança das propriedades viscoelásticas. O gel de ácido hialurônico resultante deste tipo de reação atua como uma única unidade, impondo uma barreira física e química à quebra enzimática e de radicais livres. Além disso, devido ao seu grande tamanho, as enzimas podem ter dificuldade em penetrar na rede de gel, o que de fato contribuirá para uma degradação mais lenta (TEZEL; FREDRICKSON, 2008). A reticulação realizada com o BDDE e hialuronato de sódio é mostrada em alguns trabalhos como superiores à fosfonas. No trabalho citado é possível visualizar a molécula de BDDE com dois grupamentos epóxidos capazes de ligar-se às moléculas do hialuronato, formando assim uma ponte entre as cadeias lineares de ácido hialurônico. Tendo por base estas características presentes no produto Opus 2F é que optamos por adotar o mesmo em nossa rotina clínica. Sem mais para o momento....",
+      "A quem interessar possa: A terapia do tratamento da dor associada à osteoartrite ou artrose, tem entre seus objetivos duas funções muito importantes, que estão diretamente ligadas aos efeitos clínicos esperados pelas características do hialuronato de sódio na terapia proposta, neste caso específico o produto solicitado é feito com uma reticulação (cross link) moderna e mais amigável ao corpo, e sua composição trás o fato que em laboratório, se conseguiu manipular e manter na mesma seringa até o momento da aplicação com total estabilidade do produto, dois pesos moleculares diferentes sendo alto e médio peso. Com essa faceta esse produto tem características anti-inflamatórias e pode ser usado em artroscopias ou uso direto em clínicas para o melhor e mais rápido efeito no controle e tratamento da dor associada à osteoartrite e artrose além de oferecer excelente durabilidade de no mínimo 6 meses com o peso molecular de referência próximo ao peso do liquido sinovial humano que é de 5,4 mega daltons. Essa durabilidade auxilia na lubrificação mais adequada e prolongada da articulação bem como a a indução de reparação da mesma. Para o melhor resultado clínico faz-se necessário lançarmos mão de técnicas e novas tecnologias que temos acesso. O produto que atualmente optamos em usar é o OPUS 2F, que é sintetizado para obtenção do hialuronato de sódio com uma concentração 1,5% deste composto. Seu uso tem entre suas aplicações mais rotineiras o tratamento da dor associada à osteoartrite ou artrose como importante arsenal terapias ambulatoriais ou mesmo no intraoperatório em pacientes de artroscopia para minimizar os riscos de novas lesões na articulação em pacientes submetidos à esse procedimento, bem como formações de artro fibroses que elevam os custos no pós operatório. A viscosidade dinâmica é maior que 120 pascal o que confere a ele a ideal lubrificação e por um tempo maior e mais adequado como já citado. Outra importante característica desse hialuronato de sódio é o fato de ele receber um cross link feito por um composto bem mais moderno e que evita irritações nas articulações. Há ainda uma importante característica do Opus 2F por ser um produto totalmente livre de proteínas aviárias que podem levar à sinovite. Caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa em conformidade com a resolução normativa 395 da ANS. Certo de sua liberação Cordialmente,",
+      "A quem interessar possa: A terapia do tratamento da dor associada à osteoartrite ou artrose, tem entre seus objetivos duas funções muito importantes, que estão diretamente ligadas aos efeitos clínicos esperados pelas características do hialuronato de sódio na terapia proposta, neste caso específico o produto solicitado é feito com uma reticulação (cross link) moderna e mais amigável ao corpo, e sua composição trás o fato que em laboratório, se conseguiu manipular e manter na mesma seringa até o momento da aplicação com total estabilidade do produto, dois pesos moleculares diferentes sendo alto e médio peso. Com essa faceta esse produto tem características anti-inflamatórias e pode ser usado em artroscopias ou uso direto em clínicas para o melhor e mais rápido efeito no controle e tratamento da dor associada à osteoartrite e artrose além de oferecer excelente durabilidade de no mínimo 6 meses com o peso molecular de referência próximo ao peso do liquido sinovial humano que é de 5,4 mega daltons. Essa durabilidade auxilia na lubrificação mais adequada e prolongada da articulação bem como a a indução de reparação da mesma. Para o melhor resultado clinico faz-se necessário lançarmos mão de técnicas e novas tecnologias que temos acesso. O produto que atualmente optamos em usar é o OPUS 2F, que é sintetizado para obtenção do hialuronato de sódio com uma concentração 1,5% deste composto. Seu uso tem entre suas aplicações mais rotineiras a visco suplementação das articulações tanto em terapias ambulatoriais quanto no intra-operatório em pacientes de artroscopia para minimizar os riscos de novas lesões na articulação em pacientes submetidos à esse procedimento, bem como formações artrofibroses que elevam os custos no pós operatório. A viscosidade dinâmica é maior que 120 pascal o que confere a ele a ideal lubrificação e por um tempo maior e mais adequado como já citado. Outra importante característica desse hialuronato de sódio é o fato de ele receber um cross link feito por um composto bem mais moderno e que evita irritações na articulações. Há ainda uma importante característica do Opus 2F por ser um produto totalmente livre de proteínas aviárias que podem levar à sinovite. Como princípio basilar da legislação que rege o setor de saúde suplementar e que tem sua redação no Art. 4 da Resolução normativa 428, recomendando ações de prevenção na promoção da saúde dos pacientes, é que solicitamos a cobertura para o tratamento cirúrgico PROFILÁTICO para neuropatia compressiva como já citado anteriormente e respaldado como efeito colateral indesejável, e, portanto, a ser combatida previamente, pela literatura da especialidade de ortopedia ... Caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa em conformidade com a resolução normativa 395 da ANS. Certo de sua liberação Cordialmente,",
+      "A quem interessar possa: A terapia do tratamento da dor associada à osteoartrite ou artrose, tem entre seus objetivos duas funções muito importantes, que estão diretamente ligadas aos efeitos clínicos esperados pelas características do hialuronato de sódio na terapia proposta, neste caso específico o produto solicitado é feito com uma reticulação (cross link) moderna e mais amigável ao corpo, e sua composição trás o fato que em laboratório, se conseguiu manipular e manter na mesma seringa até o momento da aplicação com total estabilidade do produto, três pesos moleculares diferentes sendo alto, médio e baixo peso.. Dessa forma passamos a ter como arsenal terapêutico um produto quem tem na mesma seringa hialuronatos com e sem reticulação (cross link), o que clinicamente é muito importante e amplia a abordagem e resultados para o paciente. Com essa composição o produto tem simultaneamente características anti-inflamatórias e pró inflamatória. Essas duas ações são descritas em trabalhos científicos como capazes de oferecer ambiente para a diferenciação de macrófagos, acelerando o processo inicial de reparação e proteção da cartilagem, indução de VGF e proteção celular e tecidual contra a espécie reativas de oxigênio proporcionando um ambiente bem mais adequado para o controle e tratamento da Dor associada à artrite e artrose Com essa faceta esse produto tem características anti-inflamatórias e pro- inflamatórias (benéficas e vinculadas à diferenciação dos macrófagos) e pode ser usado diretamente em hospitais e clínicas para o melhor e mais rápido efeito no controle e tratamento da dor associada à osteoartrite e artrose além de oferecer excelente durabilidade de no mínimo 6 meses com o peso molecular de referência próximo ao peso do líquido sinovial humano que é de 5,4 mega daltons. Essa durabilidade auxilia na lubrificação mais adequada e prolongada da articulação bem como a indução de reparação da mesma no tratamento da dor associada à osteoartrite ou artrose. Para o melhor resultado clínico faz-se necessário lançarmos mão de técnicas e novas tecnologias que temos acesso. O produto que atualmente optamos em usar é o OPUS 3F, que é sintetizado para obtenção do hialuronato de sódio com uma concentração 1,5% deste composto. A viscosidade dinâmica é maior que 120 pascal o que confere a ele a ideal lubrificação e por um tempo maior e mais adequado como já citado. Outra importante característica desse hialuronato de sódio é o fato de ele receber um cross link feito por um composto bem mais moderno e que evita irritações nas articulações. Há ainda uma importante característica do Opus 3F por ser um produto totalmente livre de proteínas aviárias que podem levar à sinovite. Caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa em conformidade com a resolução normativa 395 da ANS. Certo de sua liberação Cordialmente,",
+      "A quem interessar possa: A terapia do tratamento da dor associada à osteoartrite ou artrose, tem entre seus objetivos duas funções muito importantes, que estão diretamente ligadas aos efeitos clínicos esperados pelas características do hialuronato de sódio na terapia proposta, neste caso específico o produto solicitado é feito com uma reticulação (cross link) moderna e mais amigável ao corpo, e sua composição trás o fato que em laboratório, se conseguiu manipular e manter na mesma seringa até o momento da aplicação com total estabilidade do produto, três pesos moleculares diferentes sendo alto, médio e baixo peso.. Dessa forma passamos a ter como arsenal terapêutico um produto quem tem na mesma seringa hialuronatos com e sem reticulação (cross link), o que clinicamente é muito importante e aplia a abordagem e resultados para o paciente. Com essa composição o produto tem simultaneamente características anti-inflamatórias e pró inflamatória. Essas duas ações são descritas em trabalhos científicos como capazes de oferecer ambiente para a diferenciação de macrófogos, acelerando o processo inicial de reparação e proteção da cartilagem, indução de VGF e proteção celular e tecidual contra o espécie reativas de oxigênio proporcionando um ambiente bem mais adequado para o controle e tratamento da Dor associada à artrite e artrose Com essa faceta esse produto tem características anti-inflamatórias e pro- inflamatórias (benéficas e vinculadas à diferenciação dos macrófagos) e pode ser usado diretamente em hospitais e clínicas para o melhor e mais rápido efeito no controle e tratamento da dor associada à osteoartrite e artrose além de oferecer excelente durabilidade de no mínimo 6 meses com o peso molecular de referência próximo ao peso do liquido sinovial humano que é de 5,4 mega daltons. Essa durabilidade auxilia na lubrificação mais adequada e prolongada da articulação bem como a a indução de reparação da mesma. Para o melhor resultado clinico faz-se necessário lançarmos mão de técnicas e novas tecnologias que temos acesso. O produto que atualmente optamos em usar é o OPUS 3F, que é sintetizado para obtenção do hialuronato de sódio com uma concentração 1,5% deste composto.. A viscosidade dinâmica é maior que 120 pascal o que confere a ele a ideal lubrificação e por um tempo maior e mais adequado como já citado. Outra importante característica desse hialuronato de sódio é o fato de ele receber um cross link feito por um composto bem mais moderno e que evita irritações na articulações. Há ainda uma importante característica do Opus 3F por ser um produto totalmente livre de proteínas aviárias que podem levar à sinovite. Como princípio basilar da legislação que rege o setor de saúde suplementar e que tem sua redação no Art. 4 da Resolução normativa 428, recomendando ações de prevenção na promoção da saúde dos pacientes, é que solicitamos a cobertura para o tratamento cirúrgico PROFILÁTICO para neuropatia compressiva como já citado anteriormente e respaldado como efeito colateral indesejável, e, portanto, a ser combatida previamente, pela literatura da especialidade de ortopedia ... Caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa em conformidade com a resolução normativa 395 da ANS. Certo de sua liberação Cordialmente,"
+    ],
+    "Adhesion STP+": [
+      "..............................., 20 de janeiro 2015. Convênio: Paciente: Material solicitado: ............. Relatório de justificativa Solicito autorização para uso do material anti-fibrótico (Adhesion STP – 3 gr) com ação hemostática na cirurgia da paciente Eliene Jose Martins, portadora de Lesão expansiva sólida no hilo hepático no lobo caudado Cid (D-37.6), que será submetida ao procedimento Lobectomia Hepática Direita com uso de Termoenergia – código 3.10.052.9-2 e 3.10.005.3-0, além de Aplicação de membranas antiaderentes 31307051 O material Adhesion STP 3g, é um anti-fibrótico com ação hemostática, que vai atuar também no controle de formação de aderências, através do mecanismo de duplo princípio ativo. Enquanto o polissacarídeo vegetal atua fortemente no processo de hemostasia e é absorvido rapidamente, a carboximetilclulose (CMC) permanece como uma camada finíssima por mais tempo evitando a aderência, formando uma camada selante (barreira) sobre a lesão, bio absorvível entre 40 a 45 dias, propiciando a profilaxia de futuras intervenções cirúrgicas por possíveis aderências intraperitoneais. Sugerimos o produto acima mencionado por reunir o duplo princípio ativo; o de hemostasia e ação anti-fibrinolítica. Uma vez que se disponibiliza de material com propriedades simultâneas de hemostasia e efeito anti-fibrótico, justifica-se seu uso no sentido de prevenir aderências intraperitoneais, em procedimento cirúrgico desse porte e dessa natureza . A literatura é farta nos relatos das aderências intraperitoneais como causa de complicação pós-operatória nos pacientes submetidos a cirurgias abdominais, que implicam em reoperações com alto potencial de morbi-mortalidade (BASILIO PC. Obstrução intestinal por aderências: utilização de membrana bio­reabsorvível (hialuronato de sódio + carboximetilcelulose) seprafilm® na profilaxia de complicações em reoperações abdominopélvicas. Rev bras Coloproct, 2003;23(3):168­171). Estas ocorrências implicarão em múltiplos atendimentos hospitalares e extra hospitalares subsequentes. A incidência de aderências intraperitoneais pós-operatórias varia de 67% a 93% após operações abdominais de um modo geral. A prevenção das aderências intrabdominais, representa a opção sensata e coerente no tratamento cirúrgico do paciente em questão. Diante do exposto solicito a autorização do material em questão, justificável à realização do ato cirúrgico proposto a essa paciente.",
+      "Ao Convênio: Solicito a liberação do Adhesion STP+ , para a cirurgia do paciente....(descrição rápida da anamnese) .............................................., o produto em questão será utilizado para prevenir a formação de aderência/fibrose e promover hemostasia contínua por até 45 dias, risco previsível conforme estudos conhecidos na especialidade de ortopedia gerado pelo o trauma ou ato cirúrgico, bem como pela carbonização e isquemia das eletro cirurgias. Os Códigos paras esses procedimentos são: Tratamento cirúrgico (profilático ou não) da pericardiectomia de código 30915040. Conforme tabela TUSS este procedimento citado é de cobertura mínima obrigatória pela ANS. Conforme Resolução normativa da ANS 424, referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao médico assistente a prerrogativa de determinar as características (tipo, matéria- prima e dimensões ) das órteses, próteses e materiais especiais OPME necessários à execução dos procedimentos contidos no Roll de Procedimentos da ANS. Lembro ainda que os produtos aprovado pela ANVISA que tenha em sua bula ou manual a indicação de uso ligado à patologia tratada, passam a ter sua cobertura obrigatória conforme conteúdo da RN 428 da ANS. Tal rol, em sua edição ou em consulta online, dá para o procedimento cobertura obrigatória mínima, uma vez que como reza a própria resolução normativa, a indicação da bula ou manual do produto é específica para o tratamento e ou profilaxia aqui propostos. A Técnica por mim eleita necessitará para obter o melhor resultado da barreia anti adesão e indução conjunta da cascata de coagulção, a qual passo a justificar, como necessária e garantida por resolução normativa para o paciente citado. Com a aplicação da barreira anti adesão solicitada, Adhesion STP +, a região cirúrgica afetada terá a formação de um filme polimérico por até 45 dias, mesmo período em que este produto também fará a importante função hemostática promovendo também a minoração dos sangramentos tardios pós operatório, pois optaremos em não usar em excesso a eletro cirurgia, que em seu uso demasiado provoca carbonizações e isquemias, que tardiamente vão produzir novos e desorganizados processos de cicatrização e com isso mais aderências ou fibrose que é o que pretendemos evitar. Umas das complicações que levam à necessidade da pericardiectomia é distúrbio cicatricial de formação de aderências que deverão ser removidas através de cirurgia de uma parte ou de todo o pericárdio no tratamento de pericardite fibrinosa e derrames pericárdicos recorrentes. A pericardiectomia permanece como o tratamento padrão ouro para pacientes com pericardite constritiva crônica sintomática, entretanto, o procedimento apresenta alta mortalidade e uma parcela significativa dos pacientes não apresenta melhora dos sinais e sintomas de insuficiência cardíaca. Além disso, o impacto da pericardiectomia na capacidade cardiopulmonar de pacientes com pericardite constritiva ainda é pouco estudado. Como princípio basilar da legislação que rege o setor de saúde suplementar e que tem sua redação no Art. 4 da Resolução normativa 428, recomendando ações de prevenção na promoção da saúde dos pacientes, é que solicitamos a cobertura para o tratamento cirúrgico PROFILÁTICO da pericardite fibrinosa/serofibrinosa. Caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa em conformidade com a resolução normativa 395 da ANS. Certo de sua liberação Cordialmente,",
+      "Ao Convênio: Solicito a liberação do Adhesion STP+ , para a cirurgia do paciente....(descrição rápida da anamnese) .............................................., o produto em questão será utilizado para prevenir a formação de aderência/fibrose e promover hemostasia contínua por até 45 dias, risco previsível conforme estudos conhecidos na especialidade de cabeça e pescoço gerado pelo o trauma ou ato cirúrgico, bem como pela carbonização e isquemia das eletro cirurgias. Os Códigos paras esses procedimentos são: (citar o código entre os diversos de esvaziamento cervical) ....................................... e tratamento cirúrgico PROFILÁTICO de BRIDECTOMIA/BRIDOTOMIA de código 82001545. Conforme tabela TUSS estes procedimentos citados são de cobertura mínima obrigatória pela ANS. Conforme Resolução normativa da ANS 424, referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao médico assistente a prerrogativa de determinar as características (tipo, matéria- prima e dimensões ) das órteses, próteses e materiais especiais OPME necessários à execução dos procedimentos contidos no Roll de Procedimentos da ANS. Lembro ainda que os produtos aprovado pela ANVISA que tenha em sua bula ou manual a indicação de uso ligado à patologia tratada, passam a ter sua cobertura obrigatória conforme conteúdo da RN 428 da ANS. Tal rol, em sua edição ou em consulta online, dá para o procedimento cobertura obrigatória mínima. A Técnica por mim eleita necessitará para obter o melhor resultado da barreia anti adesão, a qual passo a justificar, como necessária e garantida por resolução normativa para o paciente citado. Com a aplicação da barreira anti adesão solicitada, Adhesion STP +, a região cirúrgica afetada terá a formação de um filme polimérico por até 45 dias, mesmo período em que este produto também fará a importante função hemostática promovendo também a minoração dos sangramentos tardios pós operatório, pois optaremos em não usar em excesso a eletro cirurgia, que em seu uso demasiado provoca carbonizações e isquemias, que tardiamente vão produzir novos e desorganizados processos de cicatrização e com isso mais aderências ou fibrose que é o que pretendemos evitar. É de conhecimento amplo em nossa especialidade e respaldado pela literatura que a cirurgia de esvaziamento cervical na cabeça e pescoço, pela sua complexidade, leva a produção de alterações anatômicas e funcionais, causando por vezes distúrbios mecânicos na articulação escapulo-umeral, que leva a uma progressiva ocorrência de FIBROSE, RETRAÇÃO CICATRICIAL, ADERÊNCIA INTRACAPSULAR, periarterite e, subsequente dano no plexo braquial e também nos ligamentos e músculos e o comprometimento da articulação do ombro é conseqüência reconhecida do esvaziamento cervical” Como princípio basilar da legislação que rege o setor de saúde suplementar e que tem sua redação no Art. 4 da Resolução normativa 428, recomendando ações de prevenção na promoção da saúde dos pacientes, é que solicitamos a cobertura para o tratamento cirúrgico PROFILÁTICO para britectomia como já citado anteriormente e respaldado como efeito colateral indesejável, e, portanto, a ser combatido previamente, pela literatura da especialidade de cabeça e pescoço... Caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa em conformidade com a resolução normativa 395 da ANS. Certo de sua liberação Cordialmente,",
+      "Ao Convênio: Solicito a liberação do Adhesion STP+ , para a cirurgia do paciente....(descrição rápida da anamnese) .............................................., o produto em questão será utilizado para prevenir a formação de aderência/fibrose e promover hemostasia contínua por até 45 dias, risco previsível conforme estudos conhecidos na especialidade de cabeça e pescoço gerado pelo o trauma ou ato cirúrgico, bem como pela carbonização e isquemia das eletro cirurgias. Os Códigos paras esses procedimentos são: (citar o código entre os diversos de esvaziamento cervical) ....................................... e tratamento cirúrgico PROFILÁTICO Tratamento cirúrgico de bridas constritivas de código 30101824, que acorrem no tecido celular subcultâneo. Conforme tabela TUSS estes procedimentos citados são de cobertura mínima obrigatória pela ANS. Conforme Resolução normativa da ANS 424, referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao médico assistente a prerrogativa de determinar as características (tipo, matéria- prima e dimensões ) das órteses, próteses e materiais especiais OPME necessários à execução dos procedimentos contidos no Roll de Procedimentos da ANS. Lembro ainda que os produtos aprovado pela ANVISA que tenha em sua bula ou manual a indicação de uso ligado à patologia tratada, passam a ter sua cobertura obrigatória conforme conteúdo da RN 428 da ANS. Tal rol, em sua edição ou em consulta online, dá para o procedimento cobertura obrigatória mínima. A Técnica por mim eleita necessitará para obter o melhor resultado da barreia anti adesão, a qual passo a justificar, como necessária e garantida por resolução normativa para o paciente citado. Com a aplicação da barreira anti adesão solicitada, Adhesion STP +, a região cirúrgica afetada terá a formação de um filme polimérico por até 45 dias, mesmo período em que este produto também fará a importante função hemostática promovendo também a minoração dos sangramentos tardios pós operatório, pois optaremos em não usar em excesso a eletro cirurgia, que em seu uso demasiado provoca carbonizações e isquemias, que tardiamente vão produzir novos e desorganizados processos de cicatrização e com isso mais aderências ou fibrose que é o que pretendemos evitar. É de conhecimento amplo em nossa especialidade e respaldado pela literatura que a cirurgia de esvaziamento axilar na mastologia, pela sua complexidade, leva a produção de alterações anatômicas e funcionais, causando por vezes distúrbios mecânicos na articulação escapulo-umeral, que leva a uma progressiva ocorrência de FIBROSE, RETRAÇÃO CICATRICIAL, ADERÊNCIAS, subsequente dano Nos ligamentos e músculos e o comprometimento da articulação do ombro que pode ser uma consequência reconhecida do esvaziamento axilar” Como princípio basilar da legislação que rege o setor de saúde suplementar e que tem sua redação no Art. 4 da Resolução normativa 465, recomendando ações de prevenção na promoção da saúde dos pacientes, é que solicitamos a cobertura para o tratamento cirúrgico PROFILÁTICO para cirúrgico de bridas constritivas como já citado anteriormente e respaldado como efeito colateral indesejável, e, portanto, a ser combatido previamente, pela literatura da especialidade de mastologia... Caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa em conformidade com a resolução normativa 395 da ANS. Certo de sua liberação Cordialmente,",
+      "Ao Convênio: Solicito a liberação do Adhesion STP+ , para a cirurgia do paciente....(descrição rápida da anamnese) .............................................., o produto em questão será utilizado para prevenir a formação de aderência/fibrose e promover hemostasia contínua por até 45 dias, risco previsível conforme estudos conhecidos na especialidade de cabeça e pescoço gerado pelo o trauma ou ato cirúrgico, bem como pela carbonização e isquemia das eletro cirurgias. Os Códigos paras esses procedimentos são: (citar os código entre fistulas) ....................................... e tratamento cirúrgico PROFILÁTICO Tratamento cirúrgico de bridas constritivas de código 30101824, que acorrem no tecido celular subcultâneo. Conforme tabela TUSS estes procedimentos citados são de cobertura mínima obrigatória pela ANS. Conforme Resolução normativa da ANS 424, referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao médico assistente a prerrogativa de determinar as características (tipo, matéria- prima e dimensões ) das órteses, próteses e materiais especiais OPME necessários à execução dos procedimentos contidos no Roll de Procedimentos da ANS. Lembro ainda que os produtos aprovado pela ANVISA que tenha em sua bula ou manual a indicação de uso ligado à patologia tratada, passam a ter sua cobertura obrigatória conforme conteúdo da RN 428 da ANS. Tal rol, em sua edição ou em consulta online, dá para o procedimento cobertura obrigatória mínima. A Técnica por mim eleita necessitará para obter o melhor resultado da barreia anti adesão, a qual passo a justificar, como necessária e garantida por resolução normativa para o paciente citado. Com a aplicação da barreira anti adesão solicitada, Adhesion STP +, a região cirúrgica afetada terá a formação de um filme polimérico por até 45 dias, mesmo período em que este produto também fará a importante função hemostática promovendo também a minoração dos sangramentos tardios pós operatório, pois optaremos em não usar em excesso a eletro cirurgia, que em seu uso demasiado provoca carbonizações e isquemias, que tardiamente vão produzir novos e desorganizados processos de cicatrização e com isso mais aderências ou fibrose que é o que pretendemos evitar. É de conhecimento amplo em nossa especialidade e respaldado pela literatura que a cirurgia de esvaziamento axilar na mastologia, pela sua complexidade, leva a produção de alterações anatômicas e funcionais, causando por vezes distúrbios mecânicos na articulação escapulo-umeral, que leva a uma progressiva ocorrência de FIBROSE, RETRAÇÃO CICATRICIAL, ADERÊNCIAS, subsequente dano Nos ligamentos e músculos e o comprometimento da articulação do ombro que pode ser uma consequência reconhecida do esvaziamento axilar” Como princípio basilar da legislação que rege o setor de saúde suplementar e que tem sua redação no Art. 4 da Resolução normativa 465, recomendando ações de prevenção na promoção da saúde dos pacientes, é que solicitamos a cobertura para o tratamento cirúrgico PROFILÁTICO para cirúrgico de bridas constritivas como já citado anteriormente e respaldado como efeito colateral indesejável, e, portanto, a ser combatido previamente, pela literatura da especialidade de mastologia... Caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa em conformidade com a resolução normativa 395 da ANS. Certo de sua liberação Cordialmente,"
+    ],
+    "Kit FO - Laser Cirúrgico": [
+      "Ao (Nome do convênio) Paciente : _____________________________________________________________ A paciente acima citada, possui (descrever anamnese detalhada da paciente), sendo assim necessário a realização dos procedimentos por mim solicitado conforme abaixo: _______________________________________ (Colocar os procedimentos pertinentes e de rotina) Solicito a liberação do seguinte material: 01 Kit Introdutor para Cateter FO 600 Material este a ser utilizado para a realização dos procedimentos solicitados. O Kit Introdutor para cateter FO será utilizado para cortar e coagular sem alternar instrumentos ampliando a segurando do ato cirúrgico devido à extrema precisão deste equipamento. Tendo em vista as vantagens que o uso desta tecnologia como ferramenta que auxilia decisivamente na utilização da técnica por mim eleita a qual permitirá cortes bem definidos e superficiais por sua delicadeza e precisa delimitação tecidual permitindo incisões por planos além de garantir a melhor proteção das estruturas adjacentes afim de que não sejam danificadas ou lesionadas proporcionando ainda controle do sangramento transoperatório devido à já citada precisão e simultâneo controle na área de hemostasia garantindo melhor visibilidade da área cirúrgica, com importante diminuição do dano térmico dos tecidos adjacentes. Em Neurocirurgia, o sistema usado para remover o tecido de interesse deve ser eficaz, mas seus efeitos colaterais e período de recuperação devem ser considerados, já que as mínima injuria é sempre desejável nesse tipo de procedimento em nossa especialidade. Diante do exposto solicito a autorização do material em questão, justificável à utilização no ato cirúrgico proposto a essa paciente, e conforme descrê a RN 424 da ANS referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: “I cabe ao médico ou cirurgião dentista assistente a prerrogativa de determinar as características (tipo, matéria- prima e dimensões ) das órteses, próteses e materiais especiais OPME necessários à execução dos procedimentos contidos no Roll de Procedimentos da ANS”, os procedimentos por mim solicitados para a paciente ____________________________ são de cobertura obrigatória, e os materiais acima são por mim definidos como essenciais para a realização de tais procedimentos. Digo ainda que conforme o Código de Ética Médica, em sei Capítulo I, inciso V, descreve que: “V - Compete ao médico aprimorar continuamente seus conhecimentos e usar o melhor do progresso científico em benefício do paciente.”, o que me motiva a solicitar tais conjuntos em benefício desta paciente. Certo de vossa compreensão e autorização, Att..",
+      "O paciente ...................(inserir anamnese)...... é necessita de procedimento cirúrgico visando o tratamento na região da ATM, com o uso da artroscopia nesta região, por já ter sido tentado tratamento conservador e refratário ao mesmo, e por ser essa uma técnica com menor morbidade para o paciente em que solicito os procedimentos, Tenossinovites estenosantes - tratamento cirúrgico e Punção articular terapêutica (cirúrgica) orientada por imagem, com respectivos códigos 30731186 e 30713137 com a utilização dos seguintes materiais especiais : 01 Kit Introdutor para cateter em fibra optica descartável, e 01 Cânula Guia Reta para fibra optica Descartável Conforme Resolução normativa da ANS 424 referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao profissional assistente a prerrogativa de determinar as características (tipo, matéria-prima e dimensões) das órteses, das próteses e dos materiais especiais - OPME necessários à execução dos procedimentos contidos no Rol de Procedimentos e Eventos em Saúde; descritos no Roll de Procedimentos da ANS, tal rol, em sua edição da RN 424 ou em consulta online, dá para os procedimentos citados a cima a cobertura. Para o procedimento cauterização há o adendo de qualquer técnica. A Técnica por mim eleita foi a foto térmica por 980 com 1470 nanômetros simultâneos, a qual passo a justificar, como necessária e garantida legalmente para o paciente citado. O tratamento por imagem para liberação de aderências intra articulares é fundamental para a redução de dores e possíveis lesões ou deslocamentos do disco articular, e essa abordagem permite um pos operatório com menor comorbidade dos pacientes, a tecnica por mim eleita permite também o tratamento de possíveis neoformações micro vasculares que coadunam a persistência da dor que participam também do processo inflamatório da ATM. O material solicitado nos permitirá uma maior e mais segura liberação dessas aderências além de uma abordagem da sinovite dando uma melhor e mais rápida recuperação ao paciente supracitado. O material permitirá ainda, se necessário for, realizar além do corte das aderências com a simultânea coagulação ou cauterização de pequenos sangramentos durante o procedimento em uma área que é extremamente delicada e de difícil acesso para instrumentos utilizados em cirurgias de maior porte. Outra facilidade e a de que a fibra chega ao local da lesão com facilidade, pois a espessura e a flexibilidade permite o seu manejo correto e preciso exigido pelos procedimentos por imagem. Isto é de extrema importância e substitui com muito mais segurança e matérias tradicionalmente utilizados nesse tipo de procedimento no tratamento cirurgico da ATM. Isto posto, aguardamos a vossa análise para a liberação do referido procedimento uma vez que o mesmo atende a todas as questões normativas anotadas pelas Resoluções Normativas 424 e 428 da ANS e caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa por escrito em conformidade com a resolução normativa 395 da ANS. Certo de vossa liberação.",
+      "Relatório Médico O paciente .........................................apresenta amigdalite recorrente e obstrução respiratória alta, levando a roncos e apnéia refratário ao tratamento clínico, necessitando intervenção cirúrgica para a retirada das amígdalas , e conseqüentes cauterizações na região da faringe. tendo como procedimentos e códigos como: ADENO-AMIGDALECTOMIA cod. 30205034 + Cauterização (qualquer técnica) 30205085 + Uvulopalatofaringoplastia (qualquer técnica) (para dificuldade de respiração) 30205247. Solicito a liberação de 01 Kit Introdutor para Cateter de FO para laser de diodo em 980 e 1470 Nanometros e 01 Cânula Guia descartável para fibra óptica, material este a ser utilizado para a realização dos procedimentos solicitados . O procedimento de amigdalectomia ideal deve atingir uma remoção segura,atraumático, praticamente indolor e sem derramamento de sangue das amígdalas, a cirurgia de cauterização de partes da região da faringe, com menor formação de edemas no pós operatório leva a uma recuperação satisfatória , reduzindo em muito a reabordagem de curativos no pós operatório. O material solicitado para a realização do procedimento é de suma importância, tendo em vista das vantagens que o uso do laser de diodo de contato indicado para o paciente ......................................., permite a utilização superficial e intratecidual promovendo corte, hemostasia e ou ablação simultaneamente, beneficia o paciente nos seguintes aspectos: alta precisão cirúrgica com um campo cirúrgico sem sangue praticamente,diminuindo o tempo cirúrgico com conseqüente menor uso de materiais anestésicos devido ao efeito do laser de diodo de corte e coagulação simultâneos, menos dor ,exige menos medicação a ser usada,devido à menor carbonização do tecido uma vez que o laser de diodo de contato despeja menor energia térmica pela entrega do mesmo ser através da fibra óptica de 400 nm ou 600 nm evitando formação de edemas, proporcionando menor tempo de internação com uma recuperação mais rápida, permitindo aos pais retornar o trabalho mais cedo. Tendo em vista que esta é a melhor opção de tratamento para a paciente supracitado solicito a liberação do material para a execução do mesmo. Portanto, conto com a vossa compreensão e certo da liberação do material pedido, subscrevo-me.",
+      "O paciente ................................ é necessita de procedimento cirurgico visando o tratamento na região do ouvido médio com o uso de microscopia em que solicito os procedimentos, ESTAPEDECTOMIA OU ESTAPEDOTOMIA e Tenotomia ,com respectivos códigos 30403030 e 30731208 com a utilização dos seguintes materiais especiais : 01 Kit Introdutor para cateter em fibra optica descartável, e 01 Cânula Guia Angulada para fibra optica Descartável Conforme Resolução normativa da ANS 424 referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao profissional assistente a prerrogativa de determinar as características (tipo, matéria-prima e dimensões) das órteses, das próteses e dos materiais especiais - OPME necessários à execução dos procedimentos contidos no Rol de Procedimentos e Eventos em Saúde; descritos no Roll de Procedimentos da ANS, tal rol, em sua edição da RN 428 ou em consulta online, dá para os procedimentos citados a cima a cobertura. A Técnica por mim eleita foi ressecção e perfuração foto térmica por laser de diodo 980 com 1470 nanômetros simultâneos, a qual passo a justificar, como necessária e garantida legalmente para o paciente citado. A perfuração da platina da região do estribo, é uma das partes importantes para o bom pós operatório em relação aos pacientes submetidos ao procedimento de estapedotomia, o material solicitado nos permitirá uma maior e mais segura fenestração nessa região do ouvido médio minimizando os traumas mecânicos na região do labirinto, dando uma melhor e mais rápida recuperação ao paciente supracitado. O material permitirá ainda, se necessário for, realizar além do corte do tendão vestibular a micro coagulação ou cauterização de pequenos sangramentos durante o procedimento em uma área que é extremamente delicada e de difícil acesso para instrumentos utilizados em cirurgias de maior porte. Outra facilidade e a de que a fibra chega ao local da lesão com facilidade, pois a espessura e a flexibilidade permite o seu manejo correto e preciso exigido pelos procedimentos com microscopia. Isto é de extrema importância e substitui com muito mais segurança e eficácia as canetas de bisturi ou bipolar que dificilmente cabem no campo cirugico e geralmente não têm funcionamento adequado nas cirurgias como as de estapedotomia e ou estapedectomia. Isto posto, aguardamos a vossa análise para a liberação do referido procedimento uma vez que o mesmo atende a todas as questões normativas anotadas pelas Resoluções Normativas 424 e 428 da ANS e caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa por escrito em conformidade com a resolução normativa 395 da ANS. Certo de vossa liberação.",
+      "O paciente ................................ é necessita de procedimento cirurgico para retirada da hipófise, via endoscópica por acesso paranasal. Foi solicitado por mim os procedimentos, Hipofisectomia por qualquer método e cauterização (qualquer técnica) ,com respectivos códigos 31401074 e 30501113 com a utilização dos seguintes materiais : 01 Conjunto óptico para cirurgia naso endoscópica , 01 Kit Introdutor para cateter FO para laser de diodo 980 com 1470 nanômetros e 01 Cânula Guia Angulada Descartável A ressecção endoscópica com o uso do Laser de Diodo em comparação com a cirurgia convencional tem as seguintes vantagens para o paciente, maior precisão de corte, efeito de corte e coagulação simultâneos de pequenos vasos e conseqüente diminuição da perda sanguínea, uma vez que, o receio neste tipo de ressecção , é a temida complicação de intenso sangramento cirúrgico, o laser de diodo com comprimento de onda 980 nm e até 1470 nm, por ter seu pico de absorção na hemoglobina e oxi-hemoglobina e parte de água terá a energia absorvida pelo tecido, ocasionando menor dano térmico lateral, com o mínimo de carbonização da mucosa uma vez que o laser de diodo de contato despeja menor energia térmica pela entrega do mesmo ser através da fibra óptica de 400 u.m ou 600 u.m guiadas pelas cânulas descartáveis evitando formação de crostas, evitando assim novas reabordagens de curativos pós cirúrgicos Outra facilidade e a de que a fibra chega ao local da lesão, pois a espessura e a flexibilidade permitem que o laser atinja sem dificuldades para cirurgia endoscópica os locais com precisão, na base do crânio, e o controle da potência e da dissipação de energia na região da base do crânio, vasos sanguíneos, estruturas nervosas, tecido tumoral e cerebral (realização de hemostasia, ressecção tumoral e de tecido glial amorfo). Isto é de extrema importância e substitui com muito mais segurança e eficácia as canetas d bisturi bipolar que dificilmente cabem e geralmente não têm funcionamento adequado nas cirurgias endoscópicas da base do crânio. Solicito portanto a liberação dos materiais acima informados pois o mesmos são imprescindíveis para a execução do procedimento solicitado para ressecção e cauterização da base da lesão acima descrita a fim de diminuir as complicações já citadas. Conforme Resolução normativa da ANS 424 referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao profissional assistente a prerrogativa de determinar as características (tipo, matéria-prima e dimensões) das órteses, das próteses e dos materiais especiais - OPME necessários à execução dos procedimentos contidos no Rol de Procedimentos e Eventos em Saúde; descritos no Roll de Procedimentos da ANS, tal rol, em sua edição da RN 428 ou em consulta online, dá para os procedimentos citados a cima a cobertura. Para o procedimento cauterização há o adendo de qualquer técnica. A Técnica por mim eleita foi a cauterização foto térmica por laser de diodo 980 com 1470 nanômetros simultâneos, a qual passo a justificar, como necessária e garantida legalmente para o paciente citado. A Técnica por mim eleita necessitará para obter o melhor resultado dos materiais descartáveis do laser necessários à realização dos procedimentos e garantida por resolução normativa para o paciente citado. Caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa em conformidade com a resolução normativa 395 da ANS. Certo de sua liberação Certo de vossa liberação."
+    ],
+    "Biossilex - Biovidro": [
+      "O paciente. (descrever a anamnese do paciente........) necessita de tratamento cirúrgico de (................)na região (.....................) devido a (fratura, correção cirúrgica de deformidade, tumor ósseo) sendo necessário os procedimentos, ,de respectivos códigos ....................................................com a utilização dos seguintes materiais especiais : Enxerto de Biovidro (Escolher a quantidade em gramas ou CC) , com elevada bio atividade e com poder bacteriostático. Biossilex (especificar quantidade ou tamanho) Conforme Resolução normativa da ANS 424 referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao profissional assistente a prerrogativa de determinar as características (tipo, matéria-prima e dimensões) das órteses, das próteses e dos materiais especiais - OPME necessários à execução dos procedimentos contidos no Rol de Procedimentos e Eventos em Saúde; descritos no Roll de Procedimentos da ANS, tal rol, em sua edição da RN 428 ou em consulta online, dá para os procedimentos citados a cima a cobertura obrigatória e as diretrizes clinicas do anexo III da mesma resolução da ANS dá também este procedimento como cobertura obrigatório nos parâmetros clinicos lá estabelecidos. O material por mim descrito atende à todas as exigências das RNs já que possui registro e regularização na ANVISA conforme legislação vigente. Duas características dos Biovidros são o motivo de nossa escolha para o tratamento proposto. A primeira é a elevada bioatividade deste composto, que é a capacidade de em pouco tempo (dias) formar uma consolidação de hidroxiapatita na integração com o tecido ósseo, o que em grandes falhas ósseas ou pseudo artroses é indispensável para a melhor estabilidade e correção dos defeitos ósseos. Há ainda uma importante consideração que é o fato de que em contato com o sangue humano o Biossilex que tem sua composição especial, consegue promover por mais de 7 dias um ambiente inibidor do crescimento bacteriano devido a liberação de aníons derivados desta reação química nos contato com o sangue, o que permite uma adequada janela terapêutica para evitar a reformação do biofilme bacteriano, bem como dar maior eficácia ao uso dos antibióticos sistêmicos no combate às osteomielites Isto posto, aguardamos a vossa análise para a liberação do referido procedimento uma vez que o mesmo atende a todas as questões normativas anotadas pelas Resoluções Normativas 424 e 428 da ANS e caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa por escrito em conformidade com a resolução normativa 395 da ANS. Certo de vossa liberação Para justificativa no pós..... Há duas características dos Biovidros que motivaram a nossa escolha para o tratamento realizado. A primeira é a elevada bioatividade deste composto, que é a capacidade de em pouco tempo (dias) formar uma consolidação de hidroxiapatita na integração com o tecido ósseo, o que em perdas ósseas como a que tratamos é muito importante na reparação tecidual melhorando a estabilidade e correção dos defeitos ósseos. Há ainda uma importante, e neste caso a mais relevante que fez da solução indispensável que é o fato de que em contato com o sangue humano o biovidro Biossilex consegue promover por mais de 7 dias um ambiente (de forma tópica não sistêmica) inibidor do crescimento bacteriano (conforme laudos anexos) devido a liberação de aníons derivados desta reação química nos contato com o sangue, o que permite uma adequada janela terapêutica para evitar a reformação do biofilme bacteriano e assim evitar as riscos de novas intervenções cirúrgicos por conta da infeção instalada e infiltrada no tecido ósseo, bem como dar maior eficácia ao uso dos antibióticos sistêmicos no combate utilizados no pós operatório destes pacientes. Como o produto tem em sua bula esta destinação descrita para a inibição de infecções ósseas, e a necessidade terapêutica se fez premente neste caso isso embasou nossa escolha e também sustentou mediante a regulação de ANS nossa indicação e conseguinte utilização do produto."
+    ],
+    "Kit EC2 - Enxerto Composto": [
+      "Relatório Pré Operatório Paciente ......com quadro de disfunção erétil importante, avaliação clínica mostrou presença de calcificações importantes em topografia de corpo cavernoso bilateral, em função de curvatura peniana, solicito autorização para tratamento cirúrgico. CID:N45 OPME: 01 Kit Cânula Introdutor para Cateter EC2, Anvisa: 850021486 destinado a aspiração e colheita de enxerto composto, conjunto esse descartável para preservação de tecido celular subcutâneo coletado. Fornecedor: Rastriall A colheita de enxerto composto quando abordado o tecido celular subcutâneo, deve ser acompanhada dos cuidados de preservação entre o momento da colheita e a efetiva reimplantação desse enxerto composto no tratamento eleito, com isso ter tanto instrumental adequado (cânulas de acesso e colheita) quanto meios de preservação do enxerto composto (gel carreador) para que não haja a degradação ou mesmo a contaminação do tecido celular subcutâneo coletado é fundamental para o melhor resultado do tratamento eleito, e com isso ofereça tanto melhor recuperação ao paciente quanto à redução de custos já que se reduz substancialmente os riscos de nova intervenção. Qtd Código Procedimento Via de acesso 1 31206204 Plástica de Corpo Cavernoso 1 31206042 Doença de Peyronie-Tratamento Cirúrgico 1 31104142 Meatotomia uretral 1 30101670 Plástica em Z ou W 1 30101310 Enxerto Composto (tecido celular subcutâneo) Portanto para esse caso necessito de tratamento cirúrgico para aplicação de Enxerto Composto em toda extensão e base do corpo cavernoso, a fim de proporcionar vasculogênese e angiogênese para melhor resposta à conduta clínica. Enxertos compostos são formados por grupos celulares subcultâneos onde encontramos células como as do estroma vascular (SVF) que são fundamentais para a reparação tecidual a que se propõe o tratamento eleito por nós... Cirurgião: Glauco André Almeida Guedes – (CRM-DF 9934) Solicito, portanto, a liberação dos procedimentos solicitados bem como o material.",
+      "Relatório Pré Operatório Paciente ......com quadro de disfunção erétil importante, avaliação clínica mostrou presença de calcificações importantes em topografia de corpo cavernoso bilateral, em função de curvatura peniana, solicito autorização para tratamento cirúrgico. CID:N45 OPME: 01 Kit Cânula Introdutor para Cateter EC2, Anvisa: 850021486 destinado a aspiração e colheita de enxerto composto, conjunto esse descartável para preservação de tecido celular subcutâneo coletado. Fornecedor: Rastriall A colheita de enxerto composto quando abordado o tecido celular subcutâneo, deve ser acompanhada dos cuidados de preservação entre o momento da colheita e a efetiva reimplantação desse enxerto composto no tratamento eleito, com isso ter tanto instrumental adequado (cânulas de acesso e colheita) quanto meios de preservação do enxerto composto (gel carreador) para que não haja a degradação ou mesmo a contaminação do tecido celular subcutâneo coletado é fundamental para o melhor resultado do tratamento eleito, e com isso ofereça tanto melhor recuperação ao paciente quanto à redução de custos já que se reduz substancialmente os riscos de nova intervenção. Qtd Código Procedimento Via de acesso 1 31206204 Plástica de Corpo Cavernoso 1 31104142 Meatotomia uretral (tratamento da estenose) 1 30101670 Plástica em Z ou W 1 30101310 Enxerto Composto (tecido celular subcutâneo) Portanto para esse caso necessito de tratamento cirúrgico para aplicação de Enxerto Composto em toda extensão e base do corpo cavernoso, a fim de proporcionar vasculogênese e angiogênese para melhor resposta à conduta clínica e modulação do processo inflamatório e cicatricial Enxertos compostos são formados por grupos celulares subcultâneos onde encontramos células como as do estroma vascular (SVF) que são fundamentais para a reparação tecidual a que se propõe o tratamento eleito por nós... Cirurgião: Glauco André Almeida Guedes – (CRM-DF 9934) Solicito, portanto, a liberação dos procedimentos solicitados bem como o material.",
+      "Relatório Pré Operatório Paciente ......com quadro de disfunção erétil importante, avaliação clínica mostrou presença de calcificações importantes em topografia de corpo cavernoso bilateral, em função de curvatura peniana, solicito autorização para tratamento cirúrgico. CID:N45 OPME: 01 Kit Cânula Introdutor para Cateter EC2, Anvisa: 850021486 destinado a aspiração e colheita de enxerto composto, conjunto esse descartável para preservação de tecido celular subcutâneo coletado. Fornecedor: Rastriall A colheita de enxerto composto quando abordado o tecido celular subcutâneo, deve ser acompanhada dos cuidados de preservação entre o momento da colheita e a efetiva reimplantação desse enxerto composto no tratamento eleito, com isso ter tanto instrumental adequado (cânulas de acesso e colheita) quanto meios de preservação do enxerto composto (gel carreador) para que não haja a degradação ou mesmo a contaminação do tecido celular subcutâneo coletado é fundamental para o melhor resultado do tratamento eleito, e com isso ofereça tanto melhor recuperação ao paciente quanto à redução de custos já que se reduz substancialmente os riscos de nova intervenção. Qtd Código Procedimento Via de acesso 1 31206204 Plástica de Corpo Cavernoso 1 31206263 Revascularização peniana 1 30101670 Plástica em Z ou W 1 30101310 Enxerto Composto (tecido celular subcutâneo) Portanto para esse caso necessito de tratamento cirúrgico para aplicação de Enxerto Composto em toda extensão e base do corpo cavernoso, a fim de proporcionar vasculogênese e angiogênese para melhor resposta à conduta clínica e modulação do processo inflamatório e cicatricial Enxertos compostos são formados por grupos celulares subcultâneos onde encontramos células como as do estroma vascular (SVF) que são fundamentais para a reparação tecidual a que se propõe o tratamento eleito por nós... Cirurgião: Glauco André Almeida Guedes – (CRM-DF 9934) Solicito, portanto, a liberação dos procedimentos solicitados bem como o material.",
+      "Relatório Médico Complementar Paciente: Ao Convênio: Prezados Senhores: Visto a evolução que estamos acompanhando do nosso paciente, após longos anos de terapia com cobertura convencional sem sucesso, estamos entregando a ele o que tem de mais moderno e seguro do ponto de vista de medicina regenerativa, sabemos do impacto que as feridas crônicas causam na vida dos portadores dessa doença. Assim como transcrito do e-mail do plano, iniciamos o tratamento do Sr.___________________ após autorização do Convenio sendo realizado desbridamento com tratamento das lesões e enxerto composto com acompanhamento da equipe multidisciplinar composta por médico especialista, enfermeiras e equipe especialista em lesão do corpo clinico da _________________________________________. Conforme TUSS abaixo favoráveis ao procedimento do paciente acima, necessito que todo material seja liberado, uma vez que para que se tenha sucesso na terapia proposta necessitamos dos itens solicitados. TUSS: 30101310 - Enxerto composto FAVORÁVEL TUSS: 30101883 - Tratamento de escaras ou ulcerações com retalhos miocutâneos ou musculares FAVORÁVEL TUSS: 30730031 - Desbridamento cirúrgico de feridas ou extremidades FAVORÁVEL Tendo em vista a evolução do quadro e o grande benefício que vem trazendo ao nosso paciente, solicito autorização para que possamos avançar na terapia e utilizar a matriz extracelular antimicrobiana que demanda do kit cânula introdutor + conjunto optico diferente do enxerto composto utilizado no primeiro momento. São terapias que se complementam e beneficia o paciente. Conforme texto retirado do manual do usuário registrado na ANVISA, material tem sua indicação e com liberação do órgão para o tratamento proposto, ver Art. 17 citado abaixo. Referencias: PARIPEX - INDIAN JOURNAL OF RESEARCH | Volume - 10 | Issue - 08 |August - 2021 | PRINT ISSN No. 2250 - 1991 | DOI : 10.36106/paripex https://www.worldwidejournals.com/ CÓDIGO DE ÉTICA MÉDICA Capítulo I Princípios fundamentais II - O alvo de toda a atenção do médico é a saúde do ser humano, em benefício da qual deverá agir com o máximo de zelo e o melhor de sua capacidade profissional. V - Compete ao médico aprimorar continuamente seus conhecimentos e usar o melhor do progresso científico em benefício do paciente. VIII - O médico não pode, em nenhuma circunstância ou sob nenhum pretexto, renunciar à sua liberdade profissional, nem permitir quaisquer restrições ou imposições que possam prejudicar a eficiência e a correção de seu trabalho. XVI - Nenhuma disposição estatutária ou regimental de hospital ou de instituição, pública ou privada, limitará a escolha, pelo médico, dos meios cientificamente reconhecidos a serem praticados para o estabelecimento do diagnóstico e da execução do tratamento, salvo quando em benefício do paciente. XIX - O médico se responsabilizará, em caráter pessoal e nunca presumido, pelos seus atos profissionais, resultantes de relação particular de confiança e executados com diligência, competência e prudência. XXI - No processo de tomada de decisões profissionais, de acordo com seus ditames de consciência e as previsões legais, o médico aceitará as escolhas de seus pacientes, relativas aos procedimentos diagnósticos e terapêuticos por eles expressos, desde que adequadas ao caso e cientificamente reconhecidas. RESOLUÇÃO NORMATIVA - RN Nº 428, DE 7 DE NOVEMBRO DE 2017 Atualiza o Rol de Procedimentos e Eventos em Saúde, que constitui a referência básica para cobertura assistencial mínima nos planos privados de assistência à saúde, contratados a partir de 1º de janeiro de 1999 Art. 1º Esta Resolução Normativa – RN atualiza o Rol de Procedimentos e Eventos em Saúde, que constitui a referência básica para cobertura mínima obrigatória da atenção à saúde nos planos privados de assistência à saúde, contratados a partir de 1º de janeiro de 1999, e naqueles adaptados conforme a Lei nº 9.656, de 3 de junho de 1998. Art. 3º Esta RN é composta por quatro Anexos, quais sejam: I - Anexo I: lista os procedimentos e eventos de cobertura mínima obrigatória, respeitando-se a segmentação contratada; Seção II Dos Princípios de Atenção à Saúde na Saúde Suplementar Art. 4º A atenção à saúde na saúde suplementar deverá observar os seguintes princípios: III - incorporação de ações de promoção da saúde e prevenção de riscos e doenças, bem como de estímulo ao parto normal; Os princípios estabelecidos neste artigo devem ser observados em todos os níveis de complexidade da atenção, respeitando-se as segmentações contratadas, visando à promoção da saúde, à prevenção de riscos e doenças, ao diagnóstico, ao tratamento, à recuperação e à reabilitação. Art. 12. Os procedimentos realizados por laser, radiofrequência, robótica, neuronavegação ou outro sistema de navegação, escopias e técnicas minimamente invasivas somente terão cobertura assegurada quando assim especificados no Anexo I, de acordo com a segmentação contratada. Ainda baseado na Resolução Normativa, o produto em questão tem sua cobertura assegurada conforme artigo a seguir: Art. 17. Taxas, materiais, contrastes, medicamentos (ANVISA), entre outros, necessários para a execução de procedimentos e eventos em saúde de cobertura obrigatória, contemplados nesta RN e em seus Anexos, possuem cobertura obrigatória, desde que estejam regularizados e registrados e suas indicações constem da bula/manual perante a ANVISA e respeitados os critérios de credenciamento, referenciamento, reembolso ou qualquer outro tipo de relação entre a operadora e prestadores de serviços de saúde. Subseção I Do Plano-Referência Art. 20. A cobertura assistencial de que trata o plano-referência compreende todos os procedimentos clínicos, cirúrgicos, obstétricos e os atendimentos de urgência e emergência, na forma estabelecida no art. 10 da Lei nº 9.656, de 1998. § 1º São permitidas as seguintes exclusões assistenciais: I - tratamento clínico ou cirúrgico experimental, isto é, aquele que: a) emprega medicamentos, produtos(ANVISA) para a saúde ou técnicas(AMB) não registrados/não regularizados no país; b) é considerado experimental pelo Conselho Federal de Medicina – CFM ou pelo Conselho Federal de Odontologia - CFO; ou c) não possui as indicações descritas na bula/manual registrado na ANVISA (uso off-label), ressalvado o disposto no art. 26; § 3º Órtese é entendida como qualquer material permanente ou transitório que auxilie as funções de um membro, órgão ou tecido, sendo não ligados ao ato cirúrgico os materiais cuja colocação ou remoção não requeiram a realização de ato cirúrgico. Subseção III Do Plano Hospitalar Art. 22. O Plano Hospitalar compreende os atendimentos realizados em todas as modalidades de internação hospitalar e os atendimentos caracterizados como de urgência e emergência, conforme Resolução específica vigente, não incluindo atendimentos ambulatoriais para fins de diagnóstico, terapia ou recuperação, ressalvado o disposto no inciso X deste artigo, observadas as seguintes exigências: VI – cobertura de órteses e próteses ligadas aosatos cirúrgicos listados nos Anexos desta RN; Solicito respeitosamente, os códigos cirúrgicos, bem como os materiais solicitados em relatório pré cirúrgico. Isto posto ,aguardamos a vossa análise para liberação do referido material conforme anotas as resoluções acima citadas e caso haja divergências entre o que justificamos e a cobertura de direito do paciente supracitado ,favor proceder com a devida negativa por escrito direcionada ao paciente em conformidade com a resolução normativa 395 da ANS. Solicito respeitosamente, os códigos cirúrgicos, bem como os materiais solicitados em relatório pré cirúrgico. Isto posto, aguardamos a vossa análise para liberação do referido material conforme anotas as resoluções acima citadas e caso haja divergências entre o que justificamos e a cobertura de direito do paciente supracitado, favor proceder com a devida negativa por escrito direcionada ao paciente em conformidade com a resolução normativa 395 da ANS.",
+      "O paciente. (descrever a anamnese do paciente........) necessita de tratamento cirúrgico para aplicação de Enexerto composto na região (...................) para melhor resposta à conduta clinica sendo necessário o procedimento, Tecido celular subcutâneo ou ENXERTO COMPOSTO de respectivo código 30101310 com a utilização dos seguintes materiais especiais :, 1. Kit Cânula introdutor para cateter destinado à aspiração e colheita de enxerto composto e Gel carreador para preservação do tecido celular subcutâneo coletado. Conforme Resolução normativa da ANS 424 referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao profissional assistente a prerrogativa de determinar as características (tipo, matéria-prima e dimensões) das órteses, das próteses e dos materiais especiais - OPME necessários à execução dos procedimentos contidos no Rol de Procedimentos e Eventos em Saúde; descritos no Roll de Procedimentos da ANS, tal rol, em sua edição da RN 465 ou em consulta online, dá para os procedimentos citados a cima a cobertura obrigatória e as diretrizes clinicas do anexo III da mesma resolução da ANS dá também este procedimento como cobertura obrigatório nos parâmetros clinicos lá estabelecidos. O material por mim descrito atende à todas as exigências das RNs já que possui registro e regularização na ANVISA conforme legislação vigente, e também é um procedimento percutâneo (minimamente invasivo portanto) A colheita de enxerto composto quando abordado o tecido celular subcutâneo, deve ser acompanhada dos cuidados de preservação entre o momento da colheita e a efetiva reimplantação desse enxerto composto no tratamento eleito, com isso ter tanto instrumental adequado (cânulas de acesso e colheita) quanto meios de preservação do enxerto composto (gel carreador) para que não haja a degradação ou mesmo a contaminação do tecido celular subcutâneo coletado é fundamental para o melhor resultado do tratamento eleito, e com isso ofereça tanto melhor recuperação ao paciente quanto à redução de custos já que se reduz substancialmente os riscos de nova intervenção. Isto posto, aguardamos a vossa análise para a liberação do referido procedimento uma vez que o mesmo atende a todas as questões normativas anotadas pelas Resoluções Normativas 424 e 465 da ANS e caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa por escrito em conformidade com a resolução normativa 395 da ANS. Certo de vossa liberação"
+    ],
+    "Kit LP-CT - Lipedema": [
+      "O paciente .........................................., portadora de Lipedema com início (ou severa) de deformidade e funcionalidade anatômica dos membros (citar os membros), foi submetida a tratamento convencional conservador, porém sem resultados clinicamente suficientes. Será necessário o tratamento cirúrgico para correção das comorbidades geradas pelo Lipedema que tem limitado a paciente em suas atividades por conta de dores, mobilidade e distúrbios vasculares que precisam ser corrigidos. Nossa abordagem, precisará ser com o menor trauma possível e riscos associados na remoção do tecido adiposo patológico de forma e reverter as comorbidades já citadas e reduzir e ou retardar sobretudo os riscos de recidiva, para isso solicito a liberação do1. Kit introdutor para cateter LP-CT destinado à aspiração do tecido adiposo que tem provocado tais comorbidades, contendo Fibra Óptica flexível, cânula reta e coletor e Laser de 1210 nanômetros de emissão pulsada e/ou contínua. Conjunto esse descartável para extração segura deste tecido com baixa apoptose celular, além de estimular a área tratada para a correta reparação tecidual. (depende do estado da paciente) Vale considerar que por estar em estado avançado de evolução do Lipedema a paciente em questão necessitará de realizar este procedimento em (2 ou 3 ou 4) etapas, obedecendo assim os parâmetros de segurança cirúrgica. Solicito o tratamento de Lipedema com os seguintes códigos (por similaridade) (outros códigos da rotina do médico podem ser acrescentados). 30101271 Dermolipectomia não estética por deformidade de pele e tecido adiposo (caso a paciente tenha clinica de lipedema em áreas do abdome isso reforça essa cobertura) 30101190 Correção de lipodistrofia membros inferiores ou superiores O método usado por nós já teve sua observação feita sobre os resultados de menor risco e preservação tecidual. Foi realizado estudos de laboratório nos quais foi comparado com as variáveis entre amostras de curetagens convencionais e as obtidas pela técnica One STEP com baixo trauma tecidual e celular. As variáveis ​​medidas e comparados foram: histologia dos adipócitos, o número e a porcentagem de viabilidade da ADSC em ambos, fresco e amostras cultivadas, atividade mitocondrial (MTT, em amostras frescas e após 12 horas de cultura), e finalmente a temperatura da pele e tecido subcutâneo antes / após a infiltração e imediatamente após a aplicação do laser. Nas imagens a seguir, podemos comparar as diferentes histologias mencionadas acima. Microscopia 20x: células adiposas, 12 horas após a colheita (AT): Podemos ver as diferenças entre SAL (esquerda) imagem) e One STEP ™ (imagem à direita), enquanto a histologia é preservada sem partículas inflamatórias (manchas pretas) em comparação com a SAL, onde os adipócitos apresentam uma morfologia alterada, detritos (membrana citoplasmática) e um alto número de partículas inflamatórias. TECIDO CONJUNTO: Podemos ver nessas imagens comparativas do AT (seringa) aspirado fresco mostra as diferenças da quantidade de tecido conjuntivo entre SAL (ESQUERDA), que é o denso rosa cor que envolve a célula adiposa, enquanto no One STEP (DIREITO) é quase inexistente. (Hematoxilina / Eosina) A Técnica por mim eleita exigirá o material supracitado. Conforme Resolução normativa da ANS 424 referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao profissional assistente a prerrogativa de determinar as características (tipo, matéria-prima e dimensões) das órteses, das próteses e dos materiais especiais - OPME necessários à execução dos procedimentos contidos no Rol de Procedimentos e Eventos em Saúde; descritos no Roll de Procedimentos da ANS. O material por mim descrito atende à todas as exigências das RNs já que possui registro e regularização na ANVISA conforme legislação vigente, e também é um procedimento percutâneo (minimamente invasivo) portanto isto posto, aguardamos a vossa análise para a liberação do referido procedimento. Certo de vossa liberação"
+    ],
+    "Vitagraft - Enxerto Bifásico": [
+      "O paciente. (descrever a anamnese do paciente........) necessita de tratamento cirúrgico de (................)na região (.....................) devido a (fratura, correção cirúrgica de deformidade, tumor ósseo) sendo necessário os procedimentos, ,de respectivos códigos ....................................................com a utilização dos seguintes materiais especiais : Enxerto Bifásico, com bio funcionalidade estrutural nos formatos ( cunha, barras, placas), composto pelo polímero PLGA e da cerâmica Beta tri Cálcio. Vitagraft (especificar quantidade ou tamanho) Conforme Resolução normativa da ANS 424 referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao profissional assistente a prerrogativa de determinar as características (tipo, matéria-prima e dimensões) das órteses, das próteses e dos materiais especiais - OPME necessários à execução dos procedimentos contidos no Rol de Procedimentos e Eventos em Saúde; descritos no Roll de Procedimentos da ANS, tal rol, em sua edição da RN 428 ou em consulta online, dá para os procedimentos citados a cima a cobertura obrigatória e as diretrizes clinicas do anexo III da mesma resolução da ANS dá também este procedimento como cobertura obrigatório nos parâmetros clinicos lá estabelecidos. O material por mim descrito atende à todas as exigências das RNs já que possui registro e regularização na ANVISA conforme legislação vigente. Há ainda uma importante consideração que é o uso de um polímero bio absorvível que é o ácido poli lático glicólico, participa da cadeia nutricional celular, o que melhora a velocidade de osteo integração. Além do que Devido à transformação do β-TCP, espaços dentro da matriz começam a serem formados, os chamados arcabouços. Esse arcabouço é utilizado para a infiltração vascular, ou seja, oxigenação óssea, fixação e proliferação celular. Esses são requisitos fundamentais para a rápida integração do biomaterial, reabsorção e subsequente substituição óssea. Essa nova vascularização, ou angiogênese descrita no mecanismo de ação deste enxerto ocorre também com o temporal absorção do PLGA, processo fundamental para o reparo do tecido ósseo. O Vitagraft estruturado tem uma característica única que é a de oferecer uma composição estrutural com resistência mecânica conferida por sua fabricação, em que é possível contar com o este enxerto para suporte estrutural mínimo e temporário suportando inclusive uso simultâneo de placas e parafusos sem que haja destruição de sua forma estrutural. Além dessa importante sustentação física e temporária. Esta forma serve também de suporte (scaffold) para a melhor e mais rápida osteogênese reduzindo procedimentos extras como retiradas de enxerto autólogo de ilíacos ou fíbulas, minorando os riscos e comorbidades associados à essas indesejáveis falhas ósseas produzidas. Isto posto, aguardamos a vossa análise para a liberação do referido procedimento uma vez que o mesmo atende a todas as questões normativas anotadas pelas Resoluções Normativas 424 e 428 da ANS e caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa por escrito em conformidade com a resolução normativa 395 da ANS. Certo de vossa liberação",
+      "O paciente. (descrever a anamnese do paciente........) necessita de tratamento cirúrgico de (................)na região (.....................) devido a (fratura, correção cirúrgica de deformidade, tumor ósseo) sendo necessário os procedimentos, ,de respectivos códigos ....................................................com a utilização dos seguintes materiais especiais : Enxerto Bifásico, com bio funcionalidade estrutural, composto pelo polímero PLGA e da cerâmica Beta tri Cálcio. Vitagraft (especificar quantidade ou tamanho) Conforme Resolução normativa da ANS 424 referente a cobertura assistencial para órteses, prótese e materiais especiais discorre que: I cabe ao profissional assistente a prerrogativa de determinar as características (tipo, matéria-prima e dimensões) das órteses, das próteses e dos materiais especiais - OPME necessários à execução dos procedimentos contidos no Rol de Procedimentos e Eventos em Saúde; descritos no Roll de Procedimentos da ANS, tal rol, em sua edição da RN 428 ou em consulta online, dá para os procedimentos citados a cima a cobertura obrigatória e as diretrizes clinicas do anexo III da mesma resolução da ANS dá também este procedimento como cobertura obrigatório nos parâmetros clinicos lá estabelecidos. O material por mim descrito atende à todas as exigências das RNs já que possui registro e regularização na ANVISA conforme legislação vigente. Há ainda uma importante consideração que é o uso de um polímero bio absorvível que é o ácido poli lático glicólico, participa da cadeia nutricional celular, o que melhora a velocidade de osteo integração. Além do que Devido à transformação do β-TCP, espaços dentro da matriz começam a serem formados, os chamados arcabouços. Esse arcabouço é utilizado para a infiltração vascular, ou seja, oxigenação óssea, fixação e proliferação celular. Esses são requisitos fundamentais para a rápida integração do biomaterial, reabsorção e subsequente substituição óssea. Essa nova vascularização, ou angiogênese descrita no mecanismo de ação deste enxerto ocorre também com o temporal absorção do PLGA, processo fundamental para o reparo do tecido ósseo. Isto posto, aguardamos a vossa análise para a liberação do referido procedimento uma vez que o mesmo atende a todas as questões normativas anotadas pelas Resoluções Normativas 424 e 428 da ANS e caso haja divergência entre o que justificamos e as coberturas de direito do paciente supracitado, favor proceder com a devida justificativa de negativa por escrito em conformidade com a resolução normativa 395 da ANS. Certo de vossa liberação"
+    ]
+  },
+  "nao_classificados_count": 0,
+  "referencias_unicas": [
+    "Altman et al., 2015 avaliaram 68 estudos em relação ao peso molecular classificando os produtos em alto peso molecular (≥ 3 MDa), moderado peso molecular (< 3 e > 1,5 MDa) e baixo peso molecular (≤ 1,5 MDa) (ALTMAN et al."
+  ]
+}

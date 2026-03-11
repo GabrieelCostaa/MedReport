@@ -1,0 +1,265 @@
+"""
+Orquestrador do pipeline multi-agente: Pesquisador -> Redator -> Auditor.
+"""
+import logging
+import uuid
+from dataclasses import dataclass, field
+from typing import Optional
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from .researcher import research, ResearchResult, GapQuestion, _fetch_clinical_evidences, _fetch_pubmed_evidences
+from .writer import write_justification, DraftReport
+from .auditor import audit, AuditResult
+from .checklist import ReportChecklist
+from .validator import validate_technical_data, ValidationResult
+from .token_tracker import PipelineUsage
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class PipelineSession:
+    """Estado de uma sessão do pipeline multi-agente."""
+    session_id: str
+    step: str = "init"  # init | researching | questions | writing | auditing | done
+    product: object = None
+    template: object = None
+    medico_inputs: dict = field(default_factory=dict)
+    research_result: Optional[ResearchResult] = None
+    pending_questions: list[dict] = field(default_factory=list)
+    answered_questions: dict = field(default_factory=dict)
+    draft: Optional[DraftReport] = None
+    audit_result: Optional[AuditResult] = None
+    clinical_evidences: list = field(default_factory=list)
+    pubmed_evidences: list = field(default_factory=list)
+    usage: PipelineUsage = field(default_factory=PipelineUsage)
+
+
+class ReportPipeline:
+    """
+    Pipeline multi-agente para geração de relatórios OPME.
+
+    Fluxo:
+    1. start() -> pesquisa + identifica lacunas
+    2. Se há lacunas -> retorna perguntas A/B/C
+    3. answer() -> recebe respostas do médico
+    4. generate() -> redação + auditoria
+    5. Resultado: texto auditado + checklist
+    """
+
+    _sessions: dict[str, PipelineSession] = {}
+
+    @classmethod
+    def get_session(cls, session_id: str) -> Optional[PipelineSession]:
+        return cls._sessions.get(session_id)
+
+    @classmethod
+    async def start(
+        cls,
+        product,
+        template,
+        diagnostico: str,
+        cid: str,
+        medico_inputs: dict,
+        db: Optional[AsyncSession] = None,
+    ) -> dict:
+        """
+        Inicia pipeline: executa Agente A (Pesquisador).
+        Retorna session_id e perguntas A/B/C se houver lacunas.
+        """
+        session_id = str(uuid.uuid4())
+        session = PipelineSession(
+            session_id=session_id,
+            product=product,
+            template=template,
+            medico_inputs=medico_inputs,
+        )
+        session.step = "researching"
+        cls._sessions[session_id] = session
+
+        logger.info("Pipeline iniciado: session=%s, product=%s", session_id, product.nome)
+
+        session.clinical_evidences = await _fetch_clinical_evidences(db, cid, product.id)
+        session.pubmed_evidences = await _fetch_pubmed_evidences(db, cid, product.nome, diagnostico)
+
+        research_result = await research(product, diagnostico, cid, template, db=db)
+        session.research_result = research_result
+        session.medico_inputs["cid"] = cid
+        session.medico_inputs["diagnostico"] = diagnostico
+
+        if research_result.token_usage:
+            session.usage.add(research_result.token_usage)
+
+        if research_result.lacunas:
+            session.step = "questions"
+            session.pending_questions = [
+                {
+                    "secao": q.secao,
+                    "pergunta": q.pergunta,
+                    "opcoes": q.opcoes,
+                }
+                for q in research_result.lacunas
+            ]
+
+            return {
+                "session_id": session_id,
+                "step": "questions",
+                "questions": session.pending_questions,
+                "sugestao_tuss": research_result.sugestao_tuss,
+                "especialidade": research_result.especialidade_detectada,
+            }
+
+        return await cls._generate(session)
+
+    @classmethod
+    async def answer(cls, session_id: str, answers: dict) -> dict:
+        """
+        Recebe respostas A/B/C do médico e avança o pipeline.
+        """
+        session = cls._sessions.get(session_id)
+        if not session:
+            return {"error": "Sessão não encontrada"}
+
+        session.answered_questions.update(answers)
+
+        for key, value in answers.items():
+            if key in ("falha_terapeutica", "risco_nao_realizacao"):
+                session.medico_inputs[key] = value
+            else:
+                session.medico_inputs[key] = value
+
+        session.pending_questions = [
+            q for q in session.pending_questions
+            if q["secao"] not in answers
+        ]
+
+        if session.pending_questions:
+            return {
+                "session_id": session_id,
+                "step": "questions",
+                "questions": session.pending_questions,
+            }
+
+        return await cls._generate(session)
+
+    @classmethod
+    async def _generate(cls, session: PipelineSession) -> dict:
+        """Executa Agente B (Redator) -> Agente C (Auditor) -> Camada 4 (Validador Hard-Coded)."""
+
+        session.step = "writing"
+        logger.info("Pipeline redação: session=%s", session.session_id)
+
+        draft = await write_justification(
+            research=session.research_result,
+            product=session.product,
+            template=session.template,
+            medico_inputs=session.medico_inputs,
+            clinical_evidences=session.clinical_evidences,
+            pubmed_evidences=session.pubmed_evidences,
+        )
+        session.draft = draft
+        if draft.token_usage:
+            session.usage.add(draft.token_usage)
+
+        session.step = "auditing"
+        logger.info("Pipeline auditoria: session=%s", session.session_id)
+
+        audit_result = await audit(draft, session.product, clinical_evidences=session.clinical_evidences)
+        session.audit_result = audit_result
+        if audit_result.token_usage:
+            session.usage.add(audit_result.token_usage)
+
+        # Camada 4: Validador Hard-Coded (Python puro, sem IA)
+        session.step = "validating"
+        logger.info("Pipeline validação hard-coded: session=%s", session.session_id)
+
+        validation = validate_technical_data(
+            audit_result.texto_corrigido,
+            session.product,
+        )
+
+        audit_log = [
+            {"tipo": a.tipo, "campo": a.campo, "original": a.original,
+             "corrigido": a.corrigido, "motivo": a.motivo}
+            for a in audit_result.audit_log
+        ]
+
+        if validation.issues:
+            for issue in validation.issues:
+                audit_log.append({
+                    "tipo": "hard_validation",
+                    "campo": issue.campo,
+                    "original": issue.valor_no_texto,
+                    "corrigido": issue.valor_oficial,
+                    "motivo": f"[{issue.severidade.upper()}] {issue.tipo}: valor no texto '{issue.valor_no_texto}' diverge do oficial '{issue.valor_oficial}'",
+                })
+
+        final_approved = audit_result.aprovado and validation.aprovado
+        session.step = "done"
+
+        motivos_bloqueio = []
+        if not audit_result.aprovado:
+            missing = [k for k, v in audit_result.checklist.items() if not v]
+            if missing:
+                motivos_bloqueio.append(f"Checklist incompleto: faltam {', '.join(missing)}")
+        for issue in validation.issues:
+            if issue.severidade == "bloqueante":
+                motivos_bloqueio.append(
+                    f"O valor '{issue.valor_no_texto}' foi identificado como {issue.campo} incorreto. "
+                    f"O valor oficial é '{issue.valor_oficial}'."
+                )
+
+        logger.info(
+            "Pipeline concluído: session=%s, aprovado=%s, hard_validation=%s",
+            session.session_id, final_approved, validation.aprovado,
+        )
+
+        return {
+            "session_id": session.session_id,
+            "step": "done",
+            "justificativa": audit_result.texto_corrigido,
+            "aprovado": final_approved,
+            "motivo_bloqueio": motivos_bloqueio if motivos_bloqueio else None,
+            "checklist": audit_result.checklist,
+            "audit_log": audit_log,
+            "audit_summary": {
+                "data_corrections": [
+                    f"{a.campo}: {a.motivo}" for a in audit_result.audit_log
+                    if a.tipo == "correcao"
+                ],
+                "sources_cited": audit_result.referencias_validadas,
+                "checklist": audit_result.checklist,
+                "hard_validation": {
+                    "passed": validation.aprovado,
+                    "issues_count": len(validation.issues),
+                    "blocking_issues": [
+                        {"campo": i.campo, "texto": i.valor_no_texto,
+                         "oficial": i.valor_oficial, "tipo": i.tipo}
+                        for i in validation.issues if i.severidade == "bloqueante"
+                    ],
+                    "entities_found": len(validation.entities_found),
+                },
+            },
+            "referencias": audit_result.referencias_validadas,
+            "diagnostico_resumo": draft.diagnostico_resumo,
+            "falha_terapeutica": draft.falha_terapeutica,
+            "risco_nao_realizacao": draft.risco_nao_realizacao,
+            "base_legal": draft.base_legal,
+            "usage": session.usage.to_dict(),
+        }
+
+    @classmethod
+    async def regenerate(
+        cls,
+        session_id: str,
+        adjustments: dict,
+    ) -> dict:
+        """Re-gera com ajustes do médico."""
+        session = cls._sessions.get(session_id)
+        if not session:
+            return {"error": "Sessão não encontrada"}
+
+        session.medico_inputs.update(adjustments)
+        session.step = "writing"
+        return await cls._generate(session)

@@ -1,0 +1,52 @@
+CENÁRIO: Opus - Gonartrose Unilateral
+PRODUTO: Kit EC2 - Linha Opus
+PACIENTE: Roberto Almeida
+CID: M17.1
+DIAGNÓSTICO: Gonartrose unilateral de joelho direito, grau II-III Kellgren-Lawrence, com derrame articular recorrente e sinovite crônica
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 1985
+TEMPO: 28.5s
+REFERÊNCIAS: ["Bellamy et al."]
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+O paciente Roberto Almeida, com diagnóstico de gonartrose unilateral de joelho direito, grau II-III pela escala de Kellgren-Lawrence (CID M17.1), apresenta quadro clínico caracterizado por derrame articular recorrente e sinovite crônica, resultando em dor significativa e limitação funcional que comprometem suas atividades diárias. Após insucesso com tratamento conservador, incluindo anti-inflamatórios não esteroidais (AINEs), fisioterapia cinesioterapêutica e infiltrações corticoides, indica-se a viscossuplementação com o Kit EC2 - Linha Opus. Este produto, composto por ácido hialurônico de alto peso molecular (6.000 kDa), restaura a viscoelasticidade do líquido sinovial, proporcionando alívio prolongado da dor. Diferente de formulações de baixo peso molecular, o Kit EC2 possui reticulação polimérica tridimensional, criando uma barreira física que impede a degradação enzimática, garantindo permanência intra-articular prolongada. Estudos, como o de Bellamy et al., demonstram melhora funcional significativa por até 12 meses com aplicação única. A não realização do procedimento pode resultar em progressão da dor e limitação funcional, evoluindo para necessidade de artroplastia total, cujo custo varia entre R$30.000 e R$50.000, significativamente superior ao custo do material solicitado. Conforme a RN 395 da ANS, qualquer negativa deve ser justificada por escrito, fundamentada em evidências científicas equivalentes. A RN 424 afirma a autonomia do médico assistente na escolha do material OPME, enquanto a RN 428/465 obriga a cobertura mínima dos procedimentos. O Código de Ética Médica assegura o uso do melhor progresso científico em benefício do paciente. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST DETALHADO:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}
+
+AUDIT LOG:
+[
+  {
+    "tipo": "validacao",
+    "campo": "peso_molecular",
+    "original": "6.000 kDa",
+    "corrigido": "6.000 kDa",
+    "motivo": "Conforme ficha oficial do produto."
+  },
+  {
+    "tipo": "validacao",
+    "campo": "diferenciais_oficiais",
+    "original": "Restauração da viscoelasticidade do líquido sinovial, proporcionando alívio prolongado da dor.",
+    "corrigido": "Restauração da viscoelasticidade do líquido sinovial, proporcionando alívio prolongado da dor.",
+    "motivo": "Conforme ficha oficial do produto."
+  },
+  {
+    "tipo": "validacao",
+    "campo": "referencia_bibliografica",
+    "original": "Bellamy et al.",
+    "corrigido": "Bellamy et al.",
+    "motivo": "Autor presente na lista de referências conhecidas do produto."
+  }
+]

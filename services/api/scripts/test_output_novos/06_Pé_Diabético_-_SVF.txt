@@ -1,0 +1,51 @@
+CENÁRIO: 06 Pé Diabético - SVF
+PRODUTO: Kit EC2 - Enxerto Composto
+PACIENTE: Antônio Dias
+CID: E11.5
+DIAGNÓSTICO: Pé diabético com úlcera isquêmica plantar grau 3 WIfI, paciente diabético tipo 2 com doença arterial periférica. Risco iminente de amputação maior após falha de revascularização.
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 2655
+TEMPO: 39.9s
+REFERÊNCIAS: ["Özkan et al. (2022)", "Zhao et al. (2020)"]
+AUTORES ESPERADOS: {"Zhao": true, "Özkan": true}
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+Relatório Médico Complementar
+
+Paciente: Antônio Dias
+Convênio: Unimed
+
+Prezado(a) Auditor(a),
+
+O paciente Antônio Dias, portador de pé diabético com úlcera isquêmica plantar grau 3 WIfI (CID E11.5), apresenta risco iminente de amputação maior após falha de revascularização. A condição clínica do paciente é agravada pela insuficiência de circulação colateral, o que impossibilita a cicatrização adequada das lesões e compromete a viabilidade do membro afetado.
+
+A manutenção do quadro isquêmico sem a intervenção adequada resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que aceleram a apoptose celular e a degradação tecidual. As tentativas de tratamento conservador, incluindo revascularização, não foram bem-sucedidas, comprovando a refratariedade do quadro e tornando a intervenção com o Kit EC2 - Enxerto Composto não apenas indicada, mas mandatória para evitar desfecho catastrófico.
+
+O Kit EC2 oferece um procedimento percutâneo minimamente invasivo, que preserva o enxerto entre colheita e reimplantação, reduzindo riscos de contaminação e degradação do tecido. Contém células do estroma vascular (SVF), fundamentais para a reparação tecidual, promovendo neovascularização e diferenciação endotelial, conforme evidenciado por Özkan et al. (2022) e Zhao et al. (2020). Diferente de técnicas convencionais, a SVF promove regeneração de vasos sanguíneos e tecidos nervosos, superando limitações de bypass vascular e cirurgia intervencionista.
+
+A não realização do procedimento resultará em progressão para amputação maior, com custos significativamente superiores para a operadora, incluindo internações prolongadas e reabilitação. O tratamento profilático aqui proposto é significativamente inferior ao custo de uma artroplastia total, que pode variar entre R$30.000 e R$50.000.
+
+Fundamentação Legal:
+- RN 424: Cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME).
+- RN 428/465: Os procedimentos citados são de cobertura mínima obrigatória pela ANS.
+- RN 395: Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas.
+- Código de Ética Médica Cap. I, V: Compete ao médico usar o melhor do progresso científico em benefício do paciente.
+
+A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional.
+
+Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}

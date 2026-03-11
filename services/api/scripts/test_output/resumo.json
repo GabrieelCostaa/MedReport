@@ -1,0 +1,92 @@
+[
+  {
+    "cenario": "Opus - Gonartrose Bilateral",
+    "status": "OK",
+    "chars": 2292,
+    "checklist": "6/6",
+    "tempo": "30.9s",
+    "aprovado": true,
+    "arquivo": "scripts/test_output/01_Kit_EC2__Linha_Opus.txt"
+  },
+  {
+    "cenario": "Adhesion - Aderências Peritoneais",
+    "status": "OK",
+    "chars": 2706,
+    "checklist": "6/6",
+    "tempo": "40.3s",
+    "aprovado": true,
+    "arquivo": "scripts/test_output/02_Adhesion_STP+.txt"
+  },
+  {
+    "cenario": "Laser - Hipertrofia de Cornetos",
+    "status": "OK",
+    "chars": 1990,
+    "checklist": "6/6",
+    "tempo": "29.6s",
+    "aprovado": true,
+    "arquivo": "scripts/test_output/03_Kit_FO__Laser_Cirúrgico.txt"
+  },
+  {
+    "cenario": "Biossilex - Osteomielite",
+    "status": "OK",
+    "chars": 2477,
+    "checklist": "6/6",
+    "tempo": "30.6s",
+    "aprovado": true,
+    "arquivo": "scripts/test_output/04_Biossilex.txt"
+  },
+  {
+    "cenario": "Vitagraft - Pseudoartrose",
+    "status": "OK",
+    "chars": 2292,
+    "checklist": "6/6",
+    "tempo": "27.3s",
+    "aprovado": true,
+    "arquivo": "scripts/test_output/05_Vitagraft.txt"
+  },
+  {
+    "cenario": "Opus - Gonartrose Unilateral",
+    "status": "OK",
+    "chars": 1985,
+    "checklist": "6/6",
+    "tempo": "28.5s",
+    "aprovado": true,
+    "arquivo": "scripts/test_output/06_Kit_EC2__Linha_Opus.txt"
+  },
+  {
+    "cenario": "Adhesion - Obstrução Intestinal",
+    "status": "OK",
+    "chars": 1632,
+    "checklist": "6/6",
+    "tempo": "26.2s",
+    "aprovado": true,
+    "arquivo": "scripts/test_output/07_Adhesion_STP+.txt"
+  },
+  {
+    "cenario": "Laser - Amigdalectomia",
+    "status": "OK",
+    "chars": 2604,
+    "checklist": "6/6",
+    "tempo": "28.6s",
+    "aprovado": true,
+    "arquivo": "scripts/test_output/08_Kit_FO__Laser_Cirúrgico.txt"
+  },
+  {
+    "cenario": "Enxerto Composto - Peyronie",
+    "status": "OK",
+    "chars": 3203,
+    "checklist": "6/6",
+    "tempo": "38.9s",
+    "aprovado": true,
+    "arquivo": "scripts/test_output/09_Kit_EC2__Enxerto_Composto.txt"
+  },
+  {
+    "cenario": "Opus - Condropatia Patelar",
+    "status": "OK",
+    "chars": 2534,
+    "checklist": "5/6",
+    "tempo": "39.6s",
+    "aprovado": true,
+    "arquivo": "scripts/test_output/10_Kit_EC2__Linha_Opus.txt"
+  }
+]

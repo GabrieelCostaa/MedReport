@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 25mm 20mm 30mm 20mm;
+    @bottom-center {
+      content: "Página " counter(page) " de " counter(pages);
+      font-size: 8pt;
+      color: #999;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.55;
+    color: #1a1a1a;
+  }
+
+  .header {
+    border-bottom: 3px solid #1a4d8f;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .header-title {
+    font-size: 16pt;
+    font-weight: 700;
+    color: #1a4d8f;
+    letter-spacing: 0.5px;
+  }
+
+  .header-subtitle {
+    font-size: 9pt;
+    color: #666;
+    margin-top: 2px;
+  }
+
+  .header-date {
+    font-size: 9pt;
+    color: #666;
+    text-align: right;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+    background: #f4f7fb;
+    border: 1px solid #d8e2ef;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 10pt;
+  }
+
+  .meta-item {
+    display: flex;
+    gap: 6px;
+  }
+
+  .meta-label {
+    font-weight: 600;
+    color: #1a4d8f;
+    white-space: nowrap;
+  }
+
+  .meta-value {
+    color: #333;
+  }
+
+  .section {
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #1a4d8f;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 1.5px solid #d8e2ef;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+  }
+
+  .section-body {
+    text-align: justify;
+  }
+
+  .section-body p {
+    margin-bottom: 8px;
+  }
+
+  .legal-block {
+    background: #fef9f0;
+    border-left: 4px solid #d4a017;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 10pt;
+  }
+
+  .legal-block p {
+    margin-bottom: 6px;
+  }
+
+  .checkmate {
+    background: #fdf2f2;
+    border-left: 4px solid #c0392b;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 10pt;
+    font-weight: 600;
+    color: #7b1a1a;
+  }
+
+  .references {
+    font-size: 9pt;
+    color: #555;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    margin-top: 18px;
+  }
+
+  .references li {
+    margin-bottom: 3px;
+    list-style-type: none;
+    padding-left: 14px;
+    text-indent: -14px;
+  }
+
+  .references li::before {
+    content: "■ ";
+    color: #1a4d8f;
+    font-size: 7pt;
+  }
+
+  .closing {
+    margin-top: 28px;
+    text-align: center;
+    font-size: 10pt;
+  }
+
+  .closing .line {
+    width: 250px;
+    border-top: 1px solid #333;
+    margin: 40px auto 6px;
+  }
+
+  .closing .doctor-name {
+    font-weight: 700;
+    font-size: 11pt;
+  }
+
+  .closing .crm {
+    color: #666;
+    font-size: 9pt;
+  }
+
+  .checklist {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 20px;
+    font-size: 9pt;
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #f0f8f0;
+    border: 1px solid #c3dfc3;
+    border-radius: 4px;
+  }
+
+  .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .check-ok { color: #27ae60; font-weight: bold; }
+  .check-fail { color: #c0392b; font-weight: bold; }
+
+  .watermark {
+    position: fixed;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-35deg);
+    font-size: 72pt;
+    color: rgba(200, 200, 200, 0.12);
+    font-weight: 900;
+    letter-spacing: 12px;
+    white-space: nowrap;
+    z-index: -1;
+  }
+</style>
+</head>
+<body>
+
+{% if watermark %}<div class="watermark">{{ watermark }}</div>{% endif %}
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-title">Relatório Médico Complementar</div>
+      <div class="header-subtitle">Justificativa Técnica para Autorização de OPME</div>
+    </div>
+    <div class="header-date">
+      {{ data_emissao }}<br>
+      Protocolo: {{ protocolo }}
+    </div>
+  </div>
+</div>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <span class="meta-label">Paciente:</span>
+    <span class="meta-value">{{ paciente_nome }}</span>
+  </div>
+  <div class="meta-item">
+    <span class="meta-label">Convênio:</span>
+    <span class="meta-value">{{ convenio }}</span>
+  </div>
+  <div class="meta-item">
+    <span class="meta-label">Diagnóstico (CID):</span>
+    <span class="meta-value">{{ cid }} — {{ diagnostico_resumo }}</span>
+  </div>
+  <div class="meta-item">
+    <span class="meta-label">Material OPME:</span>
+    <span class="meta-value">{{ produto_nome }}</span>
+  </div>
+  {% if especialidade %}
+  <div class="meta-item">
+    <span class="meta-label">Especialidade:</span>
+    <span class="meta-value">{{ especialidade }}</span>
+  </div>
+  {% endif %}
+  {% if codigo_tuss %}
+  <div class="meta-item">
+    <span class="meta-label">Código TUSS:</span>
+    <span class="meta-value">{{ codigo_tuss }}</span>
+  </div>
+  {% endif %}
+</div>
+
+<div class="section">
+  <div class="section-title">Justificativa Técnica</div>
+  <div class="section-body">
+    {% for paragrafo in justificativa_paragrafos %}
+    <p>{{ paragrafo }}</p>
+    {% endfor %}
+  </div>
+</div>
+
+{% if referencias %}
+<div class="references">
+  <strong>Referências Bibliográficas:</strong>
+  <ul>
+    {% for ref in referencias %}
+    <li>{{ ref }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if checklist %}
+<div class="checklist">
+  {% for item, status in checklist.items() %}
+  <div class="checklist-item">
+    <span class="{{ 'check-ok' if status else 'check-fail' }}">{{ '✓' if status else '✗' }}</span>
+    {{ item | replace('_', ' ') | title }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="closing">
+  <div class="line"></div>
+  <div class="doctor-name">{{ medico_nome | default('___________________________') }}</div>
+  <div class="crm">{{ medico_crm | default('CRM: __________') }}</div>
+</div>
+
+</body>
+</html>

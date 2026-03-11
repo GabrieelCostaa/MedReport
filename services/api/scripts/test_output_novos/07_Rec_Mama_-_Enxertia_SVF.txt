@@ -1,0 +1,52 @@
+CENÁRIO: 07 Rec Mama - Enxertia SVF
+PRODUTO: Kit EC2 - Enxerto Composto
+PACIENTE: Cláudia Rezende
+CID: N60.9
+DIAGNÓSTICO: Sequela de mastectomia parcial com assimetria mamária e atrofia de tecido subcutâneo. Indicação de lipoenxertia autóloga com SVF para reconstrução volumétrica e regeneração tecidual.
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 3024
+TEMPO: 38.6s
+REFERÊNCIAS: ["Centurión-Rivas et al., 2017"]
+AUTORES ESPERADOS: {"Centurión": true, "Tan": true}
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+Relatório Médico Complementar
+
+Paciente: Cláudia Rezende
+Diagnóstico: Aumentar o volume mamário e melhorar a simetria (CID N60.9)
+Material Solicitado: Kit EC2 - Enxerto Composto
+Código TUSS: 30101310
+
+Prezados Senhores da Porto Seguro,
+
+A paciente Cláudia Rezende apresenta diagnóstico de assimetria mamária com necessidade de aumento de volume, condição que impacta diretamente na sua qualidade de vida e autoestima. A abordagem cirúrgica proposta visa não apenas a correção estética, mas também a reestruturação funcional do tecido mamário, essencial para o equilíbrio corporal e psicológico da paciente.
+
+Quadro Clínico e Falha Terapêutica:
+A paciente foi submetida a diversas terapias conservadoras, incluindo fisioterapia e uso de próteses externas, que não resultaram em melhora significativa da simetria ou volume mamário. A manutenção do quadro atual pode resultar em um ambiente bioquímico desfavorável, com potencial para desenvolvimento de fibroses e alterações teciduais adversas, agravando a condição clínica e estética da paciente.
+
+Justificativa Técnica e Superioridade do Material:
+O Kit EC2 - Enxerto Composto é insubstituível para o procedimento proposto devido ao seu mecanismo de ação avançado. Este material preserva as células do estroma vascular (SVF), fundamentais para a reparação tecidual, garantindo uma integração superior do enxerto. A técnica de preservação entre colheita e reimplantação reduz riscos de contaminação e degradação, assegurando viabilidade celular e eficácia no aumento de volume e simetria mamária. Estudos demonstram que o uso do laser 1210nm, presente no procedimento, preserva adipócitos intactos, resultando em menor taxa de seroma e viabilidade celular adequada para lipoenxertia autóloga (Centurión-Rivas et al., 2017).
+
+Risco da Não Realização e Impacto Financeiro:
+A negativa deste procedimento pode levar à progressão para condições mais graves, como fibrose mamária, necessitando de intervenções mais invasivas e onerosas no futuro. O tratamento profilático aqui proposto é significativamente inferior ao custo de procedimentos corretivos mais complexos, que podem custar à operadora valores substancialmente mais elevados.
+
+Fundamentação Legal:
+Conforme a RN 395 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A RN 428/465 estabelece que os procedimentos são de cobertura mínima obrigatória. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas. O Código de Ética Médica reforça a obrigação do médico de usar o melhor do progresso científico em benefício do paciente.
+
+Fechamento Checkmate:
+A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}

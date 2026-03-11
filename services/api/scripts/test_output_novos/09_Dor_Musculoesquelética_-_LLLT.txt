@@ -1,0 +1,36 @@
+CENÁRIO: 09 Dor Musculoesquelética - LLLT
+PRODUTO: Kit FO - Laser Cirúrgico
+PACIENTE: Mário Lopes
+CID: M79.1
+DIAGNÓSTICO: Mialgia crônica cervical e lombar com pontos gatilho miofasciais bilaterais. Falha terapêutica com AINES, relaxantes musculares e fisioterapia convencional por 18 meses.
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 2767
+TEMPO: 34.5s
+REFERÊNCIAS: ["Cotler et al., 2015"]
+AUTORES ESPERADOS: {"Cotler": true, "Simunovic": false}
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+Justificativa Clínica: O paciente Mário Lopes apresenta mialgia crônica cervical e lombar com pontos gatilho miofasciais bilaterais, conforme CID M79.1. Após 18 meses de tratamento conservador com AINEs, relaxantes musculares e fisioterapia convencional, o quadro clínico permanece refratário, evidenciando a necessidade de intervenção com OPME. A manutenção deste quadro inflamatório crônico, sem intervenção adequada, resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, acelerando a apoptose celular e a degradação irreversível do tecido muscular. A não realização do procedimento com o Kit FO - Laser Cirúrgico pode levar à progressão para um estágio mais grave, com aumento da morbidade e dos custos associados a internações e tratamentos mais invasivos.
+
+Justificativa Técnica e Superioridade do Material: O Kit FO - Laser Cirúrgico utiliza tecnologia de laser de diodo, permitindo corte e coagulação simultâneos, com extrema precisão cirúrgica e campo sem sangramento. Diferente de métodos convencionais, o laser promove um efeito fotoquímico que desencadeia mudanças bioquímicas intracelulares, comparáveis à fotossíntese, estimulando a produção de ATP, aumentando β-endorfina no líquor espinal e melhorando a microcirculação local (Cotler et al., 2015). Essa tecnologia reduz edema, promove analgesia e acelera a cicatrização, sendo insubstituível por métodos genéricos que não oferecem os mesmos benefícios bioquímicos e clínicos.
+
+Risco da Não Realização e Impacto Financeiro: A negativa deste procedimento pode resultar em uma evolução para perda funcional irreversível, com necessidade de procedimentos de maior morbidade e custo, como cirurgias invasivas. A utilização do Kit FO - Laser Cirúrgico é um tratamento profilático que representa um custo significativamente inferior comparado a intervenções mais complexas, como artroplastias, que podem custar à operadora entre R$30.000 e R$50.000.
+
+Fundamentação Legal: Conforme a Resolução Normativa 395 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME necessários. A RN 395 estabelece a cobertura obrigatória para os procedimentos citados, enquanto a operadora deve apresentar justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível. O Código de Ética Médica garante ao médico o uso do melhor progresso científico em benefício do paciente.
+
+Fechamento Checkmate: A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}

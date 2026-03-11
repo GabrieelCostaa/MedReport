@@ -1,0 +1,67 @@
+CENÁRIO: Vitagraft - Pseudoartrose
+PRODUTO: Vitagraft - Enxerto Bifásico
+PACIENTE: Ana Pereira
+CID: M84.1
+DIAGNÓSTICO: Pseudoartrose de fêmur com falha de consolidação óssea após fratura prévia
+APROVADO: True
+CHECKLIST: 6/6
+CARACTERES: 2292
+TEMPO: 27.3s
+REFERÊNCIAS: ["LeGeros"]
+
+============================================================
+RELATÓRIO GERADO:
+============================================================
+
+A paciente Ana Pereira, portadora do diagnóstico de pseudoartrose de fêmur (CID M84.1), apresenta falha de consolidação óssea após fratura prévia, com inadequada vascularização no local da fratura. Este quadro clínico caracteriza-se por um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que resulta na apoptose dos osteoblastos e degradação da matriz óssea. As tentativas de tratamento conservador, incluindo imobilização prolongada e estimulação elétrica, foram exauridas, sem sucesso na promoção da consolidação óssea adequada. 
+
+A utilização do Vitagraft - Enxerto Bifásico é imprescindível para o sucesso do tratamento cirúrgico. Este material é composto por PLGA e cerâmica β-TCP, que juntos formam um arcabouço tridimensional, promovendo infiltração vascular e angiogênese. O PLGA participa da cadeia nutricional celular, melhorando a osteointegração, enquanto o β-TCP fornece resistência mecânica estrutural temporária, essencial para a osteogênese. Este mecanismo de ação elimina a necessidade de retirada de enxerto autólogo. 
+
+A não realização deste procedimento pode resultar em progressão para uma condição de maior morbidade, com necessidade de intervenções cirúrgicas mais complexas e onerosas, como a artroplastia total, que pode custar à operadora entre R$30.000 e R$50.000, significativamente superior ao custo do Vitagraft. Além disso, a manutenção da pseudoartrose aumenta o risco de complicações, como infecções e fraturas adicionais, gerando custos adicionais para a operadora. 
+
+Conforme a Resolução Normativa 395 da ANS, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 estabelece a cobertura obrigatória para os procedimentos indicados, enquanto a RN 395 exige justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível. O Código de Ética Médica reforça a obrigação do médico de utilizar o melhor do progresso científico em benefício do paciente. 
+
+A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+============================================================
+CHECKLIST DETALHADO:
+{
+  "diagnostico": true,
+  "justificativa_tecnica": true,
+  "falha_terapeutica": true,
+  "risco_nao_realizacao": true,
+  "base_legal_ans": true,
+  "referencia_bibliografica": true
+}
+
+AUDIT LOG:
+[
+  {
+    "tipo": "correcao",
+    "campo": "diferenciais_oficiais",
+    "original": "promovendo infiltração vascular e angiogênese em 14 dias, como evidenciado por LeGeros RZ.",
+    "corrigido": "promovendo infiltração vascular e angiogênese.",
+    "motivo": "O tempo de 14 dias não está presente na ficha oficial do produto."
+  },
+  {
+    "tipo": "correcao",
+    "campo": "diferenciais_oficiais",
+    "original": "acelerando a osteointegração",
+    "corrigido": "melhorando a osteointegração",
+    "motivo": "Conformidade com a ficha oficial do produto."
+  },
+  {
+    "tipo": "correcao",
+    "campo": "diferenciais_oficiais",
+    "original": "fornece suporte estrutural temporário",
+    "corrigido": "fornece resistência mecânica estrutural temporária",
+    "motivo": "Conformidade com a ficha oficial do produto."
+  },
+  {
+    "tipo": "correcao",
+    "campo": "base_legal_ans",
+    "original": "Resolução Normativa 424",
+    "corrigido": "Resolução Normativa 395",
+    "motivo": "Correção do número da resolução normativa."
+  }
+]
