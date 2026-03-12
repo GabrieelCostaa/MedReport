@@ -19,8 +19,8 @@ Hugo/
 
 ```
                     ┌─────────────┐
-    Dados do    │  Pesquisador  │   Busca evidências internas + PubMed
-    Médico ───▶ │   (Agente A)  │   Identifica lacunas → perguntas A/B/C
+    Dados do        │ Pesquisador │   Busca evidências internas + PubMed
+    Médico ───▶     │ (Agente A)  │   Identifica lacunas → perguntas A/B/C
                     └──────┬──────┘
                            │
                     ┌──────▼──────┐
