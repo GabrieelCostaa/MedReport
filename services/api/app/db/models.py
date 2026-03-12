@@ -1,5 +1,8 @@
 from datetime import datetime
-from sqlalchemy import Column, String, Boolean, DateTime, Text, ForeignKey, Enum as SQLEnum, TypeDecorator, JSON
+from sqlalchemy import (
+    Column, String, Boolean, DateTime, Text, ForeignKey,
+    Enum as SQLEnum, TypeDecorator, JSON, Float, Integer, Index,
+)
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 import uuid
 import enum
@@ -138,6 +141,13 @@ class Report(Base):
     # Sessão de IA
     ai_session_id = Column(String(100), nullable=True)
     ai_session_data = Column(JSON, nullable=True)
+    # ANS Compliance: versões usadas na geração (auditoria reprodutível)
+    rol_version_id = Column(UUID(), ForeignKey("rol_versions.id"), nullable=True)
+    dut_version_id = Column(UUID(), ForeignKey("dut_versions.id"), nullable=True)
+    tuss_version = Column(String(20), nullable=True)
+    approval_score = Column(Float, nullable=True)
+    approval_score_details = Column(JSON, nullable=True)
+    compliance_mode = Column(String(50), nullable=True)  # rol_dut | fora_do_rol | cobertura_direta
     # Assinatura
     signed_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
@@ -205,6 +215,160 @@ class TussTerm(Base):
     table_source = Column(String(50), nullable=True)  # e.g. procedimentos, materiais
     version = Column(String(20), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+
+# ---------------------------------------------------------------------------
+# ANS Compliance Models
+# ---------------------------------------------------------------------------
+
+class AnvisaStatus(str, enum.Enum):
+    ativo = "ativo"
+    vencido = "vencido"
+    suspenso = "suspenso"
+    cancelado = "cancelado"
+
+
+class TussMaterial(Base):
+    """TUSS Tabela 19 - Materiais e OPME. Fonte: FTP ANS."""
+    __tablename__ = "tuss_materials"
+
+    codigo_tuss = Column(String(20), primary_key=True)
+    nome = Column(Text, nullable=False)
+    display_normalized = Column(Text, nullable=True, index=True)
+    grupo = Column(String(255), nullable=True)
+    subgrupo = Column(String(255), nullable=True)
+    fabricante = Column(String(255), nullable=True)
+    manufacturer_normalized = Column(String(255), nullable=True, index=True)
+    registro_anvisa = Column(String(50), nullable=True)
+    descricao = Column(Text, nullable=True)
+    ativo = Column(Boolean, default=True)
+    data_atualizacao = Column(DateTime(timezone=True), nullable=True)
+    versao_tuss = Column(String(20), nullable=True)
+    raw_data = Column(JSON, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+
+class RolVersion(Base):
+    """Versão do Rol de Procedimentos (Anexo I). Rastreabilidade de qual versão foi usada."""
+    __tablename__ = "rol_versions"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    artifact_type = Column(String(20), default="rol")
+    versao = Column(String(100), nullable=False)
+    rn_numeros = Column(JSON, nullable=True)  # ["465/2021", "643/2025"]
+    data_publicacao = Column(DateTime(timezone=True), nullable=True)
+    data_vigencia = Column(DateTime(timezone=True), nullable=True)
+    hash_arquivo = Column(String(64), nullable=True)
+    url_fonte = Column(String(500), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+
+class DutVersion(Base):
+    """Versão das DUT (Anexo II). Separado do Rol porque podem ser atualizados por RNs diferentes."""
+    __tablename__ = "dut_versions"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    artifact_type = Column(String(20), default="dut")
+    versao = Column(String(100), nullable=False)
+    rn_numeros = Column(JSON, nullable=True)  # ["465/2021", "628/2025", "629/2025"]
+    data_publicacao = Column(DateTime(timezone=True), nullable=True)
+    data_vigencia = Column(DateTime(timezone=True), nullable=True)
+    hash_arquivo = Column(String(64), nullable=True)
+    url_fonte = Column(String(500), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+
+class RolProcedure(Base):
+    """Procedimento do Rol da ANS (Anexo I). Define cobertura obrigatória por segmentação."""
+    __tablename__ = "rol_procedures"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    codigo_procedimento = Column(String(20), nullable=False, index=True)
+    nome = Column(Text, nullable=False)
+    segmentacao_ambulatorial = Column(Boolean, default=False)
+    segmentacao_hospitalar = Column(Boolean, default=False)
+    segmentacao_obstetrica = Column(Boolean, default=False)
+    segmentacao_odontologica = Column(Boolean, default=False)
+    tem_dut = Column(Boolean, default=False)
+    dut_numero = Column(String(20), nullable=True)
+    grupo = Column(String(255), nullable=True)
+    subgrupo = Column(String(255), nullable=True)
+    version_id = Column(UUID(), ForeignKey("rol_versions.id"), nullable=True)
+    raw_data = Column(JSON, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+    __table_args__ = (
+        Index("ix_rol_proc_code_version", "codigo_procedimento", "version_id"),
+    )
+
+
+class DutRule(Base):
+    """Diretriz de Utilização (Anexo II). Critérios condicionantes de cobertura."""
+    __tablename__ = "dut_rules"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    numero_dut = Column(String(20), nullable=False, index=True)
+    titulo = Column(Text, nullable=False)
+    procedimento_nome = Column(Text, nullable=True)
+    procedimento_codigo = Column(String(20), nullable=True, index=True)
+    # Critérios: 3 representações complementares
+    criterios_json = Column(JSON, nullable=True)    # GPT-4o output with evidence_spans
+    criterios_texto = Column(Text, nullable=True)    # Texto original do PDF
+    criterios_dsl = Column(JSON, nullable=True)      # DSL determinística para Python
+    exames_exigidos = Column(JSON, nullable=True)
+    documentos_exigidos = Column(JSON, nullable=True)
+    faixa_etaria_min = Column(Integer, nullable=True)
+    faixa_etaria_max = Column(Integer, nullable=True)
+    condicoes_vedacao = Column(JSON, nullable=True)
+    # Versionamento e rastreabilidade
+    version_id = Column(UUID(), ForeignKey("dut_versions.id"), nullable=True)
+    revisado_humano = Column(Boolean, default=False)
+    source_url = Column(String(500), nullable=True)
+    source_hash = Column(String(64), nullable=True)
+    page_start = Column(Integer, nullable=True)
+    page_end = Column(Integer, nullable=True)
+    extraction_confidence = Column(Float, nullable=True)  # 0.0-1.0
+    extraction_warnings = Column(JSON, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+    __table_args__ = (
+        Index("ix_dut_numero_version", "numero_dut", "version_id"),
+    )
+
+
+class AnvisaProduct(Base):
+    """Registro de produto na Anvisa. Critério 5 do STF (ADI 7.265)."""
+    __tablename__ = "anvisa_products"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    registro = Column(String(50), nullable=False, unique=True, index=True)
+    nome_comercial = Column(String(500), nullable=True)
+    fabricante = Column(String(500), nullable=True)
+    status = Column(SQLEnum(AnvisaStatus), default=AnvisaStatus.ativo)
+    data_validade = Column(DateTime(timezone=True), nullable=True)
+    classe_risco = Column(String(20), nullable=True)
+    data_consulta = Column(DateTime(timezone=True), nullable=True)
+    dados_json = Column(JSON, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class TissRule(Base):
+    """Regra do TISS Organizacional. Define campos permitidos/proibidos por tipo de guia."""
+    __tablename__ = "tiss_rules"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    tipo_guia = Column(String(100), nullable=False, index=True)
+    campo = Column(String(100), nullable=False)
+    regra = Column(String(50), nullable=False)  # permitido | proibido | obrigatorio
+    tabela_tuss_aplicavel = Column(String(20), nullable=True)  # "19", "22", etc.
+    descricao = Column(Text, nullable=True)
+    versao_tiss = Column(String(20), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+    __table_args__ = (
+        Index("ix_tiss_guia_campo", "tipo_guia", "campo"),
+    )
 
 
 class QuoteStatus(str, enum.Enum):

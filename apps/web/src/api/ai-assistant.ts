@@ -58,6 +58,16 @@ export interface PipelineResult {
   report_id?: string;
   error?: string;
   usage?: PipelineUsage;
+  // ANS Compliance
+  approval_score?: number;
+  approval_nivel?: string;
+  approval_componentes?: Record<string, number | string>;
+  approval_explicacao?: string[];
+  approval_alertas?: string[];
+  approval_gaps?: string[];
+  compliance_mode?: string;
+  stf_checklist?: Record<string, unknown>;
+  dut_suggestions?: string[];
 }
 
 export interface ChecklistItem {

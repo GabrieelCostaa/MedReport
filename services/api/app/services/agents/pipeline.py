@@ -78,6 +78,7 @@ class PipelineSession:
     clinical_evidences: list = field(default_factory=list)
     pubmed_evidences: list = field(default_factory=list)
     usage: PipelineUsage = field(default_factory=PipelineUsage)
+    compliance_context: object = None  # ComplianceContext when available
 
 
 class ReportPipeline:
@@ -142,6 +143,29 @@ class ReportPipeline:
         n_pubmed = len(session.pubmed_evidences)
         if n_pubmed > 0:
             await _emit("researching", f"{n_pubmed} artigo(s) científico(s) relevante(s) identificado(s)")
+
+        # Compliance layer: DUT, TUSS, Anvisa
+        try:
+            from app.services.compliance_layer import build_compliance_context
+            await _emit("researching", "Verificando conformidade regulatória ANS...")
+            compliance_ctx = await build_compliance_context(
+                db=db,
+                procedure_code=getattr(product, "codigo_tuss_sugerido", "") or "",
+                patient_data=medico_inputs,
+                produto_registro_anvisa=getattr(product, "registro_anvisa", "") or "",
+                evidence_count=n_internal + n_pubmed,
+                on_progress=on_progress,
+            )
+            session.compliance_context = compliance_ctx
+            if compliance_ctx.mode == "fora_do_rol":
+                await _emit("researching", "Modo Fora do Rol ativado — Dossiê de Exceção será gerado")
+            elif compliance_ctx.mode == "rol_dut" and compliance_ctx.dut_evaluation:
+                met = len(compliance_ctx.dut_evaluation.criteria_met)
+                total = compliance_ctx.dut_evaluation.total_criteria
+                await _emit("researching", f"DUT: {met}/{total} critérios atendidos pelo paciente")
+        except Exception as e:
+            logger.warning("Compliance layer unavailable: %s", e)
+            session.compliance_context = None
 
         await _emit("researching", "Analisando contexto clínico e identificando lacunas...")
         research_result = await research(product, diagnostico, cid, template, db=db)
@@ -300,9 +324,38 @@ class ReportPipeline:
             session.clinical_evidences,
         )
 
+        # Compliance: recalculate score with justification
+        compliance_data = {}
+        if session.compliance_context:
+            try:
+                from app.services.approval_score import compute_approval_score
+                final_score = compute_approval_score(
+                    dut_evaluation=getattr(session.compliance_context, "dut_evaluation", None),
+                    tuss_validation=getattr(session.compliance_context, "tuss_validation", None),
+                    anvisa_status=getattr(session.compliance_context, "anvisa_status", None),
+                    evidence_count=len(session.clinical_evidences) + len(session.pubmed_evidences),
+                    has_justification=bool(audit_result.texto_corrigido),
+                    cid_procedure_consistent=True,
+                )
+                compliance_data = {
+                    "approval_score": final_score.score,
+                    "approval_nivel": final_score.nivel,
+                    "approval_componentes": final_score.componentes,
+                    "approval_explicacao": final_score.explicacao,
+                    "approval_alertas": final_score.alertas,
+                    "approval_gaps": final_score.gaps,
+                    "compliance_mode": session.compliance_context.mode,
+                }
+                if session.compliance_context.stf_checklist:
+                    compliance_data["stf_checklist"] = session.compliance_context.stf_checklist
+                if session.compliance_context.dut_suggestions:
+                    compliance_data["dut_suggestions"] = session.compliance_context.dut_suggestions
+            except Exception as e:
+                logger.warning("Compliance score failed: %s", e)
+
         await _emit("done", "Relatório finalizado")
 
-        return {
+        result = {
             "session_id": session.session_id,
             "step": "done",
             "justificativa": audit_result.texto_corrigido,
@@ -335,6 +388,8 @@ class ReportPipeline:
             "base_legal": draft.base_legal,
             "usage": session.usage.to_dict(),
         }
+        result.update(compliance_data)
+        return result
 
     @classmethod
     async def regenerate(

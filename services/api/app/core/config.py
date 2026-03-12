@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     PUBMED_TIMEOUT_SECONDS: int = 5
     PUBMED_ENABLED: bool = True
 
+    # ANS Data Sources
+    ANS_TUSS_FTP_URL: str = "https://dadosabertos.ans.gov.br/FTP/PDA/terminologia_unificada_saude_suplementar_TUSS/TUSS.zip"
+    ANS_ROL_XLSX_URL: str = "https://www.gov.br/ans/pt-br/acesso-a-informacao/participacao-da-sociedade/atualizacao-do-rol-de-procedimentos/Anexo_I_Rol_2021RN_465.2021_RN643.2025.xlsx/@@download/file"
+    ANS_DUT_PDF_URL: str = "https://www.gov.br/ans/pt-br/acesso-a-informacao/participacao-da-sociedade/atualizacao-do-rol-de-procedimentos/Anexo_II_DUT_2021_RN_465.2021_RN628.2025_RN629.2025.pdf/@@download/file"
+    ANS_DATA_DIR: str = "data/ans"
+
     class Config:
         env_file = ".env"
 

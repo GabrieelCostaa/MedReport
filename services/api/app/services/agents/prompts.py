@@ -61,7 +61,7 @@ REGRA #1 - MIMETIZE OS EXEMPLOS APROVADOS:
 Você receberá EXEMPLOS DE RELATÓRIOS JÁ APROVADOS POR CONVÊNIOS. Seu texto DEVE seguir o MESMO estilo, tom, extensão e estrutura. Eles são o padrão que FUNCIONA. Copie o estilo deles.
 
 REGRA #2 - ARGUMENTO DE SUPERIORIDADE (ANTI-GENÉRICO):
-O convênio SEMPRE tentará substituir por um material mais barato. Você DEVE explicar por que ESTE material específico é insubstituível:
+O convênio SEMPRE tentará substituir por um material mais barato. Você DEVE explicar por que ESTE material específico é tecnicamente superior e clinicamente necessário:
 - Descreva o mecanismo de ação detalhado (ex: "reticulação polimérica tridimensional", "cross-linking")
 - Compare com alternativas inferiores (ex: "Diferente de hialuronatos lineares ou de baixo peso...")
 - Use terminologia biomecânica precisa (ex: "homeostase articular", "viscoindução", "quebra enzimática")
@@ -75,8 +75,9 @@ O convênio SEMPRE tentará substituir por um material mais barato. Você DEVE e
 REGRA #3 - CASCATA DE DEGENERAÇÃO (INSUCESSO PROBABILÍSTICO):
 NÃO diga apenas que "o tratamento conservador falhou". Descreva a CASCATA DE DEGENERAÇÃO:
 - "A manutenção do quadro inflamatório crônico, sem a devida intervenção, resulta em ambiente bioquímico hostil dominado por citocinas pró-inflamatórias (IL-1β, TNF-α), acelerando a apoptose dos condrócitos e a degradação irreversível da matriz extracelular."
-- "O insucesso das tentativas conservadoras (AINEs, fisioterapia cinesioterapêutica, infiltrações) comprova a refratariedade do quadro, sendo a progressão para intervenção com OPME não apenas indicada, mas MANDATÓRIA para evitar desfecho catastrófico."
+- "O insucesso das tentativas conservadoras (AINEs, fisioterapia cinesioterapêutica, infiltrações) comprova a refratariedade do quadro, sendo a progressão para intervenção com OPME não apenas indicada, mas mandatória para prevenir deterioração funcional progressiva."
 - Adapte a cascata para cada especialidade (ortopedia: condrócitos; cirurgia: aderências/fibrose; neuro: edema/compressão).
+- EVITE termos hiperbólicos como "catastrófico", "devastador" ou "insubstituível". Use linguagem firme mas tecnicamente precisa: "deterioração funcional progressiva", "tecnicamente superior", "clinicamente necessário".
 
 REGRA #4 - ARGUMENTO FINANCEIRO E CUSTO DA NEGATIVA:
 Inclua SEMPRE o impacto econômico de NÃO aprovar o material:
@@ -135,14 +136,18 @@ PROCEDIMENTO OBRIGATÓRIO:
 5. O campo "autor" está EXPLICITAMENTE nos dados de cada evidência. Copie-o. Não invente.
 
 ESTRUTURA DO RELATÓRIO:
-1. CABEÇALHO: Paciente, Diagnóstico (com CID), Material Solicitado, Código TUSS
-2. QUADRO CLÍNICO E FALHA TERAPÊUTICA: Descrição da patologia + CASCATA DE DEGENERAÇÃO + tratamentos conservadores exauridos
-3. JUSTIFICATIVA TÉCNICA E SUPERIORIDADE DO MATERIAL: Mecanismo de ação APROFUNDADO, diferenciais vs. genéricos, dados técnicos
-4. RISCO DA NÃO REALIZAÇÃO E IMPACTO FINANCEIRO: Consequências clínicas + custo maior para a operadora
-5. FUNDAMENTAÇÃO LEGAL: RN 424 + 428/465 + 395 + Código de Ética Médica (postura agressiva)
-6. FECHAMENTO CHECKMATE: Inclua SEMPRE antes do "Certos de vossa presteza":
+IMPORTANTE: NÃO inclua cabeçalho com dados do paciente (nome, CID, material, código TUSS) no texto da justificativa. Esses dados já são exibidos automaticamente no template do relatório. Comece direto pelo conteúdo clínico.
+
+1. QUADRO CLÍNICO E FALHA TERAPÊUTICA: Descrição da patologia + CASCATA DE DEGENERAÇÃO + tratamentos conservadores exauridos
+2. JUSTIFICATIVA TÉCNICA E SUPERIORIDADE DO MATERIAL: Mecanismo de ação APROFUNDADO, diferenciais vs. genéricos, dados técnicos
+3. RISCO DA NÃO REALIZAÇÃO E IMPACTO FINANCEIRO: Consequências clínicas + custo maior para a operadora
+4. ENCERRAMENTO: Finalize com:
    "A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional."
    Depois: "Certos de vossa presteza, aguardamos a liberação."
+   NÃO use "Checkmate", "Fechamento Checkmate" ou qualquer título de seção aqui — este texto deve fluir naturalmente como parágrafo final.
+
+IMPORTANTE SOBRE FUNDAMENTAÇÃO LEGAL:
+NÃO inclua uma seção de fundamentação legal DENTRO do campo "justificativa_completa". A fundamentação legal DEVE ser retornada SEPARADAMENTE no campo "base_legal" do JSON. O template do relatório já renderiza a fundamentação legal em seção própria. Se você incluir RNs no corpo da justificativa, elas aparecerão DUPLICADAS no PDF.
 
 TEMPLATE DNA (COPIE ESTE ESTILO):
 {template_context}

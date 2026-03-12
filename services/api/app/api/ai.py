@@ -604,6 +604,14 @@ async def download_pdf(
 # Helpers
 # ============================================================================
 
+def _build_tuss_codes(product) -> list[dict] | None:
+    """Monta lista de códigos TUSS a partir do produto."""
+    code = getattr(product, "codigo_tuss_sugerido", None)
+    if code:
+        return [{"code": code, "source": "product"}]
+    return None
+
+
 async def _save_report(db, user_id, product, body, pipeline_result) -> Report:
     """Cria Report a partir do resultado do pipeline."""
     report = Report(
@@ -615,7 +623,9 @@ async def _save_report(db, user_id, product, body, pipeline_result) -> Report:
         cid=body.cid,
         diagnosis=body.diagnostico,
         surgery_description=body.surgery_description,
+        materials=product.nome,
         health_plan=body.health_plan,
+        tuss_codes=_build_tuss_codes(product),
         justificativa_ia=pipeline_result.get("justificativa", ""),
         falha_terapeutica=pipeline_result.get("falha_terapeutica", ""),
         risco_nao_realizacao=pipeline_result.get("risco_nao_realizacao", ""),
@@ -624,6 +634,9 @@ async def _save_report(db, user_id, product, body, pipeline_result) -> Report:
         agent_audit_log=pipeline_result.get("audit_log", []),
         checklist_status=pipeline_result.get("checklist", {}),
         ai_session_id=pipeline_result.get("session_id"),
+        approval_score=pipeline_result.get("approval_score"),
+        approval_score_details=pipeline_result.get("approval_componentes"),
+        compliance_mode=pipeline_result.get("compliance_mode"),
     )
     db.add(report)
     await db.flush()
@@ -646,7 +659,9 @@ async def _save_report_from_session(db, user_id, session, pipeline_result) -> Re
         cid=inputs.get("cid", ""),
         diagnosis=inputs.get("diagnostico", ""),
         surgery_description=inputs.get("surgery_description", ""),
+        materials=product.nome,
         health_plan=inputs.get("health_plan", ""),
+        tuss_codes=_build_tuss_codes(product),
         justificativa_ia=pipeline_result.get("justificativa", ""),
         falha_terapeutica=pipeline_result.get("falha_terapeutica", ""),
         risco_nao_realizacao=pipeline_result.get("risco_nao_realizacao", ""),
@@ -655,6 +670,9 @@ async def _save_report_from_session(db, user_id, session, pipeline_result) -> Re
         agent_audit_log=pipeline_result.get("audit_log", []),
         checklist_status=pipeline_result.get("checklist", {}),
         ai_session_id=session.session_id,
+        approval_score=pipeline_result.get("approval_score"),
+        approval_score_details=pipeline_result.get("approval_componentes"),
+        compliance_mode=pipeline_result.get("compliance_mode"),
     )
     db.add(report)
     await db.flush()

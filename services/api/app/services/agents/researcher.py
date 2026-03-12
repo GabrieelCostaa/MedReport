@@ -97,11 +97,16 @@ async def _fetch_clinical_evidences(db: Optional[AsyncSession], cid: str, produc
                 "referencia_completa": r.referencia_completa or f"{r.autor} ({r.ano})",
                 "ano": r.ano,
                 "tipo": r.tipo,
+                "doi": getattr(r, "doi", ""),
             }
             for r in rows
         ]
     except Exception as e:
         logger.warning("Falha ao buscar clinical_evidences: %s", e)
+        try:
+            await db.rollback()
+        except Exception:
+            pass
         return []
 
 
@@ -114,6 +119,10 @@ async def _fetch_pubmed_evidences(db: Optional[AsyncSession], cid: str, product_
         return await get_evidences_for_cid(db, cid, product_name, diagnostico)
     except Exception as e:
         logger.warning("Falha ao buscar PubMed evidences: %s", e)
+        try:
+            await db.rollback()
+        except Exception:
+            pass
         return []
 
 

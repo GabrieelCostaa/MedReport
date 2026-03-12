@@ -40,6 +40,8 @@ def _build_product_facts(product) -> str:
         facts.append(f"Concentração (OFICIAL): {product.concentracao}")
     if product.registro_anvisa:
         facts.append(f"Registro ANVISA: {product.registro_anvisa}")
+    if getattr(product, "codigo_tuss_sugerido", None):
+        facts.append(f"Código TUSS: {product.codigo_tuss_sugerido}")
     if product.diferenciais_clinicos:
         facts.append(f"Diferenciais clínicos: {product.diferenciais_clinicos}")
     return "\n".join(facts)
@@ -122,11 +124,13 @@ async def write_justification(
         medico_inputs=medico_text,
     )
 
+    tuss_code = getattr(product, "codigo_tuss_sugerido", "") or ""
     user_message = (
         f"Diagnóstico: {medico_inputs.get('diagnostico', '')}\n"
         f"CID: {medico_inputs.get('cid', '')}\n"
         f"Procedimento: {medico_inputs.get('surgery_description', '')}\n"
         f"Material: {product.nome}\n"
+        f"Código TUSS: {tuss_code or 'não informado'}\n"
     )
 
     if medico_inputs.get("falha_terapeutica"):

@@ -1,14 +1,54 @@
 """Cria tabelas e insere dados iniciais (seed)."""
 import asyncio
+import logging
 from sqlalchemy import text
 from app.db.session import engine, Base, AsyncSessionLocal
-from app.db.models import User, TussTerm, UserRole, Product, ReportTemplate
+from app.db.models import (
+    User, TussTerm, UserRole, Product, ReportTemplate,
+    TussMaterial, RolVersion, DutVersion, RolProcedure, DutRule,
+    AnvisaProduct, TissRule,
+)
 from app.core.security import get_password_hash
+
+logger = logging.getLogger(__name__)
+
+REPORT_NEW_COLUMNS = [
+    ("rol_version_id", "VARCHAR(36)"),
+    ("dut_version_id", "VARCHAR(36)"),
+    ("tuss_version", "VARCHAR(20)"),
+    ("approval_score", "FLOAT"),
+    ("approval_score_details", "JSON"),
+    ("compliance_mode", "VARCHAR(50)"),
+]
+
+CLINICAL_EVIDENCE_NEW_COLUMNS = [
+    ("doi", "VARCHAR(255)"),
+]
 
 
 async def create_tables():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    async with engine.begin() as conn:
+        for col_name, col_type in REPORT_NEW_COLUMNS:
+            try:
+                await conn.execute(text(
+                    f"ALTER TABLE reports ADD COLUMN {col_name} {col_type}"
+                ))
+                logger.info("Added column reports.%s", col_name)
+            except Exception:
+                pass
+
+    async with engine.begin() as conn:
+        for col_name, col_type in CLINICAL_EVIDENCE_NEW_COLUMNS:
+            try:
+                await conn.execute(text(
+                    f"ALTER TABLE clinical_evidences ADD COLUMN {col_name} {col_type}"
+                ))
+                logger.info("Added column clinical_evidences.%s", col_name)
+            except Exception:
+                pass
 
 
 PRODUCTS_SEED = [

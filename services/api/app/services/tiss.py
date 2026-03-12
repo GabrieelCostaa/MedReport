@@ -6,6 +6,24 @@ from datetime import datetime
 from app.db.models import Report
 
 
+def _format_ref(ref) -> str:
+    """Extrai texto legível de uma referência (dict ou string)."""
+    if isinstance(ref, dict):
+        text = ref.get("texto") or ref.get("text") or ""
+        if not text:
+            return str(ref)
+        pmid = ref.get("pmid", "")
+        doi = ref.get("doi", "")
+        link = ref.get("link", "")
+        suffix = ""
+        if pmid:
+            suffix = f" (PMID: {pmid})"
+        elif doi:
+            suffix = f" (DOI: {doi})"
+        return f"{text}{suffix}"
+    return str(ref)
+
+
 def build_guia_solicitacao_xml(report: Report) -> str:
     """Monta XML da guia de solicitação conforme padrão TISS."""
     ns = "http://www.ans.gov.br/padroes/tiss/schemas"
@@ -27,6 +45,14 @@ def build_guia_solicitacao_xml(report: Report) -> str:
     return '<?xml version="1.0" encoding="UTF-8"?>\n' + rough
 
 
+def _truncate_word(text: str, max_len: int = 100) -> str:
+    """Trunca texto no limite de caracteres respeitando palavra inteira."""
+    if not text or len(text) <= max_len:
+        return text or "-"
+    truncated = text[:max_len].rsplit(" ", 1)[0]
+    return truncated + "..." if truncated != text else text
+
+
 def _build_report_html(report: Report) -> str:
     """Monta HTML do relatório médico profissional."""
     data_emissao = (report.created_at or datetime.utcnow()).strftime("%d/%m/%Y")
@@ -36,7 +62,7 @@ def _build_report_html(report: Report) -> str:
     refs_html = ""
     referencias = getattr(report, 'referencias_bib', None) or []
     if referencias:
-        refs_items = "".join(f"<li>{ref}</li>" for ref in referencias)
+        refs_items = "".join(f"<li>{_format_ref(ref)}</li>" for ref in referencias)
         refs_html = f"""
         <div class="section">
             <h3>Referências Bibliográficas</h3>
@@ -177,7 +203,7 @@ body {{
     <div><span class="label">Data:</span> <span class="value">{data_emissao}</span></div>
     <div><span class="label">CID:</span> <span class="value">{report.cid or '-'}</span></div>
     <div><span class="label">Especialidade:</span> <span class="value">{especialidade or '-'}</span></div>
-    <div><span class="label">Procedimento:</span> <span class="value">{(report.surgery_description or '-')[:80]}</span></div>
+    <div><span class="label">Procedimento:</span> <span class="value">{_truncate_word(report.surgery_description, 100)}</span></div>
     <div><span class="label">Convênio:</span> <span class="value">{report.health_plan or '-'}</span></div>
     <div><span class="label">Material OPME:</span> <span class="value">{report.materials or '-'}</span></div>
     <div><span class="label">Código TUSS:</span> <span class="value">{', '.join(t.get('code', '') for t in (report.tuss_codes or [])) or '-'}</span></div>
@@ -246,7 +272,7 @@ def build_guia_pdf(report: Report) -> bytes:
 
         meta_lines = [
             f"<b>Paciente:</b> {paciente} | <b>Data:</b> {data_emissao}",
-            f"<b>CID:</b> {report.cid or '-'} | <b>Procedimento:</b> {(report.surgery_description or '-')[:60]}",
+            f"<b>CID:</b> {report.cid or '-'} | <b>Procedimento:</b> {_truncate_word(report.surgery_description, 80)}",
             f"<b>Convênio:</b> {report.health_plan or '-'} | <b>Material:</b> {report.materials or '-'}",
         ]
         for line in meta_lines:
@@ -285,7 +311,7 @@ def build_guia_pdf(report: Report) -> bytes:
             story.append(Spacer(1, 12))
             story.append(Paragraph("<b>Referências Bibliográficas</b>", styles['Heading3']))
             for i, ref in enumerate(referencias, 1):
-                story.append(Paragraph(f"{i}. {ref}", styles['Normal']))
+                story.append(Paragraph(f"{i}. {_format_ref(ref)}", styles['Normal']))
 
         story.append(Spacer(1, 40))
         center_style = styles['Normal'].clone('center')
@@ -312,9 +338,9 @@ def build_guia_pdf(report: Report) -> bytes:
         c.setFont("Helvetica", 10)
         for label, value in [
             ("CID", report.cid or "-"),
-            ("Diagnóstico", (report.diagnosis or "-")[:80]),
-            ("Procedimento", (report.surgery_description or "-")[:80]),
-            ("Material", (report.materials or "-")[:80]),
+            ("Diagnóstico", _truncate_word(report.diagnosis, 80)),
+            ("Procedimento", _truncate_word(report.surgery_description, 80)),
+            ("Material", _truncate_word(report.materials, 80)),
             ("Convênio", report.health_plan or "-"),
         ]:
             c.drawString(2 * cm, y, f"{label}: {value}")
