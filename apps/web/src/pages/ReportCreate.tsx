@@ -351,7 +351,7 @@ export default function ReportCreate() {
 
   // Step 3: IA
   const [pipelineLoading, setPipelineLoading] = useState(false);
-  const [pipelineStep, setPipelineStep] = useState('');
+  const [, setPipelineStep] = useState('');
   const [pipelineMessages, setPipelineMessages] = useState<string[]>([]);
   const [textRevealing, setTextRevealing] = useState(false);
   const [pipelineResult, setPipelineResult] = useState<PipelineResult | null>(null);
