@@ -1,4 +1,4 @@
-# Hugo — Assistente de Relatórios OPME
+# Assistente de Relatórios OPME
 
 Plataforma SaaS B2B para geração automatizada de justificativas técnicas de OPME (Órteses, Próteses e Materiais Especiais), com inteligência artificial multi-agente que minimiza glosas de convênios médicos.
 
