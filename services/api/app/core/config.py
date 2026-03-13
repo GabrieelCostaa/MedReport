@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     PUBMED_API_KEY: str = ""
     PUBMED_CACHE_TTL_DAYS: int = 180
     PUBMED_MAX_RESULTS: int = 10
-    PUBMED_TIMEOUT_SECONDS: int = 5
+    PUBMED_TIMEOUT_SECONDS: int = 15
     PUBMED_ENABLED: bool = True
 
     # ANS Data Sources

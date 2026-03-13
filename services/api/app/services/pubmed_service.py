@@ -1,6 +1,15 @@
 """
-Serviço de integração com PubMed E-utilities (NCBI).
+Serviço de integração com PubMed E-utilities (NCBI) + Europe PMC fallback.
 Busca artigos científicos e mantém cache progressivo no Postgres.
+
+Estratégia de busca em cascata:
+  1. Cache fresco → retorna imediato (0s)
+  2. Busca ESPECÍFICA: MeSH + produto + filtro RCT/meta-analysis
+  3. Busca AMPLA: MeSH + categoria genérica do produto
+  4. Busca GENÉRICA: só MeSH + "treatment outcome"
+  5. ELink: artigos relacionados a PMIDs já conhecidos
+  6. Europe PMC: fallback sem rate limit
+  7. Salva TUDO no cache → próxima consulta = instantânea
 """
 import logging
 import xml.etree.ElementTree as ET
@@ -16,67 +25,250 @@ from app.db.models import PubmedCache
 
 logger = logging.getLogger(__name__)
 
+# --- NCBI E-utilities URLs ---
 ESEARCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 EFETCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+ELINK_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi"
 
+# --- Europe PMC URL ---
+EUROPEPMC_SEARCH_URL = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+
+# HTTP timeout para buscas em cascata (cada etapa)
+_TIMEOUT = max(settings.PUBMED_TIMEOUT_SECONDS, 10)
+
+# ---------------------------------------------------------------------------
+# CID → MeSH/Descrição expandido (~60 condições)
+# ---------------------------------------------------------------------------
 CID_DESCRIPTIONS = {
-    "E88.2": "lipedema",
-    "M17.0": "knee osteoarthritis",
-    "M17.1": "knee osteoarthritis",
-    "M17.9": "knee osteoarthritis",
-    "M16.0": "hip osteoarthritis",
-    "M16.1": "hip osteoarthritis",
-    "M16.9": "hip osteoarthritis",
-    "N60.9": "breast reconstruction fat grafting",
-    "E11.5": "diabetic foot ulcer",
-    "L97": "chronic venous ulcer lower extremity",
-    "G62.9": "peripheral neuropathy",
-    "M79.1": "myalgia chronic pain",
-    "L90.5": "skin atrophy lipoatrophy",
-    "S83.5": "anterior cruciate ligament ACL",
-    "K56.5": "intestinal adhesions",
-    "M75.1": "rotator cuff syndrome shoulder",
-    "I83.0": "varicose veins lower extremities",
-    "C50.9": "breast neoplasm",
-    "M54.5": "low back pain",
-    "K43.9": "incisional hernia",
+    # Osteoartrite
+    "M17.0": ("knee osteoarthritis", '"Osteoarthritis, Knee"[mh]'),
+    "M17.1": ("knee osteoarthritis", '"Osteoarthritis, Knee"[mh]'),
+    "M17.9": ("knee osteoarthritis", '"Osteoarthritis, Knee"[mh]'),
+    "M16.0": ("hip osteoarthritis", '"Osteoarthritis, Hip"[mh]'),
+    "M16.1": ("hip osteoarthritis", '"Osteoarthritis, Hip"[mh]'),
+    "M16.9": ("hip osteoarthritis", '"Osteoarthritis, Hip"[mh]'),
+    # Coluna
+    "M54.5": ("low back pain", '"Low Back Pain"[mh]'),
+    "M54.1": ("radiculopathy", '"Radiculopathy"[mh]'),
+    "M51.1": ("lumbar disc herniation", '"Intervertebral Disc Displacement"[mh]'),
+    "M47.8": ("spondylosis", '"Spondylosis"[mh]'),
+    "M48.0": ("spinal stenosis", '"Spinal Stenosis"[mh]'),
+    # Ombro / membro superior
+    "M75.1": ("rotator cuff syndrome", '"Rotator Cuff Injuries"[mh]'),
+    "M75.0": ("frozen shoulder adhesive capsulitis", '"Bursitis"[mh]'),
+    "M65.3": ("trigger finger", '"Trigger Finger Disorder"[mh]'),
+    "M72.0": ("dupuytren contracture", '"Dupuytren Contracture"[mh]'),
+    # Joelho / ligamento
+    "S83.5": ("anterior cruciate ligament injury", '"Anterior Cruciate Ligament Injuries"[mh]'),
+    "S83.0": ("meniscus tear knee", '"Tibial Meniscus Injuries"[mh]'),
+    "M23.5": ("chronic knee instability", '"Joint Instability"[mh] AND knee'),
+    # Osso / fraturas
+    "M84.1": ("nonunion fracture pseudarthrosis", '"Fractures, Ununited"[mh]'),
+    "M86.6": ("chronic osteomyelitis", '"Osteomyelitis"[mh]'),
+    "M80.0": ("osteoporosis pathological fracture", '"Osteoporotic Fractures"[mh]'),
+    "M87.0": ("avascular necrosis bone", '"Osteonecrosis"[mh]'),
+    # Hérnia
+    "K43.1": ("incisional hernia recurrent", '"Incisional Hernia"[mh]'),
+    "K43.9": ("incisional hernia", '"Incisional Hernia"[mh]'),
+    "K40.9": ("inguinal hernia", '"Hernia, Inguinal"[mh]'),
+    "K40.3": ("inguinal hernia recurrent", '"Hernia, Inguinal"[mh] AND recurrence'),
+    "K42.9": ("umbilical hernia", '"Hernia, Umbilical"[mh]'),
+    # Aderências
+    "K56.5": ("intestinal adhesions", '"Tissue Adhesions"[mh] AND abdomen'),
+    "K66.0": ("peritoneal adhesions", '"Tissue Adhesions"[mh] AND peritoneal'),
+    "N73.6": ("pelvic adhesions", '"Tissue Adhesions"[mh] AND pelvic'),
+    # Urologia
+    "N48.6": ("peyronie disease", '"Penile Induration"[mh]'),
+    "N40.1": ("benign prostatic hyperplasia", '"Prostatic Hyperplasia"[mh]'),
+    "N13.3": ("hydronephrosis", '"Hydronephrosis"[mh]'),
+    # Otorrinolaringologia
+    "J34.3": ("nasal turbinate hypertrophy", '"Nasal Obstruction"[mh] AND turbinate'),
+    "J32.9": ("chronic sinusitis", '"Sinusitis"[mh]'),
+    "J35.1": ("tonsillar hypertrophy", '"Palatine Tonsil"[mh] AND hypertrophy'),
+    "J38.0": ("vocal cord paralysis", '"Vocal Cord Paralysis"[mh]'),
+    # Vascular
+    "I83.0": ("varicose veins lower extremities", '"Varicose Veins"[mh]'),
+    "I87.2": ("chronic venous insufficiency", '"Venous Insufficiency"[mh]'),
+    # Pé diabético / úlceras
+    "E11.5": ("diabetic foot ulcer", '"Diabetic Foot"[mh]'),
+    "L97": ("chronic venous ulcer", '"Leg Ulcer"[mh]'),
+    "L97.9": ("chronic ulcer lower limb", '"Leg Ulcer"[mh]'),
+    # Mama
+    "C50.9": ("breast neoplasm", '"Breast Neoplasms"[mh]'),
+    "N60.9": ("breast reconstruction", '"Mammaplasty"[mh]'),
+    "N62": ("gynecomastia", '"Gynecomastia"[mh]'),
+    # Lipedema
+    "E88.2": ("lipedema", '"Lipedema"[mh] OR lipedema[tiab]'),
+    # Neurologia
+    "G62.9": ("peripheral neuropathy", '"Peripheral Nervous System Diseases"[mh]'),
+    "G56.0": ("carpal tunnel syndrome", '"Carpal Tunnel Syndrome"[mh]'),
+    # Dor / tecidos moles
+    "M79.1": ("myalgia chronic pain", '"Myalgia"[mh]'),
+    "L90.5": ("skin atrophy lipoatrophy", '"Lipoatrophy"[mh]'),
+    # Oftalmologia
+    "H25.9": ("cataract", '"Cataract"[mh]'),
+    "H40.1": ("open angle glaucoma", '"Glaucoma, Open-Angle"[mh]'),
 }
 
+# ---------------------------------------------------------------------------
+# Produto → termos de busca
+# ---------------------------------------------------------------------------
+PRODUCT_SEARCH_TERMS = {
+    # Chave: palavra no nome do produto (lowercase) → (termos específicos, termos genéricos)
+    "laser": (
+        "laser surgery OR laser therapy OR photobiomodulation",
+        "laser[tiab]",
+    ),
+    "enxerto": (
+        "stromal vascular fraction OR bone graft OR tissue graft",
+        "graft[tiab] OR transplantation[tiab]",
+    ),
+    "svf": (
+        "stromal vascular fraction OR adipose derived stem cells",
+        "cell therapy OR regenerative medicine",
+    ),
+    "ec2": (
+        "stromal vascular fraction OR fat grafting OR lipotransfer",
+        "regenerative medicine",
+    ),
+    "opus": (
+        "hyaluronic acid viscosupplementation OR cross-linked hyaluronic acid",
+        "viscosupplementation[tiab]",
+    ),
+    "hialurônico": (
+        "hyaluronic acid viscosupplementation",
+        "viscosupplementation[tiab]",
+    ),
+    "hialuronico": (
+        "hyaluronic acid viscosupplementation",
+        "viscosupplementation[tiab]",
+    ),
+    "adhesion": (
+        "adhesion barrier OR anti-adhesion OR adhesion prevention",
+        "adhesion[tiab] AND prevention",
+    ),
+    "aderência": (
+        "adhesion barrier OR anti-adhesion OR adhesion prevention",
+        "adhesion[tiab] AND prevention",
+    ),
+    "parafuso": (
+        "bioabsorbable interference screw OR bioabsorbable screw fixation",
+        "orthopedic fixation devices[mh]",
+    ),
+    "bioabsorv": (
+        "bioabsorbable interference screw OR bioabsorbable implant",
+        "bioabsorbable[tiab]",
+    ),
+    "tela": (
+        "surgical mesh hernia repair OR polypropylene mesh",
+        '"Surgical Mesh"[mh]',
+    ),
+    "polipropileno": (
+        "polypropylene mesh hernia repair",
+        '"Surgical Mesh"[mh]',
+    ),
+    "mesh": (
+        "surgical mesh hernia repair",
+        '"Surgical Mesh"[mh]',
+    ),
+    "lipedema": (
+        "lipedema liposuction treatment",
+        "lipedema[tiab]",
+    ),
+    "biovidro": (
+        "bioactive glass bone regeneration OR bioglass scaffold",
+        "bioactive glass[tiab]",
+    ),
+    "biossilex": (
+        "bioactive glass bone regeneration OR bioglass scaffold",
+        "bioactive glass[tiab]",
+    ),
+    "vitagraft": (
+        "biphasic calcium phosphate bone graft OR hydroxyapatite TCP scaffold",
+        "bone substitute[tiab] OR bone graft[tiab]",
+    ),
+    "bifásico": (
+        "biphasic calcium phosphate bone graft",
+        "calcium phosphate[tiab] AND bone",
+    ),
+}
 
-def _cid_to_search_term(cid: str, product_name: str = "", diagnostico: str = "") -> str:
+# Filtros de tipo de publicação (do mais forte ao mais fraco)
+EVIDENCE_FILTER_STRONG = '("meta-analysis"[pt] OR "systematic review"[pt] OR "randomized controlled trial"[pt])'
+EVIDENCE_FILTER_BROAD = '("clinical trial"[pt] OR "meta-analysis"[pt] OR "review"[pt])'
+EVIDENCE_FILTER_MINIMAL = '("review"[pt] OR "journal article"[pt])'
+
+
+# ---------------------------------------------------------------------------
+# Construção de queries em cascata
+# ---------------------------------------------------------------------------
+
+def _get_product_terms(product_name: str) -> tuple[str, str]:
+    """Retorna (termos_específicos, termos_genéricos) para o produto."""
+    if not product_name:
+        return "", ""
+    clean = product_name.lower()
+    for keyword, (specific, generic) in PRODUCT_SEARCH_TERMS.items():
+        if keyword in clean:
+            return specific, generic
+    return "", ""
+
+
+def _build_cascade_queries(cid: str, product_name: str = "", diagnostico: str = "") -> list[str]:
+    """
+    Constrói lista de queries do mais específico ao mais amplo.
+    A busca para na primeira query que retornar resultados.
+    """
     cid_upper = cid.strip().upper()
-    desc = CID_DESCRIPTIONS.get(cid_upper, "")
+    cid_entry = CID_DESCRIPTIONS.get(cid_upper)
 
-    if not desc and diagnostico:
-        desc = diagnostico[:80]
-
-    product_terms = ""
-    if product_name:
-        clean = product_name.lower()
-        if "laser" in clean:
-            product_terms = "laser therapy OR photobiomodulation"
-        elif "enxerto" in clean or "svf" in clean or "ec2" in clean:
-            product_terms = "stromal vascular fraction OR fat grafting OR lipotransfer"
-        elif "opus" in clean or "hialurônico" in clean or "hialuronico" in clean:
-            product_terms = "hyaluronic acid viscosupplementation"
-        elif "adhesion" in clean or "aderência" in clean:
-            product_terms = "adhesion barrier prevention"
-        elif "parafuso" in clean or "bioabsorv" in clean:
-            product_terms = "bioabsorbable interference screw"
-        elif "tela" in clean or "polipropileno" in clean or "mesh" in clean:
-            product_terms = "polypropylene mesh hernia repair"
-        elif "lipedema" in clean or "lp-ct" in clean:
-            product_terms = "lipedema liposuction treatment"
-
-    if desc and product_terms:
-        return f'("{desc}") AND ({product_terms}) AND ("clinical trial"[pt] OR "meta-analysis"[pt] OR "review"[pt])'
-    elif desc:
-        return f'("{desc}") AND ("clinical trial"[pt] OR "meta-analysis"[pt] OR "review"[pt])'
-    elif product_terms:
-        return f'({product_terms}) AND ("clinical trial"[pt] OR "meta-analysis"[pt] OR "review"[pt])'
+    if cid_entry:
+        desc_text, mesh_term = cid_entry
     else:
-        return f'"{cid_upper}" AND ("clinical trial"[pt] OR "review"[pt])'
+        # CID desconhecido: usa diagnóstico como fallback
+        desc_text = diagnostico[:80] if diagnostico else cid_upper
+        mesh_term = f'"{desc_text}"[tiab]'
 
+    specific_product, generic_product = _get_product_terms(product_name)
+
+    queries = []
+
+    # Nível 1: MeSH + produto específico + evidência forte
+    if mesh_term and specific_product:
+        queries.append(
+            f"({mesh_term}) AND ({specific_product}) AND {EVIDENCE_FILTER_STRONG}"
+        )
+
+    # Nível 2: MeSH + produto específico + evidência ampla
+    if mesh_term and specific_product:
+        queries.append(
+            f"({mesh_term}) AND ({specific_product}) AND {EVIDENCE_FILTER_BROAD}"
+        )
+
+    # Nível 3: MeSH + produto genérico + evidência ampla
+    if mesh_term and generic_product:
+        queries.append(
+            f"({mesh_term}) AND ({generic_product}) AND {EVIDENCE_FILTER_BROAD}"
+        )
+
+    # Nível 4: Só MeSH + treatment outcome
+    if mesh_term:
+        queries.append(
+            f'({mesh_term}) AND ("treatment outcome"[mh] OR efficacy[tiab] OR safety[tiab]) AND {EVIDENCE_FILTER_BROAD}'
+        )
+
+    # Nível 5: Texto livre (último recurso PubMed)
+    if desc_text:
+        queries.append(
+            f'("{desc_text}"[tiab]) AND {EVIDENCE_FILTER_MINIMAL}'
+        )
+
+    return queries
+
+
+# ---------------------------------------------------------------------------
+# PubMed E-utilities (baixo nível)
+# ---------------------------------------------------------------------------
 
 async def search_pubmed(query: str, max_results: int = 10) -> list[str]:
     """Chama ESearch e retorna lista de PMIDs."""
@@ -91,17 +283,57 @@ async def search_pubmed(query: str, max_results: int = 10) -> list[str]:
         params["api_key"] = settings.PUBMED_API_KEY
 
     try:
-        async with httpx.AsyncClient(timeout=settings.PUBMED_TIMEOUT_SECONDS) as client:
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
             resp = await client.get(ESEARCH_URL, params=params)
             resp.raise_for_status()
 
         root = ET.fromstring(resp.text)
         pmids = [id_elem.text for id_elem in root.findall(".//IdList/Id") if id_elem.text]
-        logger.info("PubMed ESearch: query=%s, found=%d PMIDs", query[:80], len(pmids))
+        logger.info("PubMed ESearch: query=%s, found=%d PMIDs", query[:100], len(pmids))
         return pmids
 
     except Exception as e:
         logger.warning("PubMed ESearch failed: %s", e)
+        return []
+
+
+async def search_related(pmids: list[str], max_results: int = 5) -> list[str]:
+    """Usa ELink para encontrar artigos relacionados aos PMIDs dados."""
+    if not pmids:
+        return []
+
+    params = {
+        "dbfrom": "pubmed",
+        "db": "pubmed",
+        "id": ",".join(pmids[:3]),  # Limita a 3 seeds para performance
+        "cmd": "neighbor_score",
+        "retmode": "xml",
+    }
+    if settings.PUBMED_API_KEY:
+        params["api_key"] = settings.PUBMED_API_KEY
+
+    try:
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            resp = await client.get(ELINK_URL, params=params)
+            resp.raise_for_status()
+
+        root = ET.fromstring(resp.text)
+        related_pmids = []
+        seen = set(pmids)
+
+        for link in root.findall(".//LinkSetDb/Link"):
+            id_elem = link.find("Id")
+            if id_elem is not None and id_elem.text and id_elem.text not in seen:
+                related_pmids.append(id_elem.text)
+                seen.add(id_elem.text)
+                if len(related_pmids) >= max_results:
+                    break
+
+        logger.info("PubMed ELink: found %d related articles", len(related_pmids))
+        return related_pmids
+
+    except Exception as e:
+        logger.warning("PubMed ELink failed: %s", e)
         return []
 
 
@@ -180,6 +412,8 @@ def _parse_article(article_elem) -> Optional[dict]:
         article_type = "article"
         if any("meta-analysis" in t for t in pub_types):
             article_type = "meta-analysis"
+        elif any("systematic" in t and "review" in t for t in pub_types):
+            article_type = "systematic-review"
         elif any("randomized" in t or "clinical trial" in t for t in pub_types):
             article_type = "rct"
         elif any("review" in t for t in pub_types):
@@ -218,7 +452,7 @@ async def fetch_articles(pmids: list[str]) -> list[dict]:
         params["api_key"] = settings.PUBMED_API_KEY
 
     try:
-        async with httpx.AsyncClient(timeout=settings.PUBMED_TIMEOUT_SECONDS) as client:
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
             resp = await client.get(EFETCH_URL, params=params)
             resp.raise_for_status()
 
@@ -236,6 +470,101 @@ async def fetch_articles(pmids: list[str]) -> list[dict]:
         logger.warning("PubMed EFetch failed: %s", e)
         return []
 
+
+# ---------------------------------------------------------------------------
+# Europe PMC (fallback — sem rate limit, sem API key)
+# ---------------------------------------------------------------------------
+
+async def _search_europe_pmc(query: str, max_results: int = 10) -> list[dict]:
+    """Busca no Europe PMC como fallback quando PubMed retorna 0."""
+    params = {
+        "query": query,
+        "resultType": "core",
+        "pageSize": max_results,
+        "format": "json",
+        "sort": "RELEVANCE",
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
+            resp = await client.get(EUROPEPMC_SEARCH_URL, params=params)
+            resp.raise_for_status()
+
+        data = resp.json()
+        results = data.get("resultList", {}).get("result", [])
+
+        articles = []
+        for r in results:
+            pmid = r.get("pmid", "")
+            if not pmid:
+                # Europe PMC pode retornar artigos sem PMID; usar ID interno
+                pmid = f"EPMC-{r.get('id', '')}"
+
+            first_author = ""
+            authors_str = r.get("authorString", "")
+            if authors_str:
+                first_author = authors_str.split(",")[0].split(" ")[-1].strip()
+
+            # Classificar tipo
+            pub_type = (r.get("pubType") or "").lower()
+            article_type = "article"
+            if "meta-analysis" in pub_type:
+                article_type = "meta-analysis"
+            elif "systematic" in pub_type and "review" in pub_type:
+                article_type = "systematic-review"
+            elif "randomized" in pub_type or "clinical trial" in pub_type:
+                article_type = "rct"
+            elif "review" in pub_type:
+                article_type = "review"
+
+            articles.append({
+                "pmid": str(pmid),
+                "title": r.get("title", ""),
+                "authors": authors_str,
+                "first_author": first_author,
+                "year": str(r.get("pubYear", "")),
+                "journal": r.get("journalTitle", ""),
+                "abstract": r.get("abstractText", "")[:2000],
+                "article_type": article_type,
+                "doi": r.get("doi", ""),
+            })
+
+        logger.info("Europe PMC: query=%s, found=%d articles", query[:80], len(articles))
+        return [a for a in articles if a["title"] and a["first_author"]]
+
+    except Exception as e:
+        logger.warning("Europe PMC search failed: %s", e)
+        return []
+
+
+def _build_europe_pmc_query(cid: str, product_name: str = "", diagnostico: str = "") -> str:
+    """Constrói query para Europe PMC (sintaxe diferente do PubMed)."""
+    cid_upper = cid.strip().upper()
+    cid_entry = CID_DESCRIPTIONS.get(cid_upper)
+
+    if cid_entry:
+        desc_text = cid_entry[0]
+    else:
+        desc_text = diagnostico[:80] if diagnostico else ""
+
+    specific_product, _ = _get_product_terms(product_name)
+
+    parts = []
+    if desc_text:
+        parts.append(f'"{desc_text}"')
+    if specific_product:
+        # Simplificar para Europe PMC (não usa [mh])
+        clean_terms = specific_product.replace("[mh]", "").replace("[tiab]", "")
+        parts.append(f"({clean_terms})")
+
+    query = " AND ".join(parts) if parts else cid_upper
+    # Filtrar por tipo e artigos recentes
+    return f"({query}) AND (SRC:MED) AND (PUB_TYPE:review OR PUB_TYPE:research-article)"
+
+
+# ---------------------------------------------------------------------------
+# Cache (PostgreSQL)
+# ---------------------------------------------------------------------------
 
 async def _get_cached(db: AsyncSession, cid: str) -> tuple[list[PubmedCache], bool]:
     """Retorna artigos cacheados e se o cache é fresco (dentro do TTL)."""
@@ -311,6 +640,69 @@ def _cache_to_evidence_dicts(rows: list[PubmedCache]) -> list[dict]:
     ]
 
 
+# ---------------------------------------------------------------------------
+# Busca principal com cascata
+# ---------------------------------------------------------------------------
+
+async def _cascade_search(
+    cid: str,
+    product_name: str = "",
+    diagnostico: str = "",
+    max_results: int = 10,
+) -> tuple[list[dict], str]:
+    """
+    Busca em cascata: tenta queries do mais específico ao mais amplo.
+    Retorna (artigos, query_usada).
+    """
+    queries = _build_cascade_queries(cid, product_name, diagnostico)
+    all_pmids = []
+    used_query = ""
+
+    for query in queries:
+        pmids = await search_pubmed(query, max_results=max_results)
+        if pmids:
+            all_pmids = pmids
+            used_query = query
+            logger.info("Cascade search HIT at: %s (%d results)", query[:80], len(pmids))
+            break
+        logger.info("Cascade search MISS: %s", query[:80])
+
+    if not all_pmids:
+        return [], ""
+
+    articles = await fetch_articles(all_pmids)
+
+    # Bonus: buscar artigos relacionados via ELink para enriquecer
+    if articles and len(articles) < max_results:
+        seed_pmids = [a["pmid"] for a in articles[:3]]
+        related_pmids = await search_related(seed_pmids, max_results=max_results - len(articles))
+        if related_pmids:
+            related_articles = await fetch_articles(related_pmids)
+            seen = {a["pmid"] for a in articles}
+            for ra in related_articles:
+                if ra["pmid"] not in seen:
+                    articles.append(ra)
+                    seen.add(ra["pmid"])
+
+    return articles, used_query
+
+
+async def _europe_pmc_fallback(
+    cid: str,
+    product_name: str = "",
+    diagnostico: str = "",
+    max_results: int = 10,
+) -> tuple[list[dict], str]:
+    """Fallback para Europe PMC quando PubMed não retorna resultados."""
+    query = _build_europe_pmc_query(cid, product_name, diagnostico)
+    articles = await _search_europe_pmc(query, max_results=max_results)
+    return articles, f"[EuropePMC] {query}"
+
+
+# ---------------------------------------------------------------------------
+# API pública do serviço
+# ---------------------------------------------------------------------------
+
 async def get_evidences_for_cid(
     db: AsyncSession,
     cid: str,
@@ -318,8 +710,15 @@ async def get_evidences_for_cid(
     diagnostico: str = "",
 ) -> list[dict]:
     """
-    Busca evidências PubMed para um CID, com cache progressivo.
+    Busca evidências PubMed para um CID, com cache progressivo e busca em cascata.
     Retorna lista de dicts prontos para o Researcher/Writer.
+
+    Fluxo:
+    1. Cache fresco → retorno imediato
+    2. Cascata PubMed (5 níveis de especificidade)
+    3. ELink para artigos relacionados
+    4. Europe PMC como fallback
+    5. Cache stale como último recurso
     """
     if not settings.PUBMED_ENABLED:
         logger.info("PubMed disabled (kill switch)")
@@ -328,31 +727,37 @@ async def get_evidences_for_cid(
     if not cid:
         return []
 
+    # 1. Verificar cache
     cached_rows, is_fresh = await _get_cached(db, cid)
-
     if cached_rows and is_fresh:
         logger.info("PubMed cache HIT for CID %s (%d articles)", cid, len(cached_rows))
         return _cache_to_evidence_dicts(cached_rows)
 
-    search_term = _cid_to_search_term(cid, product_name, diagnostico)
-    pmids = await search_pubmed(search_term, max_results=settings.PUBMED_MAX_RESULTS)
+    # 2. Busca em cascata PubMed + ELink
+    articles, used_query = await _cascade_search(
+        cid, product_name, diagnostico, max_results=settings.PUBMED_MAX_RESULTS
+    )
 
-    if not pmids:
-        if cached_rows:
-            logger.info("PubMed search empty, using stale cache for CID %s", cid)
-            return _cache_to_evidence_dicts(cached_rows)
-        return []
-
-    articles = await fetch_articles(pmids)
+    # 3. Europe PMC fallback se PubMed não encontrou nada
     if not articles:
-        if cached_rows:
-            return _cache_to_evidence_dicts(cached_rows)
-        return []
+        logger.info("PubMed cascade empty for CID %s, trying Europe PMC...", cid)
+        articles, used_query = await _europe_pmc_fallback(
+            cid, product_name, diagnostico, max_results=settings.PUBMED_MAX_RESULTS
+        )
 
-    await _save_to_cache(db, cid, search_term, articles)
+    # 4. Salvar resultados no cache
+    if articles:
+        await _save_to_cache(db, cid, used_query, articles)
+        refreshed_rows, _ = await _get_cached(db, cid)
+        return _cache_to_evidence_dicts(refreshed_rows)
 
-    refreshed_rows, _ = await _get_cached(db, cid)
-    return _cache_to_evidence_dicts(refreshed_rows)
+    # 5. Cache stale como último recurso
+    if cached_rows:
+        logger.info("All searches empty, using stale cache for CID %s", cid)
+        return _cache_to_evidence_dicts(cached_rows)
+
+    logger.warning("No evidence found for CID %s (all sources exhausted)", cid)
+    return []
 
 
 async def get_evidences_preview(
