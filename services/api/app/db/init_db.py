@@ -73,7 +73,7 @@ PRODUCTS_SEED = [
         "viscosidade": "10.000 - 29.000 mPa.s",
         "peso_molecular": "Não aplicável (barreira anti-aderência)",
         "concentracao": "CMC sódica + ácido hialurônico em proporção proprietária",
-        "registro_anvisa": "80117900XXX",
+        "registro_anvisa": "80145900901",
         "codigo_tuss_sugerido": "30715016",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [
@@ -106,7 +106,7 @@ PRODUCTS_SEED = [
         "viscosidade": "80.000 - 120.000 mPa.s",
         "peso_molecular": "6.000 kDa",
         "concentracao": "10 mg/mL de hialuronato de sódio",
-        "registro_anvisa": "80117900YYY",
+        "registro_anvisa": "80149670008",
         "codigo_tuss_sugerido": "20104120",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [
@@ -135,7 +135,7 @@ PRODUCTS_SEED = [
         "viscosidade": "Não aplicável (dispositivo sólido)",
         "peso_molecular": "Não aplicável (polímero PLLA)",
         "concentracao": "Não aplicável",
-        "registro_anvisa": "80117900ZZZ",
+        "registro_anvisa": "10345500142",
         "codigo_tuss_sugerido": "30727049",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [
@@ -160,7 +160,7 @@ PRODUCTS_SEED = [
         "viscosidade": "Não aplicável (dispositivo sólido)",
         "peso_molecular": "Não aplicável",
         "concentracao": "Não aplicável",
-        "registro_anvisa": "80117900WWW",
+        "registro_anvisa": "80145900901",
         "codigo_tuss_sugerido": "30604020",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [

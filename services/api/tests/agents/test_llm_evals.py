@@ -27,7 +27,7 @@ GOLDEN_REPORTS = {
         "cid": "M17.0",
         "expected_keywords": [
             "viscossuplementação",
-            "ácido hialurônico",
+            "6.000",
             "peso molecular",
         ],
         "expected_references": ["Altman", "Bellamy"],

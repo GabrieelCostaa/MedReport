@@ -40,7 +40,7 @@ SCENARIOS = [
             "tempo_tratamento_conservador_meses": 12,
             "finalidade": "terapeutico",
         },
-        "expected_mode": "any",
+        "expected_mode": "fora_do_rol",
     },
     {
         "id": "02_rol_dut_parcial",
@@ -54,7 +54,7 @@ SCENARIOS = [
         "patient_data": {
             "idade": 55,
         },
-        "expected_mode": "any",
+        "expected_mode": "fora_do_rol",
     },
     {
         "id": "03_cobertura_direta",
@@ -69,7 +69,7 @@ SCENARIOS = [
             "idade": 45,
             "finalidade": "terapeutico",
         },
-        "expected_mode": "any",
+        "expected_mode": "cobertura_direta",
     },
     {
         "id": "04_fora_do_rol",
@@ -84,7 +84,7 @@ SCENARIOS = [
             "idade": 58,
             "finalidade": "terapeutico",
         },
-        "expected_mode": "any",
+        "expected_mode": "fora_do_rol",
     },
     {
         "id": "05_laser_otorrino",
@@ -100,7 +100,7 @@ SCENARIOS = [
             "tempo_tratamento_conservador_meses": 8,
             "finalidade": "terapeutico",
         },
-        "expected_mode": "any",
+        "expected_mode": "cobertura_direta",
     },
     {
         "id": "06_biossilex_ortopedia",
@@ -115,7 +115,7 @@ SCENARIOS = [
             "idade": 52,
             "finalidade": "terapeutico",
         },
-        "expected_mode": "any",
+        "expected_mode": "cobertura_direta",
     },
 ]
 

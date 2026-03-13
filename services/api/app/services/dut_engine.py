@@ -271,8 +271,31 @@ class DutEngine:
 
         O Rol usa abreviações (C/ em vez de 'com') e variações de nome,
         então fazemos busca progressiva: nome completo → palavras-chave.
+        Para evitar falsos positivos, valida com Jaccard similarity > 0.4.
         """
+        import re as _re
         from app.db.models import RolProcedure
+
+        stopwords = {"com", "sem", "para", "por", "que", "dos", "das", "nos", "nas", "uma", "cada"}
+
+        def _keywords(text: str) -> set[str]:
+            return {w.lower() for w in _re.findall(r"[a-zA-ZÀ-ÿ]{4,}", text) if w.lower() not in stopwords}
+
+        def _is_good_match(search: set, rol: set) -> bool:
+            """Verifica se o match é bom o suficiente.
+
+            Requer: Jaccard > 0.4 OU search cobre > 60% das keywords do Rol.
+            Isso evita falsos positivos onde 2 keywords genéricos casam com
+            um procedimento que tem muitas outras keywords não relacionadas.
+            """
+            if not search or not rol:
+                return False
+            overlap = search & rol
+            jaccard = len(overlap) / len(search | rol)
+            coverage = len(overlap) / len(rol) if rol else 0.0
+            return jaccard > 0.5 or coverage > 0.6
+
+        search_kw = _keywords(proc_name)
 
         # Strategy 1: Full name ilike
         result = await self.db.execute(
@@ -284,22 +307,20 @@ class DutEngine:
         if match:
             return match
 
-        # Strategy 2: Extract significant words (>3 chars, skip stopwords)
-        import re as _re
-        stopwords = {"com", "sem", "para", "por", "que", "dos", "das", "nos", "nas", "uma", "cada"}
-        raw_words = _re.findall(r"[a-zA-ZÀ-ÿ]{4,}", proc_name)
-        words = [w for w in raw_words if w.lower() not in stopwords]
+        # Strategy 2: Keyword search with Jaccard similarity validation
+        words = list(search_kw)
         if len(words) >= 2:
             from sqlalchemy import and_
-            # Try progressively fewer keywords: 3 → 2
             for n_words in (min(3, len(words)), 2):
                 conditions = [RolProcedure.nome.ilike(f"%{w}%") for w in words[:n_words]]
                 result = await self.db.execute(
-                    select(RolProcedure).where(and_(*conditions)).limit(1)
+                    select(RolProcedure).where(and_(*conditions)).limit(5)
                 )
-                match = result.scalar_one_or_none()
-                if match:
-                    return match
+                candidates = result.scalars().all()
+                for candidate in candidates:
+                    rol_kw = _keywords(candidate.nome)
+                    if _is_good_match(search_kw, rol_kw):
+                        return candidate
 
         return None
 
