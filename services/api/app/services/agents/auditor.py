@@ -247,6 +247,13 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None, pu
         cid_entries = _check_cid_in_text(texto_corrigido)
         audit_log_entries.extend(cid_entries)
 
+        # Deterministic: restore product data incorrectly removed by LLM
+        product_keywords = _extract_product_keywords(product)
+        texto_corrigido, audit_log_entries = _restore_product_removals(
+            texto_corrigido, draft.justificativa_completa,
+            audit_log_entries, product_keywords,
+        )
+
         return AuditResult(
             texto_corrigido=texto_corrigido,
             aprovado=aprovado,
@@ -395,6 +402,117 @@ def _strip_legal_from_body(text: str) -> str:
             cleaned_lines.append(cleaned)
 
     return "\n".join(cleaned_lines)
+
+
+def _extract_product_keywords(product) -> set[str]:
+    """Extrai termos-chave dos campos do produto para proteção contra remoção indevida."""
+    keywords = set()
+    fields = [
+        getattr(product, "descricao_tecnica", None),
+        getattr(product, "diferenciais_clinicos", None),
+        getattr(product, "indicacoes", None),
+        getattr(product, "nome", None),
+    ]
+    for field_text in fields:
+        if not field_text:
+            continue
+        # Extrair termos técnicos significativos (3+ chars, sem stopwords)
+        words = re.findall(r"[A-Za-zÀ-ÿ]{4,}", field_text.lower())
+        keywords.update(words)
+    # Extrair valores numéricos com unidades (ex: "6.000 kDa", "10 mg/mL", "980nm")
+    for field_text in fields:
+        if not field_text:
+            continue
+        nums = re.findall(r"\d[\d.,]*\s*(?:kDa|mg/mL|mPa\.?s|nm|μm|mm|cm|g/m²|%)", field_text)
+        for n in nums:
+            keywords.add(n.lower().replace(" ", ""))
+    return keywords
+
+
+def _restore_product_removals(
+    texto_corrigido: str,
+    original_text: str,
+    audit_log_entries: list[AuditEntry],
+    product_keywords: set[str],
+) -> tuple[str, list[AuditEntry]]:
+    """Restaura texto removido pelo Auditor quando o conteúdo vem da ficha do produto.
+
+    O Auditor LLM às vezes remove dados técnicos legítimos (mecanismo de ação,
+    wavelengths, composição) por não encontrá-los na ficha compacta. Este passo
+    determinístico detecta essas remoções incorretas e restaura o texto original.
+    """
+    if not product_keywords or not original_text:
+        return texto_corrigido, audit_log_entries
+
+    updated_entries = []
+    for entry in audit_log_entries:
+        if entry.tipo != "remocao":
+            updated_entries.append(entry)
+            continue
+
+        removed_text = entry.original.lower()
+        # Conta quantos termos do produto aparecem no texto removido
+        match_count = sum(1 for kw in product_keywords if kw in removed_text)
+
+        if match_count >= 2:
+            # Texto removido contém dados do produto — restaurar
+            # Encontrar a frase original no draft e re-inserir
+            restored = _try_restore_sentence(texto_corrigido, original_text, entry.original)
+            if restored:
+                texto_corrigido = restored
+                updated_entries.append(AuditEntry(
+                    tipo="validacao",
+                    campo=entry.campo,
+                    original=entry.original,
+                    corrigido=entry.original,
+                    motivo=f"Restaurado: conteúdo pertence à ficha técnica do produto ({match_count} termos match).",
+                ))
+                continue
+
+        updated_entries.append(entry)
+
+    return texto_corrigido, updated_entries
+
+
+def _try_restore_sentence(texto_corrigido: str, original_text: str, removed_sentence: str) -> str | None:
+    """Tenta re-inserir uma frase removida de volta ao texto corrigido.
+
+    Busca contexto (frase anterior/posterior) no texto original para determinar
+    onde inserir a frase de volta.
+    """
+    if not removed_sentence or removed_sentence in texto_corrigido:
+        return None  # Já presente ou vazio
+
+    # Encontrar a posição da frase removida no texto original
+    pos = original_text.find(removed_sentence)
+    if pos == -1:
+        # Tentar match parcial (primeiros 50 chars)
+        partial = removed_sentence[:50]
+        pos = original_text.find(partial)
+        if pos == -1:
+            return None
+
+    # Pegar contexto: texto antes da frase removida (últimos 80 chars)
+    context_before = original_text[max(0, pos - 80):pos].strip()
+    # Pegar os últimos 40 chars como âncora
+    anchor = context_before[-40:] if len(context_before) >= 40 else context_before
+
+    if not anchor:
+        return None
+
+    # Encontrar a âncora no texto corrigido
+    anchor_pos = texto_corrigido.find(anchor)
+    if anchor_pos == -1:
+        # Tentar âncora menor
+        anchor = context_before[-20:] if len(context_before) >= 20 else context_before
+        anchor_pos = texto_corrigido.find(anchor)
+        if anchor_pos == -1:
+            return None
+
+    # Inserir a frase removida após a âncora
+    insert_pos = anchor_pos + len(anchor)
+    restored = texto_corrigido[:insert_pos] + " " + removed_sentence + texto_corrigido[insert_pos:]
+    return restored
 
 
 def _local_checklist(draft: DraftReport) -> dict:
