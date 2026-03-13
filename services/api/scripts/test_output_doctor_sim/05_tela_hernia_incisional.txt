@@ -1,0 +1,38 @@
+================================================================================
+CENÁRIO: Tela — Hérnia incisional recidivada
+================================================================================
+ID: 05_tela_hernia_incisional
+PRODUTO: Tela de Polipropileno
+PACIENTE: Francisco Oliveira Neto
+CID: K43.1
+DIAGNÓSTICO: Hérnia incisional recidivada, defeito de 8cm, 2a recidiva após reparo primário
+CONVÊNIO: Amil
+ESPECIALIDADE: Cirurgia Geral
+
+--- RESULTADOS ---
+APROVADO: True
+CHECKLIST: 6/6
+PALAVRAS: 242
+SCORE: 62.0/100 (medio)
+MODO: fora_do_rol
+TEMPO: 25.4s
+
+--- RELATÓRIO GERADO ---
+O paciente Francisco Oliveira Neto apresenta diagnóstico de hérnia incisional recidivada (CID K43.1), com um defeito de 8 cm, sendo esta a segunda recidiva após reparo primário. A manutenção do quadro sem a devida intervenção cirúrgica resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que aceleram a degradação tecidual e a progressão do defeito herniário. O tratamento conservador, incluindo fisioterapia e uso de cintas de contenção, foi exaurido por mais de seis meses sem melhora significativa, comprovando a refratariedade do quadro e a necessidade de intervenção cirúrgica com OPME.
+A Tela de Polipropileno Macroporosa é tecnicamente superior devido à sua macroporosidade, que permite uma melhor integração tecidual e reduz a resposta inflamatória, minimizando o risco de recidiva. Diferente de materiais genéricos, a estrutura macroporosa facilita a incorporação tecidual, reduzindo a sensação de corpo estranho e proporcionando resistência mecânica adequada para reparos de hérnias incisionais. A utilização de tela profilática tem se mostrado promissora na minimização do risco de recidiva de hérnia incisional.
+A não realização do procedimento com o material indicado pode resultar em progressão para um estágio mais grave, exigindo procedimentos de maior porte e complexidade, com aumento significativo de morbidade e custos associados a internações prolongadas e complicações pós-operatórias. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+--- BASE LEGAL ---
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
+
+--- AUDIT LOG ---
+  [remocao] referencias: dado sem evidência
+  [remocao] referencias: dado sem evidência
+  [correcao] CID: CID ausente no texto
+
+--- ANÁLISE CRÍTICA ---
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? DADO REMOVIDO PELO AUDITOR: referencias: dado sem evidência
+  ? DADO REMOVIDO PELO AUDITOR: referencias: dado sem evidência
+  ⚠ ALERTA: Score de compliance médio (62.0/100)
+  ? GAP: Código TUSS 30604020: Código TUSS 30604020 não encontrado na base oficial (Tabelas 19 e 22)

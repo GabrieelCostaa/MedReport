@@ -1,0 +1,36 @@
+================================================================================
+CENÁRIO: Biossilex — Defeito ósseo pós-osteomielite
+================================================================================
+ID: 03_biossilex_osteomielite
+PRODUTO: Biossilex
+PACIENTE: Antonio Carlos da Silva
+CID: M86.6
+DIAGNÓSTICO: Osteomielite crônica de tíbia proximal com defeito ósseo segmentar após 2 desbridamentos
+CONVÊNIO: Cassi
+ESPECIALIDADE: Ortopedia
+
+--- RESULTADOS ---
+APROVADO: True
+CHECKLIST: 5/6
+PALAVRAS: 273
+SCORE: 74.0/100 (medio)
+MODO: cobertura_direta
+TEMPO: 21.5s
+
+--- RELATÓRIO GERADO ---
+O paciente Antonio Carlos da Silva apresenta diagnóstico de osteomielite crônica de tíbia proximal com defeito ósseo segmentar após dois desbridamentos (CID M86.6). A manutenção do quadro infeccioso crônico, sem a devida intervenção, resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que favorecem a persistência da infecção e a degradação do tecido ósseo. O insucesso das tentativas conservadoras, incluindo desbridamentos cirúrgicos prévios, comprova a refratariedade do quadro, sendo a progressão para intervenção com o uso de Biossilex - Biovidro não apenas indicada, mas mandatória para prevenir deterioração funcional progressiva e a necessidade de procedimentos de maior morbidade.
+O Biossilex - Biovidro é um enxerto de biovidro com elevada bioatividade e poder bacteriostático, promovendo um ambiente inibidor do crescimento bacteriano por mais de 7 dias, essencial para o tratamento de grandes falhas ósseas e osteomielites. Sua composição permite a formação rápida de hidroxiapatita, essencial para a integração com o tecido ósseo, e a liberação de aníons que inibem a formação de biofilme bacteriano, aumentando a eficácia dos antibióticos sistêmicos. Diferente de materiais convencionais, o Biossilex oferece uma ação dupla, osteocondutiva e antibacteriana, sendo eficaz contra organismos multirresistentes, o que é crucial no manejo da osteomielite crônica.
+A não realização deste procedimento com o uso do Biossilex - Biovidro pode resultar na progressão da infecção para estágios mais graves, exigindo intervenções cirúrgicas de maior porte e custo, além de aumentar a morbidade do paciente. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+--- BASE LEGAL ---
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A RN 428/465 estabelece a cobertura obrigatória dos procedimentos solicitados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, conforme a RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica.
+
+--- AUDIT LOG ---
+  [correcao] referencia_bibliografica: dado sem evidência
+  [correcao] referencia_bibliografica: dado sem evidência
+  [correcao] referencia_bibliografica: dado sem evidência
+
+--- ANÁLISE CRÍTICA ---
+  ✗ CRÍTICO: Checklist incompleto — faltam: referencia_bibliografica
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ⚠ ALERTA: Score de compliance médio (74.0/100)

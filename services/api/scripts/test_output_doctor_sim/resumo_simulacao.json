@@ -1,0 +1,143 @@
+[
+  {
+    "id": "01_viscossuplementacao_joelho",
+    "descricao": "Viscossuplementação — Gonartrose grau III",
+    "product": "Kit EC2 - Linha Opus",
+    "aprovado": true,
+    "checklist_ok": 6,
+    "checklist_total": 6,
+    "word_count": 202,
+    "score": 77.0,
+    "nivel": "medio",
+    "mode": "fora_do_rol",
+    "issues_count": 0,
+    "issues": [],
+    "elapsed": 20.2
+  },
+  {
+    "id": "02_parafuso_lca",
+    "descricao": "Parafuso bioabsorvível — Reconstrução de LCA",
+    "product": "Parafuso de Interferência Bioabsorvível",
+    "aprovado": true,
+    "checklist_ok": 6,
+    "checklist_total": 6,
+    "word_count": 266,
+    "score": 77.0,
+    "nivel": "medio",
+    "mode": "cobertura_direta",
+    "issues_count": 3,
+    "issues": [
+      "CRÍTICO: Nenhuma referência bibliográfica",
+      "DADO REMOVIDO PELO AUDITOR: referencia: dado sem evidência",
+      "DADO REMOVIDO PELO AUDITOR: referencia: dado sem evidência"
+    ],
+    "elapsed": 28.8
+  },
+  {
+    "id": "03_biossilex_osteomielite",
+    "descricao": "Biossilex — Defeito ósseo pós-osteomielite",
+    "product": "Biossilex - Biovidro",
+    "aprovado": true,
+    "checklist_ok": 5,
+    "checklist_total": 6,
+    "word_count": 273,
+    "score": 74.0,
+    "nivel": "medio",
+    "mode": "cobertura_direta",
+    "issues_count": 3,
+    "issues": [
+      "CRÍTICO: Checklist incompleto — faltam: referencia_bibliografica",
+      "CRÍTICO: Nenhuma referência bibliográfica",
+      "ALERTA: Score de compliance médio (74.0/100)"
+    ],
+    "elapsed": 21.5
+  },
+  {
+    "id": "04_vitagraft_pseudoartrose",
+    "descricao": "Vitagraft — Pseudoartrose de úmero",
+    "product": "Vitagraft - Enxerto Bifásico",
+    "aprovado": true,
+    "checklist_ok": 6,
+    "checklist_total": 6,
+    "word_count": 264,
+    "score": 77.0,
+    "nivel": "medio",
+    "mode": "cobertura_direta",
+    "issues_count": 2,
+    "issues": [
+      "DADO REMOVIDO PELO AUDITOR: arcabouço vascular em 14 dias e promover osteointegração completa em 90 dias: dado sem evidência",
+      "DADO REMOVIDO PELO AUDITOR: eliminando a necessidade de enxerto autólogo de ilíaco em 85% dos casos: dado sem evidência"
+    ],
+    "elapsed": 21.1
+  },
+  {
+    "id": "05_tela_hernia_incisional",
+    "descricao": "Tela — Hérnia incisional recidivada",
+    "product": "Tela de Polipropileno Macroporosa",
+    "aprovado": true,
+    "checklist_ok": 6,
+    "checklist_total": 6,
+    "word_count": 242,
+    "score": 62.0,
+    "nivel": "medio",
+    "mode": "fora_do_rol",
+    "issues_count": 5,
+    "issues": [
+      "CRÍTICO: Nenhuma referência bibliográfica",
+      "DADO REMOVIDO PELO AUDITOR: referencias: dado sem evidência",
+      "DADO REMOVIDO PELO AUDITOR: referencias: dado sem evidência",
+      "ALERTA: Score de compliance médio (62.0/100)",
+      "GAP: Código TUSS 30604020: Código TUSS 30604020 não encontrado na base oficial (Tabelas 19 e 22)"
+    ],
+    "elapsed": 25.4
+  },
+  {
+    "id": "06_adhesion_lise_aderencias",
+    "descricao": "Adhesion STP+ — Lise de aderências abdominais",
+    "product": "Adhesion STP+",
+    "aprovado": true,
+    "checklist_ok": 6,
+    "checklist_total": 6,
+    "word_count": 299,
+    "score": 77.0,
+    "nivel": "medio",
+    "mode": "cobertura_direta",
+    "issues_count": 1,
+    "issues": [
+      "DADO REMOVIDO PELO AUDITOR: percentual de redução: dado sem evidência"
+    ],
+    "elapsed": 25.9
+  },
+  {
+    "id": "07_enxerto_peyronie",
+    "descricao": "Enxerto Composto — Doença de Peyronie (fora do Rol)",
+    "product": "Kit EC2 - Enxerto Composto",
+    "aprovado": true,
+    "checklist_ok": 6,
+    "checklist_total": 6,
+    "word_count": 270,
+    "score": 76.0,
+    "nivel": "medio",
+    "mode": "fora_do_rol",
+    "issues_count": 1,
+    "issues": [
+      "DADO REMOVIDO PELO AUDITOR: taxa de sucesso: dado sem evidência"
+    ],
+    "elapsed": 27.3
+  },
+  {
+    "id": "08_laser_turbinectomia",
+    "descricao": "Laser — Turbinoplastia por hipertrofia de cornetos",
+    "product": "Kit FO - Laser Cirúrgico",
+    "aprovado": true,
+    "checklist_ok": 6,
+    "checklist_total": 6,
+    "word_count": 276,
+    "score": 77.0,
+    "nivel": "medio",
+    "mode": "fora_do_rol",
+    "issues_count": 0,
+    "issues": [],
+    "elapsed": 26.6
+  }
+]

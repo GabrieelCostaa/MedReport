@@ -1,0 +1,39 @@
+================================================================================
+CENÁRIO: Laser — Turbinoplastia por hipertrofia de cornetos
+================================================================================
+ID: 08_laser_turbinectomia
+PRODUTO: Kit FO - Laser Cirúrgico
+PACIENTE: Fernanda Costa Ribeiro
+CID: J34.3
+DIAGNÓSTICO: Hipertrofia de cornetos inferiores bilateral, obstrução nasal crônica refratária a tratamento clínico 10 meses
+CONVÊNIO: Bradesco Saúde
+ESPECIALIDADE: Otorrinolaringologia
+
+--- RESULTADOS ---
+APROVADO: True
+CHECKLIST: 6/6
+PALAVRAS: 276
+SCORE: 77.0/100 (medio)
+MODO: fora_do_rol
+TEMPO: 26.6s
+
+--- RELATÓRIO GERADO ---
+A paciente Fernanda Costa Ribeiro apresenta diagnóstico de hipertrofia de cornetos inferiores bilateral (CID J34.3), resultando em obstrução nasal crônica refratária a tratamento clínico por 10 meses. A manutenção deste quadro sem intervenção adequada perpetua um ambiente inflamatório crônico, exacerbando a hipertrofia dos cornetos e comprometendo a qualidade de vida da paciente. Tentativas conservadoras, incluindo uso de corticosteroides tópicos e anti-histamínicos, não resultaram em alívio significativo dos sintomas, evidenciando a refratariedade do quadro.
+A utilização do Kit FO - Laser Cirúrgico é tecnicamente superior e clinicamente necessária para o tratamento da hipertrofia dos cornetos inferiores. O Kit FO - Laser Cirúrgico oferece extrema precisão cirúrgica com campo sem sangramento, corte e coagulação simultâneos, menor dano térmico aos tecidos adjacentes, menor tempo cirúrgico e recuperação mais rápida do paciente, além de possibilitar a realização do procedimento em regime de Day Clinic. Diferente de técnicas convencionais, o laser de diodo promove menor formação de crostas pós-operatórias, eliminando a necessidade de tamponamento nasal (Janda et al., 2001). Estudos demonstram que o laser de diodo melhora a qualidade de vida dos pacientes com obstrução nasal crônica (Kankaanpää et al., 2021; Harju et al., 2021), sendo uma técnica eficaz para a redução de cornetos inferiores (Mohamed et al., 2022).
+A não realização do procedimento com o material solicitado pode resultar em progressão para quadros mais graves de obstrução nasal, aumentando a morbidade e a necessidade de intervenções futuras mais complexas e onerosas. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+--- BASE LEGAL ---
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória dos procedimentos citados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, conforme exigência da RN 395. O Código de Ética Médica, Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
+
+--- REFERÊNCIAS ---
+  1. Janda et al., 2001 [internal]
+  2. Kankaanpää et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32453643/
+  3. Harju et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
+  4. Mohamed et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33389308/
+
+--- AUDIT LOG ---
+  [correcao] diferenciais_oficiais: Ajuste para refletir os diferenciais oficiais do produto.
+  [validacao] referencia: Correção de formatação da referência.
+
+--- ANÁLISE CRÍTICA ---
+  ✓ Nenhum problema detectado

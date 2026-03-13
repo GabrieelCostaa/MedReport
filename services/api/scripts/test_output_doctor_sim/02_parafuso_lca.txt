@@ -1,0 +1,37 @@
+================================================================================
+CENÁRIO: Parafuso bioabsorvível — Reconstrução de LCA
+================================================================================
+ID: 02_parafuso_lca
+PRODUTO: Parafuso de Interferência Bioabsorvível
+PACIENTE: Lucas Andrade Ferreira
+CID: S83.5
+DIAGNÓSTICO: Ruptura de LCA joelho esquerdo, instabilidade anterior grau III, RM confirmando lesão completa
+CONVÊNIO: Bradesco Saúde
+ESPECIALIDADE: Ortopedia
+
+--- RESULTADOS ---
+APROVADO: True
+CHECKLIST: 6/6
+PALAVRAS: 266
+SCORE: 77.0/100 (medio)
+MODO: cobertura_direta
+TEMPO: 28.8s
+
+--- RELATÓRIO GERADO ---
+O paciente Lucas Andrade Ferreira apresenta diagnóstico de ruptura do ligamento cruzado anterior (LCA) do joelho esquerdo, com instabilidade anterior grau III, conforme confirmado por ressonância magnética (CID S83.5). Esta condição resulta em significativa instabilidade articular, comprometendo a função do joelho e a qualidade de vida do paciente. A ausência de intervenção adequada pode levar a uma cascata de degeneração articular, caracterizada por um ambiente bioquímico hostil dominado por citocinas pró-inflamatórias, acelerando a apoptose dos condrócitos e a degradação irreversível da matriz extracelular.
+O tratamento conservador, incluindo fisioterapia intensiva e uso de órteses, foi exaurido sem sucesso, evidenciando a refratariedade do quadro e a necessidade de intervenção cirúrgica com o uso de OPME. O Parafuso de Interferência Bioabsorvível é tecnicamente superior e clinicamente necessário para a fixação segura de enxertos tendíneos em túnel ósseo durante a reconstrução do LCA. Este dispositivo é fabricado em polímero PLLA, que permite osteointegração progressiva e elimina a necessidade de remoção posterior, ao contrário dos parafusos metálicos que podem requerer uma segunda cirurgia para remoção e podem gerar artefatos em exames de ressonância magnética.
+A não utilização deste material pode resultar em falha na fixação do enxerto, levando a complicações como instabilidade persistente, necessidade de reoperações e progressão para artrose precoce, o que implicaria em custos significativamente maiores para a operadora de saúde devido a procedimentos futuros de maior complexidade e morbidade.
+A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+--- BASE LEGAL ---
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica Cap. I, V.
+
+--- AUDIT LOG ---
+  [correcao] CID: CID ausente no texto
+  [remocao] referencia: dado sem evidência
+  [remocao] referencia: dado sem evidência
+
+--- ANÁLISE CRÍTICA ---
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? DADO REMOVIDO PELO AUDITOR: referencia: dado sem evidência
+  ? DADO REMOVIDO PELO AUDITOR: referencia: dado sem evidência

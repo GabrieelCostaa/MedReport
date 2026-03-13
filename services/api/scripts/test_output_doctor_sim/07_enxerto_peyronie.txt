@@ -1,0 +1,38 @@
+================================================================================
+CENÁRIO: Enxerto Composto — Doença de Peyronie (fora do Rol)
+================================================================================
+ID: 07_enxerto_peyronie
+PRODUTO: Kit EC2 - Enxerto Composto
+PACIENTE: Roberto Augusto Lima
+CID: N48.6
+DIAGNÓSTICO: Doença de Peyronie com curvatura peniana >60 graus, placa estável, disfunção erétil
+CONVÊNIO: Unimed
+ESPECIALIDADE: Urologia
+
+--- RESULTADOS ---
+APROVADO: True
+CHECKLIST: 6/6
+PALAVRAS: 270
+SCORE: 76.0/100 (medio)
+MODO: fora_do_rol
+TEMPO: 27.3s
+
+--- RELATÓRIO GERADO ---
+O paciente Roberto Augusto Lima apresenta diagnóstico de Doença de Peyronie (CID N48.6), caracterizada por uma curvatura peniana superior a 60 graus, presença de placa estável e disfunção erétil. A manutenção deste quadro sem a intervenção adequada resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que perpetuam a fibrose e a disfunção erétil. O tratamento conservador, incluindo o uso de inibidores da fosfodiesterase tipo 5 e fisioterapia peniana, mostrou-se ineficaz, evidenciando a refratariedade do quadro e a necessidade de intervenção com OPME.
+O Kit EC2 - Enxerto Composto é tecnicamente superior devido à sua capacidade de preservar o enxerto entre a colheita e o reimplante, reduzindo riscos de contaminação e degradação do tecido. Este material contém células do estroma vascular (SVF), fundamentais para a reparação tecidual e vasculogênese, como demonstrado por Levy JA et al. (2015). Diferente de materiais genéricos, o Kit EC2 promove a regeneração tecidual através de um mecanismo de ação que inclui a preservação da viabilidade celular e a indução de vasculogênese, comprovada por histologia (Levy et al., 2015; Akakpo et al., 2020).
+A não realização deste procedimento pode resultar na progressão para um quadro de disfunção erétil irreversível, aumentando a necessidade de intervenções futuras mais complexas e de maior morbidade, como a colocação de próteses penianas. Isso representa um custo significativamente maior para a operadora, além de impactar negativamente a qualidade de vida do paciente.
+A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+
+--- BASE LEGAL ---
+Conforme a RN 424, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 obriga a cobertura mínima dos procedimentos citados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, conforme RN 395. O Código de Ética Médica estabelece que compete ao médico usar o melhor do progresso científico em benefício do paciente.
+
+--- REFERÊNCIAS ---
+  1. Levy et al., 2015 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26414724/
+  2. Akakpo et al., 2020 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32826194/
+
+--- AUDIT LOG ---
+  [remocao] taxa de sucesso: dado sem evidência
+  [correcao] CID: CID ausente no texto
+
+--- ANÁLISE CRÍTICA ---
+  ? DADO REMOVIDO PELO AUDITOR: taxa de sucesso: dado sem evidência
