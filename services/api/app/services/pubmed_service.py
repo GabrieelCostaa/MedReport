@@ -198,6 +198,89 @@ EVIDENCE_FILTER_STRONG = '("meta-analysis"[pt] OR "systematic review"[pt] OR "ra
 EVIDENCE_FILTER_BROAD = '("clinical trial"[pt] OR "meta-analysis"[pt] OR "review"[pt])'
 EVIDENCE_FILTER_MINIMAL = '("review"[pt] OR "journal article"[pt])'
 
+# ---------------------------------------------------------------------------
+# Dicionário médico PT→EN para fallback de CIDs desconhecidos
+# Permite busca PubMed mesmo quando o CID não está no mapeamento manual
+# ---------------------------------------------------------------------------
+_MEDICAL_PT_EN = {
+    # Anatomia
+    "joelho": "knee", "quadril": "hip", "ombro": "shoulder", "coluna": "spine",
+    "tornozelo": "ankle", "punho": "wrist", "cotovelo": "elbow", "mão": "hand",
+    "pé": "foot", "fêmur": "femur", "tíbia": "tibia", "úmero": "humerus",
+    "pelve": "pelvis", "sacro": "sacrum", "lombar": "lumbar", "cervical": "cervical",
+    "torácica": "thoracic", "nasal": "nasal", "corneto": "turbinate",
+    "mama": "breast", "próstata": "prostate", "rim": "kidney", "fígado": "liver",
+    "pulmão": "lung", "intestino": "intestine", "abdome": "abdomen", "pênis": "penis",
+    "bexiga": "bladder", "útero": "uterus", "ovário": "ovary", "tireóide": "thyroid",
+    # Patologias
+    "artrose": "osteoarthritis", "gonartrose": "knee osteoarthritis",
+    "coxartrose": "hip osteoarthritis", "artrite": "arthritis",
+    "hérnia": "hernia", "fratura": "fracture", "ruptura": "rupture",
+    "lesão": "injury", "luxação": "dislocation", "instabilidade": "instability",
+    "estenose": "stenosis", "compressão": "compression", "infecção": "infection",
+    "inflamação": "inflammation", "necrose": "necrosis", "fibrose": "fibrosis",
+    "tumor": "tumor", "neoplasia": "neoplasm", "câncer": "cancer",
+    "úlcera": "ulcer", "abscesso": "abscess", "osteomielite": "osteomyelitis",
+    "pseudoartrose": "nonunion", "aderência": "adhesion", "aderências": "adhesions",
+    "hipertrofia": "hypertrophy", "obstrução": "obstruction", "degeneração": "degeneration",
+    "displasia": "dysplasia", "neuropatia": "neuropathy", "tendinite": "tendinitis",
+    "bursite": "bursitis", "sinovite": "synovitis", "menisco": "meniscus",
+    "ligamento": "ligament", "tendão": "tendon", "cartilagem": "cartilage",
+    "osteoporose": "osteoporosis", "escoliose": "scoliosis", "cifose": "kyphosis",
+    "lordose": "lordosis", "protrusão": "protrusion", "extrusão": "extrusion",
+    # Qualificadores
+    "crônica": "chronic", "crônico": "chronic", "aguda": "acute", "agudo": "acute",
+    "recidivada": "recurrent", "recidivante": "recurrent", "bilateral": "bilateral",
+    "unilateral": "unilateral", "primária": "primary", "secundária": "secondary",
+    "incisional": "incisional", "inguinal": "inguinal", "umbilical": "umbilical",
+    # Procedimentos
+    "artroplastia": "arthroplasty", "artroscopia": "arthroscopy",
+    "viscossuplementação": "viscosupplementation", "osteossíntese": "osteosynthesis",
+    "hernioplastia": "hernioplasty", "laminectomia": "laminectomy",
+    "discectomia": "discectomy", "turbinectomia": "turbinectomy",
+    "turbinoplastia": "turbinoplasty", "mastectomia": "mastectomy",
+    "reconstrução": "reconstruction", "enxerto": "graft", "implante": "implant",
+    "prótese": "prosthesis", "tela": "mesh", "parafuso": "screw",
+    # Materiais
+    "biovidro": "bioactive glass", "polipropileno": "polypropylene",
+    "bioabsorvível": "bioabsorbable", "titânio": "titanium",
+    "hialurônico": "hyaluronic acid", "colágeno": "collagen",
+}
+
+
+def _translate_diagnosis_to_english(diagnostico: str) -> str:
+    """
+    Traduz diagnóstico PT→EN usando dicionário médico.
+    Não precisa ser perfeito — PubMed é tolerante com termos aproximados.
+    """
+    if not diagnostico:
+        return ""
+
+    words = diagnostico.lower().split()
+    translated = []
+    i = 0
+    while i < len(words):
+        # Tenta bigram primeiro (ex: "ácido hialurônico")
+        if i + 1 < len(words):
+            bigram = f"{words[i]} {words[i+1]}"
+            if bigram in _MEDICAL_PT_EN:
+                translated.append(_MEDICAL_PT_EN[bigram])
+                i += 2
+                continue
+
+        word = words[i]
+        if word in _MEDICAL_PT_EN:
+            translated.append(_MEDICAL_PT_EN[word])
+        elif len(word) > 5 and not word.isdigit():
+            # Tenta match parcial — exige prefixo de 5+ chars para evitar falsos positivos
+            for pt, en in _MEDICAL_PT_EN.items():
+                if len(pt) > 5 and (pt.startswith(word[:5]) or word.startswith(pt[:5])):
+                    translated.append(en)
+                    break
+        i += 1
+
+    return " ".join(translated) if translated else ""
+
 
 # ---------------------------------------------------------------------------
 # Construção de queries em cascata
@@ -225,9 +308,16 @@ def _build_cascade_queries(cid: str, product_name: str = "", diagnostico: str = 
     if cid_entry:
         desc_text, mesh_term = cid_entry
     else:
-        # CID desconhecido: usa diagnóstico como fallback
-        desc_text = diagnostico[:80] if diagnostico else cid_upper
-        mesh_term = f'"{desc_text}"[tiab]'
+        # CID desconhecido: traduz diagnóstico PT→EN para buscar no PubMed
+        translated = _translate_diagnosis_to_english(diagnostico)
+        if translated:
+            desc_text = translated
+            mesh_term = f'"{translated}"[tiab]'
+            logger.info("CID %s not in dict, translated diagnosis: '%s' → '%s'", cid_upper, diagnostico[:60], translated)
+        else:
+            desc_text = diagnostico[:80] if diagnostico else cid_upper
+            mesh_term = f'"{desc_text}"[tiab]'
+            logger.warning("CID %s not in dict and no translation available for: %s", cid_upper, diagnostico[:60])
 
     specific_product, generic_product = _get_product_terms(product_name)
 
