@@ -4,6 +4,9 @@ from dataclasses import dataclass
 from typing import Optional
 
 import pytest
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 @dataclass

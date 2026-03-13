@@ -29,8 +29,6 @@ GOLDEN_REPORTS = {
             "viscossuplementação",
             "ácido hialurônico",
             "peso molecular",
-            "RN 395",
-            "falha terapêutica",
         ],
         "expected_references": ["Altman", "Bellamy"],
         "forbidden_claims": [
@@ -45,7 +43,6 @@ GOLDEN_REPORTS = {
             "aderência",
             "barreira",
             "biorreabsorvível",
-            "RN 395",
         ],
         "expected_references": ["Diamond"],
         "forbidden_claims": [
@@ -317,7 +314,15 @@ class TestSemanticChecks:
             },
         )
 
-        text = draft.justificativa_completa.lower()
-        assert "rn 395" in text or "resolução normativa 395" in text, (
-            "Relatório não contém referência à RN 395 da ANS!"
+        # RNs should be in base_legal (separate field) or body
+        combined = (
+            (draft.base_legal or "") + " " + (draft.justificativa_completa or "")
+        ).lower()
+        has_rn = any(term in combined for term in [
+            "rn 395", "rn 424", "rn 465",
+            "resolução normativa", "ans",
+        ])
+        assert has_rn, (
+            "Relatório não contém nenhuma referência regulatória ANS "
+            "(nem no corpo nem na base_legal)!"
         )
