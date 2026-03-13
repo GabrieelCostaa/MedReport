@@ -209,10 +209,10 @@ class ReportPipeline:
         session.answered_questions.update(answers)
 
         for key, value in answers.items():
-            if key in ("falha_terapeutica", "risco_nao_realizacao"):
-                session.medico_inputs[key] = value
-            else:
-                session.medico_inputs[key] = value
+            # Defensive: if frontend sends option dict, extract text
+            if isinstance(value, dict) and "texto" in value:
+                value = value["texto"]
+            session.medico_inputs[key] = value
 
         session.pending_questions = [
             q for q in session.pending_questions

@@ -181,7 +181,8 @@ async def answer_questions(client: httpx.AsyncClient, headers: dict, session_id:
             answers[secao] = DEFAULT_ANSWERS[secao]
         elif opcoes:
             # Médico seleciona a primeira opção (mínimo esforço)
-            answers[secao] = opcoes[0]
+            opt = opcoes[0]
+            answers[secao] = opt["texto"] if isinstance(opt, dict) else str(opt)
         else:
             answers[secao] = "Conforme avaliação clínica"
 
