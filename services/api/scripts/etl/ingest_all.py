@@ -43,6 +43,15 @@ async def main():
     except Exception as e:
         print(f"Anvisa ERRO: {e}")
 
+    print("\n--- Anvisa Modelos/Apresentações (enriquecimento) ---")
+    try:
+        from scripts.etl.download_anvisa_modelos import run_etl as modelos_etl
+        async with AsyncSessionLocal() as db:
+            modelos_result = await modelos_etl(db_session=db)
+            print(f"Modelos: {modelos_result}")
+    except Exception as e:
+        print(f"Modelos ERRO: {e}")
+
     print("\n" + "=" * 60)
     print("ETL concluído.")
     print("Nota: DUT requer OPENAI_API_KEY para estruturação LLM.")
