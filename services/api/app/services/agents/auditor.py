@@ -284,10 +284,10 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None, pu
 
 
 def _strip_fabricated_costs(text: str, evidences: list) -> tuple[str, list[AuditEntry]]:
-    """Remove valores monetários fabricados (R$X.XXX) que não venham das evidências.
+    """Remove valores monetários e argumentos de custo fabricados.
 
-    Verifica se os valores R$ encontrados no texto existem em alguma evidência.
-    Se não, remove a frase inteira contendo o valor e registra no audit_log.
+    1. Remove R$X.XXX que não venham das evidências
+    2. Remove frases com argumento de custo qualitativo sem referência bibliográfica
     """
     entries = []
     if not text:
@@ -301,44 +301,52 @@ def _strip_fabricated_costs(text: str, evidences: list) -> tuple[str, list[Audit
     )
     evidence_money = set(re.findall(r"R\$[\d.,]+", evidence_text))
 
-    # Encontrar valores monetários no texto gerado
-    money_pattern = re.compile(r"R\$\s*[\d.,]+(?:\s*(?:a|e|até)\s*R\$\s*[\d.,]+)?")
-    matches = list(money_pattern.finditer(text))
-
-    if not matches:
-        return text, entries
-
-    # Verificar quais valores NÃO vêm das evidências
     fabricated_sentences = set()
-    for match in matches:
+
+    # 1. Encontrar valores monetários no texto gerado
+    money_pattern = re.compile(r"R\$\s*[\d.,]+(?:\s*(?:a|e|até)\s*R\$\s*[\d.,]+)?")
+    for match in money_pattern.finditer(text):
         value_str = match.group(0)
-        # Extrair valores individuais
         individual_values = re.findall(r"R\$\s*[\d.,]+", value_str)
         has_evidence = any(
             v.replace(" ", "") in {e.replace(" ", "") for e in evidence_money}
             for v in individual_values
         )
         if not has_evidence:
-            # Encontrar a frase que contém este valor
-            start = text.rfind(".", 0, match.start())
-            end = text.find(".", match.end())
-            if start == -1:
-                start = 0
-            else:
-                start += 1
-            if end == -1:
-                end = len(text)
-            else:
-                end += 1
-            sentence = text[start:end].strip()
+            sentence = _extract_sentence(text, match.start(), match.end())
             if sentence:
                 fabricated_sentences.add(sentence)
                 entries.append(AuditEntry(
                     tipo="remocao",
-                    campo="custo_fabricado",
+                    campo="custo",
                     original=sentence,
                     corrigido="",
-                    motivo=f"Valor monetário '{value_str}' sem evidência científica — removido para evitar alucinação.",
+                    motivo=f"Valor monetário '{value_str}' sem evidência científica — removido.",
+                ))
+
+    # 2. Detectar argumentos qualitativos de custo sem referência
+    # Frases com palavras de custo que NÃO contêm citação "(Autor, Ano)"
+    cost_words = re.compile(
+        r"(?:custos?\s+(?:significativ|maior|menor|elevad|reduzid)|"
+        r"custo.{0,20}(?:efetiv|benefício)|"
+        r"financeiramente|economicamente|oneroso|"
+        r"maior\s+custo|menor\s+custo|"
+        r"impacto\s+(?:econômico|financeiro))",
+        re.IGNORECASE,
+    )
+    citation_pattern = re.compile(r"\([A-Z][a-záéíóúàãõâêô]+.*?\d{4}\)")
+
+    for match in cost_words.finditer(text):
+        sentence = _extract_sentence(text, match.start(), match.end())
+        if sentence and sentence not in fabricated_sentences:
+            if not citation_pattern.search(sentence):
+                fabricated_sentences.add(sentence)
+                entries.append(AuditEntry(
+                    tipo="remocao",
+                    campo="custo",
+                    original=sentence,
+                    corrigido="",
+                    motivo="Argumento de custo sem referência bibliográfica — removido.",
                 ))
 
     # Remover frases fabricadas
@@ -350,6 +358,21 @@ def _strip_fabricated_costs(text: str, evidences: list) -> tuple[str, list[Audit
     text = re.sub(r"  +", " ", text)
 
     return text.strip(), entries
+
+
+def _extract_sentence(text: str, match_start: int, match_end: int) -> str:
+    """Extrai a frase completa que contém o match."""
+    start = text.rfind(".", 0, match_start)
+    end = text.find(".", match_end)
+    if start == -1:
+        start = 0
+    else:
+        start += 1
+    if end == -1:
+        end = len(text)
+    else:
+        end += 1
+    return text[start:end].strip()
 
 
 def _check_cid_in_text(text: str) -> list[AuditEntry]:

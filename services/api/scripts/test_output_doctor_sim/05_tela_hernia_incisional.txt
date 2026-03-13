@@ -12,29 +12,28 @@ ESPECIALIDADE: Cirurgia Geral
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 264
+PALAVRAS: 258
 SCORE: 100.0/100 (alto)
 MODO: cobertura_direta
-TEMPO: 42.9s
+TEMPO: 32.3s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-O paciente Francisco Oliveira Neto apresenta diagnóstico de hérnia incisional recidivada (CID K43.1), com um defeito de 8 cm, sendo esta a segunda recidiva após reparo primário. A manutenção do quadro sem a devida intervenção cirúrgica resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que aceleram a degradação tecidual e aumentam o risco de complicações como encarceramento e estrangulamento herniário. O tratamento conservador, incluindo fisioterapia e uso de cintas de contenção, foi exaurido por mais de seis meses sem melhora significativa, comprovando a refratariedade do quadro.
-A utilização da Tela de Polipropileno Macroporosa Opus Mesh é tecnicamente superior e clinicamente necessária para o reparo da hérnia incisional. Este material possui macroporosidade que permite melhor integração tecidual e menor resposta inflamatória, características essenciais para a redução da taxa de recidiva e complicações pós-operatórias (Lichtenstein et al., 1989; EU Hernia Trialists Collaboration, 2000). Estudos demonstram que a técnica de IPOM-plus, que combina a colocação de tela intraperitoneal com fechamento fascial, é eficaz em reduzir a recorrência de hérnias incisionais (Huang et al., 2024). Além disso, a resistência mecânica adequada da tela é crucial para suportar a pressão intra-abdominal, especialmente em casos de recidiva múltipla.
-A não realização do procedimento com o material indicado pode resultar em progressão para complicações graves, como encarceramento, que exigiriam intervenções de maior porte e custo, além de aumentar a morbidade do paciente. A substituição por materiais de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+O paciente Francisco Oliveira Neto apresenta diagnóstico de hérnia incisional recidivada (CID K43.1), com um defeito de 8 cm, sendo esta a segunda recidiva após reparo primário. A manutenção do quadro sem a devida intervenção cirúrgica resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que aceleram a degradação tecidual e aumentam o risco de complicações adicionais. O tratamento conservador, incluindo fisioterapia e uso de cintas abdominais, foi exaurido ao longo de mais de seis meses sem melhora significativa, comprovando a refratariedade do quadro e a necessidade de intervenção cirúrgica com OPME.
+A Tela de Polipropileno Macroporosa da linha Opus Mesh é tecnicamente superior para o manejo deste caso devido à sua macroporosidade, que permite melhor integração tecidual e reduz a resposta inflamatória, minimizando a sensação de corpo estranho e proporcionando resistência mecânica adequada para reparos de hérnias incisionais. Diferente de materiais genéricos, a macroporosidade da tela cria um ambiente favorável à incorporação tecidual. Estudos demonstram que a técnica IPOM-plus, que utiliza esta tela, é eficaz na redução de recidivas em hérnias incisionais (Huang et al., 2024).
+A não utilização deste material específico pode resultar na progressão da hérnia, com aumento do defeito e potencial encarceramento, levando a complicações que podem exigir procedimentos de maior porte e morbidade no futuro (Cross et al., 2017; Kritharides et al., 2023). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica Cap. I, V.
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica Cap. I, V.
 
 --- REFERÊNCIAS ---
-  1. Lichtenstein et al., 1989 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35034068/
-  2. Huang et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38319440/
+  1. Huang et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38319440/
+  2. Cross et al., 2017 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/28004850/
+  3. Kritharides et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38017096/
 
 --- AUDIT LOG ---
-  [correcao] base_legal_ans: Correção da base legal para RN 395.
-  [remocao] resistencia_mecanica: dado sem evidência
-  [validacao] referencia_bibliografica: Referência válida
-  [validacao] referencia_bibliografica: Referência válida
+  [remocao] taxa de recidiva: dado sem evidência
+  [correcao] CID: CID ausente no texto
 
 --- ANÁLISE CRÍTICA ---
-  ? DADO REMOVIDO PELO AUDITOR: resistencia_mecanica: dado sem evidência
+  ? DADO REMOVIDO PELO AUDITOR: taxa de recidiva: dado sem evidência

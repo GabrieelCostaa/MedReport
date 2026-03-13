@@ -10,41 +10,33 @@ CONVÊNIO: SulAmérica
 ESPECIALIDADE: Ortopedia
 
 --- RESULTADOS ---
-APROVADO: False
+APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 295
+PALAVRAS: 252
 SCORE: 100.0/100 (alto)
-MODO: fora_do_rol
-TEMPO: 39.3s
+MODO: cobertura_direta
+TEMPO: 39.2s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-A paciente Maria Helena Souza apresenta diagnóstico de pseudoartrose de diáfise de úmero direito (CID M84.1), com 9 meses sem consolidação pós-fratura. A persistência deste quadro, mesmo após tratamento conservador por mais de 6 meses sem melhora significativa, evidencia a refratariedade à conduta clínica convencional. A manutenção do estado de não consolidação óssea gera um ambiente bioquímico desfavorável, caracterizado por um aumento de citocinas pró-inflamatórias, que comprometem a regeneração óssea e favorecem a progressão para um quadro de deterioração funcional progressiva (Tripathy et al., 2015; Assouto et al., 2022).
-O uso do Vitagraft - Enxerto Bifásico é tecnicamente superior e clinicamente necessário para este caso. Este material é composto por 60% de hidroxiapatita (HA) e 40% de beta-tricálcio fosfato (β-TCP), formando uma matriz bifásica que combina a estabilidade estrutural da HA com a reabsorção controlada do β-TCP. Esta composição promove osteocondução progressiva e favorece a vascularização e migração celular, eliminando a necessidade de enxerto autólogo e a morbidade associada ao sítio doador (Daculsi et al., 1998; LeGeros, 2008). A porosidade interconectada do Vitagraft facilita a angiogênese e a incorporação óssea, sendo aplicável em defeitos ósseos de múltiplas localizações anatômicas (Ebrahimi et al., 2017; Toosi et al., 2023).
-A não realização do procedimento com o Vitagraft pode resultar em progressão para um quadro de maior morbidade, com necessidade de intervenções cirúrgicas mais complexas no futuro. A persistência da pseudoartrose pode levar a complicações adicionais, como dor crônica e perda funcional significativa, aumentando a necessidade de reoperações e internações prolongadas (Boonsirikamchai et al., 2024; Tavares et al., 2022).
-A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+A paciente Maria Helena Souza apresenta diagnóstico de pseudartrose (CID M84.1), uma condição caracterizada pela falha na consolidação óssea após fratura, resultando em instabilidade e dor crônica. A manutenção deste quadro sem intervenção adequada perpetua um ambiente bioquímico desfavorável, dominado por citocinas pró-inflamatórias, que comprometem a regeneração óssea e aumentam o risco de complicações adicionais (Tripathy et al., 2015). As tentativas de tratamento conservador, incluindo imobilização e fisioterapia, mostraram-se ineficazes, evidenciando a refratariedade do quadro e a necessidade de intervenção cirúrgica com o uso de enxertos ósseos (Jauregui et al., 2019).
+O Vitagraft - Enxerto Bifásico é tecnicamente superior devido à sua composição de hidroxiapatita (HA) e beta-tricálcio fosfato (β-TCP) na proporção 60:40, que promove osteocondução progressiva e elimina a necessidade de enxerto autólogo, reduzindo a morbidade do sítio doador (Daculsi et al., 1998). A porosidade interconectada do Vitagraft favorece a vascularização e a migração celular, essenciais para a consolidação óssea eficaz (Ebrahimi et al., 2017). Diferente de alternativas que utilizam apenas um componente, a combinação bifásica do Vitagraft oferece estabilidade estrutural e reabsorção controlada, otimizando o processo de regeneração óssea (LeGeros, 2008).
+A não aprovação deste material pode resultar na progressão da pseudartrose para um estado de maior complexidade, potencialmente exigindo procedimentos cirúrgicos de maior porte e morbidade no futuro (Boonsirikamchai et al., 2024). A substituição por materiais de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS para os procedimentos citados. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. O Código de Ética Médica, Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
+Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece que os procedimentos citados são de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. O Código de Ética Médica, Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
   1. Tripathy et al., 2015 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26037993/
-  2. Assouto et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35701591/
+  2. Jauregui et al., 2019 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/29252909/
   3. Daculsi et al., 1998 [internal]
-  4. LeGeros, 2008 [internal]
-  5. Ebrahimi et al., 2017 [internal]
-  6. Toosi et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/36939654/
-  7. Boonsirikamchai et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38831392/
-  8. Tavares et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35534520/
+  4. Ebrahimi et al., 2017 [internal]
+  5. LeGeros, 2008 [internal]
+  6. Boonsirikamchai et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38831392/
 
 --- AUDIT LOG ---
+  [correcao] concentracao: Ajuste para refletir a ficha oficial do produto
   [correcao] CID: CID ausente no texto
-  [remocao] custo: dado sem evidência
-  [hard_validation] concentracao: [BLOQUEANTE] discrepancia: valor no texto '40%' diverge do oficial 'HA 60% / β-TCP 40%'
 
 --- ANÁLISE CRÍTICA ---
   ⚠ ALERTA: Referência com formato duvidoso: LeGeros, 2008
-  ? VERIFICAR: Percentual 60% no texto — confirmar se tem evidência
-  ? CORREÇÃO HARD: concentracao: [BLOQUEANTE] discrepancia: valor no texto '40%' diverge do oficial 'HA 60% / β-TCP 40%'
-  ? DADO REMOVIDO PELO AUDITOR: custo: dado sem evidência
-  ? BLOQUEIO: O valor '40%' foi identificado como concentracao incorreto. O valor oficial é 'HA 60% / β-TCP 40%'.

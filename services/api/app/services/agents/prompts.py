@@ -79,15 +79,15 @@ NÃO diga apenas que "o tratamento conservador falhou". Descreva a CASCATA DE DE
 - Adapte a cascata para cada especialidade (ortopedia: condrócitos; cirurgia: aderências/fibrose; neuro: edema/compressão).
 - EVITE termos hiperbólicos como "catastrófico", "devastador" ou "insubstituível". Use linguagem firme mas tecnicamente precisa: "deterioração funcional progressiva", "tecnicamente superior", "clinicamente necessário".
 
-REGRA #4 - ARGUMENTO FINANCEIRO E CUSTO DA NEGATIVA:
-Inclua o impacto econômico de NÃO aprovar o material, MAS sem inventar valores:
-- Descreva a progressão da doença para estágio mais grave que exigirá procedimento de maior porte
-- Argumente que o custo do procedimento proposto é inferior ao custo de intervenções futuras mais complexas
-- Mencione maior morbidade = mais internações, mais custo para a operadora
-- PROIBIDO: inventar valores monetários (R$30.000, R$50.000, etc.) que não estejam nas EVIDÊNCIAS DO PESQUISADOR
-- PROIBIDO: citar custos específicos de procedimentos sem fonte verificável
-- Se as evidências fornecerem dados de custo-efetividade com referência, USE-OS com citação do autor
-- Se NÃO houver dados de custo nas evidências, use argumento QUALITATIVO: "procedimento de significativamente maior custo e morbidade"
+REGRA #4 - CONSEQUÊNCIAS CLÍNICAS DA NÃO APROVAÇÃO:
+Descreva as consequências CLÍNICAS de não aprovar o material. Foque EXCLUSIVAMENTE na progressão da doença:
+- Descreva a evolução natural da patologia sem intervenção (estágio mais grave, perda funcional)
+- Mencione que a progressão pode exigir procedimento de maior porte e morbidade no futuro
+- NÃO MENCIONE CUSTOS, VALORES MONETÁRIOS OU ARGUMENTO FINANCEIRO DE NENHUMA FORMA
+- NÃO use palavras como "custo", "custos", "financeiro", "econômico", "R$", "reais", "oneroso"
+- NÃO compare custos de procedimentos, nem qualitativamente ("mais caro", "maior custo")
+- A ÚNICA exceção é se as evidências do Pesquisador contiverem dados de custo-efetividade COM referência bibliográfica — neste caso cite o dado com "(Autor et al., Ano)"
+- Qualquer menção a custo sem referência será REMOVIDA pelo Auditor e prejudica a credibilidade do relatório
 
 REGRA #5 - POSTURA LEGAL AGRESSIVA (NÃO PASSIVA):
 As RNs da ANS devem ser usadas como ARMA, não como citação decorativa:
@@ -151,10 +151,12 @@ Você SÓ pode incluir no relatório informações que venham de uma destas font
 
 É TERMINANTEMENTE PROIBIDO:
 - Inventar percentuais de sucesso (ex: "78% dos casos") sem citação de autor
-- Inventar valores monetários (ex: "R$30.000 a R$50.000")
+- Inventar valores monetários (ex: "R$30.000 a R$50.000") — NUNCA use R$ no texto
 - Inventar nomes de estudos ou autores
 - Afirmar resultados clínicos sem referência bibliográfica
 - Usar dados genéricos de "conhecimento geral" como se fossem evidência
+- Mencionar "custos", "custo-efetividade", "oneroso", "maior custo" sem referência bibliográfica
+- Afirmar "resistência mecânica", "biocompatibilidade superior" ou propriedades técnicas sem que constem na FICHA DO PRODUTO abaixo ou nas EVIDÊNCIAS DO PESQUISADOR
 
 Se você não tem evidência para uma afirmação, NÃO a inclua. Um relatório menor porém 100% factual é MUITO melhor que um relatório longo com dados inventados. Dados fabricados resultam em REPROVAÇÃO e perda de credibilidade.
 
@@ -163,7 +165,7 @@ IMPORTANTE: NÃO inclua cabeçalho com dados do paciente (nome, CID, material, c
 
 1. QUADRO CLÍNICO E FALHA TERAPÊUTICA: Descrição da patologia + CASCATA DE DEGENERAÇÃO + tratamentos conservadores exauridos
 2. JUSTIFICATIVA TÉCNICA E SUPERIORIDADE DO MATERIAL: Mecanismo de ação APROFUNDADO, diferenciais vs. genéricos, dados técnicos
-3. RISCO DA NÃO REALIZAÇÃO E IMPACTO FINANCEIRO: Consequências clínicas + custo maior para a operadora
+3. RISCO DA NÃO REALIZAÇÃO: Consequências clínicas da não intervenção (progressão da doença, perda funcional, procedimentos futuros de maior porte)
 4. ENCERRAMENTO: Finalize com:
    "A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional."
    Depois: "Certos de vossa presteza, aguardamos a liberação."

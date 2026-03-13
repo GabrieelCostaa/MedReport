@@ -226,15 +226,22 @@ def _check_concentracao(text: str, official: str) -> list[ValidationIssue]:
             if _is_statistical_percent(text, match.start(), match.group(0)):
                 continue
             found_num = _normalize_number(match.group(1))
-            if official_nums:
-                if not (official_nums[0] * 0.8 <= found_num <= official_nums[0] * 1.2):
-                    issues.append(ValidationIssue(
-                        campo="concentracao",
-                        valor_no_texto=match.group(0),
-                        valor_oficial=official,
-                        tipo="discrepancia",
-                        severidade="bloqueante",
-                    ))
+            # For composite concentrations like "HA 60% / β-TCP 40%",
+            # accept ANY number that appears in the official value
+            if official_nums and any(
+                n * 0.8 <= found_num <= n * 1.2 for n in official_nums
+            ):
+                continue  # Matches one of the official components
+            if official_nums and not any(
+                n * 0.8 <= found_num <= n * 1.2 for n in official_nums
+            ):
+                issues.append(ValidationIssue(
+                    campo="concentracao",
+                    valor_no_texto=match.group(0),
+                    valor_oficial=official,
+                    tipo="discrepancia",
+                    severidade="bloqueante",
+                ))
     elif "%" not in official:
         pattern_pct = re.compile(r"(\d[\d.,]*)\s*%")
         for match in pattern_pct.finditer(text):

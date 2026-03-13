@@ -12,32 +12,29 @@ ESPECIALIDADE: Urologia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 292
+PALAVRAS: 271
 SCORE: 99.0/100 (alto)
 MODO: cobertura_direta
-TEMPO: 58.7s
+TEMPO: 34.1s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=9/10
 
 --- RELATÓRIO GERADO ---
-O paciente Roberto Augusto Lima apresenta diagnóstico de Doença de Peyronie com curvatura peniana superior a 60 graus, placa estável e disfunção erétil (CID N48.6). Esta condição é caracterizada por fibrose da túnica albugínea, resultando em deformidade peniana e comprometimento funcional significativo. A manutenção do quadro sem intervenção adequada pode levar a um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, acelerando a fibrose e a perda funcional irreversível (Giagulli et al., 2024). O tratamento conservador, incluindo uso de medicamentos orais e fisioterapia, mostrou-se ineficaz na reversão da curvatura e na restauração da função erétil, comprovando a refratariedade do quadro (Levy et al., 2015).
-A utilização do Kit EC2 - Enxerto Composto é tecnicamente superior e clinicamente necessária para este caso. O enxerto composto autólogo, rico em células do estroma vascular (SVF), promove vasculogênese e angiogênese, essenciais para a regeneração tecidual e modulação do processo inflamatório e cicatricial (Gokce et al., 2014; Soebadi et al., 2017). Diferente de tratamentos genéricos, o gel carreador do Kit EC2 preserva a viabilidade celular entre a colheita e a reimplantação, garantindo eficácia superior (Levy et al., 2016). A aplicação do enxerto composto em toda a extensão e base do corpo cavernoso é crucial para a recuperação funcional e prevenção de complicações futuras (Asmundo et al., 2024).
-A não realização do procedimento proposto resultará em progressão da doença, com piora funcional e necessidade de procedimentos de maior porte e morbidade, como cirurgias reconstrutivas complexas. Além disso, a deterioração funcional progressiva pode aumentar a necessidade de internações e tratamentos adicionais.
-A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+O paciente Roberto Augusto Lima apresenta diagnóstico de Doença de Peyronie com curvatura peniana superior a 60 graus, placa estável e disfunção erétil (CID N48.6). A condição do paciente é caracterizada por fibrose da túnica albugínea, resultando em deformidade peniana significativa e comprometimento funcional. A manutenção do quadro sem intervenção adequada pode levar a um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que aceleram a fibrose e a perda funcional irreversível. O tratamento conservador, incluindo o uso de medicamentos orais e fisioterapia, foi exaurido por mais de seis meses sem melhora significativa, comprovando a refratariedade do quadro e a necessidade de intervenção cirúrgica com OPME.
+A utilização do Kit EC2 - Enxerto Composto é tecnicamente superior e clinicamente necessária para este caso. O kit permite a colheita e reimplantação de enxerto composto autólogo rico em células do estroma vascular (SVF), promovendo vasculogênese e angiogênese essenciais para a reparação tecidual e modulação do processo inflamatório e cicatricial (Zuk et al., 2001; Soebadi et al., 2017). Diferente de abordagens genéricas, o gel carreador do kit preserva a viabilidade celular entre a colheita e a reimplantação, evitando degradação ou contaminação do tecido coletado (Levy et al., 2016; Gokce et al., 2014).
+A não realização do procedimento com o Kit EC2 pode resultar em progressão da doença, com aumento da curvatura peniana e agravamento da disfunção erétil, potencialmente exigindo procedimentos futuros de maior porte e morbidade. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
 RN 424: Cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). RN 428/465: Os procedimentos citados são de cobertura mínima obrigatória pela ANS. RN 395: Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. Código de Ética Médica Cap. I, V: Compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
-  1. Giagulli et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38196188/
-  2. Levy et al., 2015 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26745574/
-  3. Gokce et al., 2014 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/24574095/
-  4. Soebadi et al., 2017 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/28041853/
-  5. Levy et al., 2016 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26745574/
-  6. Asmundo et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38811395/
+  1. Zuk et al., 2001 [internal]
+  2. Soebadi et al., 2017 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/28041853/
+  3. Levy et al., 2016 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26745574/
+  4. Gokce et al., 2014 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/24574095/
 
 --- AUDIT LOG ---
   [correcao] CID: CID ausente no texto
-  [remocao] custos significativamente maiores: dado sem evidência
+  [validacao] referencia: Referência preservada: autor encontrado na lista de autores conhecidos.
 
 --- ANÁLISE CRÍTICA ---
-  ? DADO REMOVIDO PELO AUDITOR: custos significativamente maiores: dado sem evidência
+  ✓ Nenhum problema detectado
