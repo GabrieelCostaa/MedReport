@@ -12,36 +12,29 @@ ESPECIALIDADE: Otorrinolaringologia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 261
+PALAVRAS: 258
 SCORE: 100.0/100 (alto)
-MODO: fora_do_rol
-TEMPO: 37.4s
+MODO: cobertura_direta
+TEMPO: 38.7s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-A paciente Fernanda Costa Ribeiro apresenta diagnóstico de hipertrofia de cornetos inferiores bilateral (CID J34.3), resultando em obstrução nasal crônica refratária a tratamento clínico por 10 meses. A manutenção do quadro inflamatório crônico sem intervenção adequada cria um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que perpetuam a obstrução nasal e comprometem a qualidade de vida da paciente (Kankaanpää et al., 2021). Tentativas conservadoras, incluindo uso de corticosteroides tópicos e anti-histamínicos, falharam em proporcionar alívio significativo, comprovando a refratariedade do quadro (Harju et al., 2021).
-O Kit FO - Laser Cirúrgico é tecnicamente superior devido à sua capacidade de realizar corte e coagulação simultâneos, reduzindo o sangramento intraoperatório e preservando tecidos adjacentes com precisão micrométrica. A fibra óptica flexível permite acesso minimamente invasivo às vias aéreas superiores e inferiores, o que é crucial para a preservação da função mucociliar e redução do risco de complicações pós-operatórias (Mohamed et al., 2022). Diferente de técnicas destrutivas, o uso do laser de diodo minimiza o dano ao epitélio respiratório, promovendo uma recuperação mais rápida e eficaz (Calvo-Henriquez et al., 2024; Zhang et al., 2023).
-A não realização do procedimento com o Kit FO - Laser Cirúrgico pode resultar na progressão da doença, levando a uma piora funcional significativa e potencial necessidade de intervenções cirúrgicas de maior porte e morbidade no futuro (El-Sisi et al., 2023). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+A paciente Fernanda Costa Ribeiro apresenta diagnóstico de hipertrofia de cornetos inferiores bilateral (CID J34.3), com obstrução nasal crônica refratária a tratamento clínico há 10 meses. A manutenção do quadro inflamatório crônico sem intervenção adequada resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que perpetuam a obstrução nasal e comprometem a qualidade de vida da paciente. Tentativas de manejo conservador, incluindo o uso de corticosteroides tópicos e anti-histamínicos, mostraram-se ineficazes, comprovando a refratariedade do quadro e a necessidade de intervenção cirúrgica com OPME.
+O Kit FO - Laser Cirúrgico, com sua fibra óptica flexível, permite acesso minimamente invasivo às vias aéreas superiores e inferiores, possibilitando corte e coagulação simultâneos que reduzem o sangramento intraoperatório e preservam tecidos adjacentes. Diferente de técnicas convencionais, como turbinectomia ou eletrocautério, o laser cirúrgico proporciona precisão micrométrica, minimizando danos aos tecidos circundantes e promovendo uma recuperação mais rápida e segura (Mohamed et al., 2022; Harju et al., 2018). Estudos demonstram que o uso do laser de diodo é eficaz na redução dos sintomas nasais e na melhora da contratilidade dos cornetos (Harju et al., 2021; Kankaanpää et al., 2021).
+A não aprovação deste material pode resultar na progressão da obstrução nasal, levando a um comprometimento respiratório significativo e à necessidade de procedimentos futuros de maior porte e morbidade (Calvo-Henriquez et al., 2024). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece que os procedimentos citados são de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
+Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS para os procedimentos citados. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. O Código de Ética Médica, Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
-  1. Kankaanpää et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32453643/
-  2. Harju et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
-  3. Mohamed et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33389308/
-  4. Calvo-Henriquez et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32485468/
-  5. Zhang et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/36315624/
-  6. El-Sisi et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/37408328/
+  1. Mohamed et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33389308/
+  2. Harju et al., 2018 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
+  3. Harju et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
+  4. Kankaanpää et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32453643/
+  5. Calvo-Henriquez et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32485468/
 
 --- AUDIT LOG ---
   [correcao] CID: CID ausente no texto
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
 
 --- ANÁLISE CRÍTICA ---
   ✓ Nenhum problema detectado

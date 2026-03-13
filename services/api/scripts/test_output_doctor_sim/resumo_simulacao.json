@@ -6,15 +6,13 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 232,
+    "word_count": 252,
     "score": 100.0,
     "nivel": "alto",
     "mode": "cobertura_direta",
-    "issues_count": 1,
-    "issues": [
-      "GAP: Status Anvisa não verificado"
-    ],
-    "elapsed": 39.9
+    "issues_count": 0,
+    "issues": [],
+    "elapsed": 31.4
   },
   {
     "id": "02_parafuso_lca",
@@ -23,18 +21,50 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 256,
+    "word_count": 309,
     "score": 100.0,
     "nivel": "alto",
     "mode": "cobertura_direta",
     "issues_count": 0,
     "issues": [],
-    "elapsed": 41.5
+    "elapsed": 46.8
   },
   {
     "id": "03_biossilex_osteomielite",
     "descricao": "Biossilex — Defeito ósseo pós-osteomielite",
     "product": "Biossilex - Biovidro",
+    "aprovado": true,
+    "checklist_ok": 6,
+    "checklist_total": 6,
+    "word_count": 301,
+    "score": 100.0,
+    "nivel": "alto",
+    "mode": "cobertura_direta",
+    "issues_count": 0,
+    "issues": [],
+    "elapsed": 36.8
+  },
+  {
+    "id": "04_vitagraft_pseudoartrose",
+    "descricao": "Vitagraft — Pseudoartrose de úmero",
+    "product": "Vitagraft - Enxerto Bifásico",
+    "aprovado": true,
+    "checklist_ok": 6,
+    "checklist_total": 6,
+    "word_count": 269,
+    "score": 100.0,
+    "nivel": "alto",
+    "mode": "cobertura_direta",
+    "issues_count": 1,
+    "issues": [
+      "VERIFICAR: Percentual 60% no texto — confirmar se tem evidência"
+    ],
+    "elapsed": 37.3
+  },
+  {
+    "id": "05_tela_hernia_incisional",
+    "descricao": "Tela — Hérnia incisional recidivada",
+    "product": "Tela de Polipropileno Macroporosa",
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
@@ -44,41 +74,7 @@
     "mode": "cobertura_direta",
     "issues_count": 0,
     "issues": [],
-    "elapsed": 47.2
-  },
-  {
-    "id": "04_vitagraft_pseudoartrose",
-    "descricao": "Vitagraft — Pseudoartrose de úmero",
-    "product": "Vitagraft - Enxerto Bifásico",
-    "aprovado": true,
-    "checklist_ok": 6,
-    "checklist_total": 6,
-    "word_count": 252,
-    "score": 100.0,
-    "nivel": "alto",
-    "mode": "cobertura_direta",
-    "issues_count": 1,
-    "issues": [
-      "ALERTA: Referência com formato duvidoso: LeGeros, 2008"
-    ],
-    "elapsed": 39.2
-  },
-  {
-    "id": "05_tela_hernia_incisional",
-    "descricao": "Tela — Hérnia incisional recidivada",
-    "product": "Tela de Polipropileno Macroporosa",
-    "aprovado": true,
-    "checklist_ok": 6,
-    "checklist_total": 6,
-    "word_count": 258,
-    "score": 100.0,
-    "nivel": "alto",
-    "mode": "cobertura_direta",
-    "issues_count": 1,
-    "issues": [
-      "DADO REMOVIDO PELO AUDITOR: taxa de recidiva: dado sem evidência"
-    ],
-    "elapsed": 32.3
+    "elapsed": 46.4
   },
   {
     "id": "06_adhesion_lise_aderencias",
@@ -87,13 +83,15 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 265,
+    "word_count": 230,
     "score": 100.0,
     "nivel": "alto",
     "mode": "fora_do_rol",
-    "issues_count": 0,
-    "issues": [],
-    "elapsed": 63.0
+    "issues_count": 1,
+    "issues": [
+      "DADO REMOVIDO PELO AUDITOR: percentual de sucesso: dado sem evidência"
+    ],
+    "elapsed": 54.4
   },
   {
     "id": "07_enxerto_peyronie",
@@ -102,13 +100,13 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 271,
+    "word_count": 280,
     "score": 99.0,
     "nivel": "alto",
     "mode": "cobertura_direta",
     "issues_count": 0,
     "issues": [],
-    "elapsed": 34.1
+    "elapsed": 55.5
   },
   {
     "id": "08_laser_turbinectomia",
@@ -117,12 +115,12 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 261,
+    "word_count": 258,
     "score": 100.0,
     "nivel": "alto",
-    "mode": "fora_do_rol",
+    "mode": "cobertura_direta",
     "issues_count": 0,
     "issues": [],
-    "elapsed": 37.4
+    "elapsed": 38.7
   }
 ]

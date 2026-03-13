@@ -248,7 +248,10 @@ def analyze_report(result: dict, scenario: dict) -> list[str]:
             issues.append("ALERTA: Apenas referências internas — sem PubMed")
         for ref in refs:
             ref_text = ref.get("texto", "") if isinstance(ref, dict) else str(ref)
-            if "et al" not in ref_text.lower() and "(" not in ref_text:
+            # Valid formats: "Author et al., Year", "Author, Year", "Author (Year)", "Author and Author, Year"
+            import re as _re
+            has_author_year = bool(_re.search(r"[A-Za-z]+.*\d{4}", ref_text))
+            if not has_author_year:
                 issues.append(f"ALERTA: Referência com formato duvidoso: {ref_text[:60]}")
 
     # 7. Detecção de possíveis alucinações

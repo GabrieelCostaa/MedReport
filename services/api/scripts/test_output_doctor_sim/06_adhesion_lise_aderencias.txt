@@ -12,31 +12,30 @@ ESPECIALIDADE: Cirurgia Geral
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 265
+PALAVRAS: 230
 SCORE: 100.0/100 (alto)
 MODO: fora_do_rol
-TEMPO: 63.0s
+TEMPO: 54.4s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-A paciente Claudia Regina Santos, portadora de aderências peritoneais pós-operatórias com suboclusão intestinal recorrente (CID K66.0), apresenta um quadro clínico caracterizado por três episódios de suboclusão intestinal nos últimos seis meses. Este cenário reflete a falha do tratamento conservador, que incluiu medidas como dieta específica, uso de laxantes e acompanhamento clínico rigoroso, sem melhora significativa. A manutenção deste quadro inflamatório crônico, sem a devida intervenção, resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, acelerando a formação de novas aderências e a deterioração funcional progressiva (Lin et al., 2025; Ouaïssi et al., 2012).
-Para prevenir a recorrência das aderências e suas complicações, é solicitada a utilização do Adhesion STP+, uma barreira anti-aderência biorreabsorvível composta por carboximetilcelulose sódica e ácido hialurônico. Este material forma uma barreira física temporária entre as superfícies peritoneais traumatizadas, sendo completamente reabsorvido em aproximadamente 7 dias, sem interferir no processo cicatricial (Ficha técnica do produto). Estudos demonstram que o uso de barreiras de ácido hialurônico é eficaz na prevenção de aderências pós-operatórias em cirurgias abdominais, reduzindo significativamente a necessidade de reoperações (Becker et al., 1996; Ten Broek et al., 2014; Wallwiener et al., 1998).
-A não utilização do Adhesion STP+ implica em um risco elevado de progressão para obstrução intestinal completa, que pode necessitar de intervenções cirúrgicas de maior porte e morbidade no futuro (Maheta et al., 2024; Kumar et al., 2009). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+A paciente Claudia Regina Santos, portadora de bridas peritoneais recidivantes (CID K66.0), será submetida a procedimento cirúrgico para lise de aderências. A formação de aderências pós-operatórias é uma complicação comum e significativa em cirurgias abdominais, ocorrendo em até 93% dos casos (Diamond, 1996). Essas aderências podem resultar em obstrução intestinal, dor crônica e infertilidade, conforme destacado por Wallwiener et al. (1998) e Ouaïssi et al. (2012). A utilização de barreiras anti-aderência, como o Adhesion STP+, é essencial para prevenir essas complicações. Este produto é composto por carboximetilcelulose sódica (CMC) e ácido hialurônico, formando uma barreira física temporária que é biorreabsorvível em aproximadamente 7 dias, sem interferir no processo cicatricial. Estudos, como o de Ten Broek et al. (2014), demonstram que barreiras anti-aderência são eficazes na redução da formação de aderências após cirurgias peritoneais, e a revisão sistemática de Maheta et al. (2024) confirma a eficácia de barreiras de ácido hialurônico na prevenção de complicações pós-operatórias. A não utilização do Adhesion STP+ pode levar a uma evolução natural da patologia, resultando em obstruções intestinais recorrentes e potencial necessidade de reoperações, conforme evidenciado por Kumar et al. (2009) e Lin et al. (2025). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica Cap. I, V.
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
-  1. Lin et al., 2025 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/40754073/
-  2. Ouaïssi et al., 2012 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/22261580/
-  3. Becker et al., 1996 [internal]
+  1. Diamond et al., 1996 [internal]
+  2. Wallwiener et al., 1998 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/9457948/
+  3. Ouaïssi et al., 2012 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/22261580/
   4. Ten Broek et al., 2014 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/24075279/
-  5. Wallwiener et al., 1998 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/9457948/
-  6. Maheta et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38795014/
-  7. Kumar et al., 2009 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/19160246/
+  5. Maheta et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38795014/
+  6. Kumar et al., 2009 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/19160246/
+  7. Lin et al., 2025 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/40754073/
 
 --- AUDIT LOG ---
   [correcao] CID: CID ausente no texto
+  [remocao] percentual de sucesso: dado sem evidência
   [validacao] referencia: verificar
   [validacao] referencia: verificar
   [validacao] referencia: verificar
@@ -46,4 +45,4 @@ Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de d
   [validacao] referencia: verificar
 
 --- ANÁLISE CRÍTICA ---
-  ✓ Nenhum problema detectado
+  ? DADO REMOVIDO PELO AUDITOR: percentual de sucesso: dado sem evidência

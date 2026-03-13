@@ -12,35 +12,30 @@ ESPECIALIDADE: Ortopedia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 232
+PALAVRAS: 252
 SCORE: 100.0/100 (alto)
 MODO: cobertura_direta
-TEMPO: 39.9s
+TEMPO: 31.4s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
-GAPS: Status Anvisa não verificado
 
 --- RELATÓRIO GERADO ---
-O paciente José Ricardo Mendes apresenta diagnóstico de gonartrose primária unilateral do joelho direito (CID M17.1), classificada como grau III na escala de Kellgren-Lawrence, com dor crônica persistente há 2 anos. O quadro clínico é caracterizado por dor articular significativa e limitação funcional que afeta as atividades diárias. Após o insucesso do tratamento conservador, que incluiu o uso de analgésicos, anti-inflamatórios não esteroidais e fisioterapia por mais de 6 meses sem melhora significativa, a indicação é para viscossuplementação com o Kit EC2 - Linha Opus. Este material contém ácido hialurônico de alto peso molecular (6.000 kDa) e concentração de 10 mg/mL, que restaura as propriedades viscoelásticas do líquido sinovial, proporcionando alívio prolongado da dor e melhora funcional (Altman et al., 2015; Bellamy et al., 2006). A superioridade do ácido hialurônico de alto peso molecular em comparação a formulações de menor peso molecular é evidenciada por sua maior permanência intra-articular, o que impede a rápida degradação enzimática (Bannuru et al., 2009). A não realização do procedimento implica em progressão da degeneração articular, com risco de perda funcional irreversível e potencial necessidade de artroplastia total no futuro (Agarwal et al., 2021; Han et al., 2025). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+O paciente José Ricardo Mendes apresenta diagnóstico de gonartrose primária unilateral no joelho direito, classificada como grau III pela escala de Kellgren-Lawrence (CID M17.1), com dor crônica persistente há 2 anos. O quadro clínico é caracterizado por dor articular significativa e limitação funcional, comprometendo as atividades diárias do paciente. Após insucesso com tratamento conservador, incluindo o uso de analgésicos, anti-inflamatórios não esteroidais e fisioterapia por mais de 6 meses sem melhora significativa, a indicação é para viscossuplementação com o Kit EC2 - Linha Opus. Este produto contém ácido hialurônico de alto peso molecular (6.000 kDa) e concentração de 10 mg/mL, que restaura as propriedades viscoelásticas do líquido sinovial, proporcionando alívio prolongado da dor e melhora funcional. Estudos demonstram que o ácido hialurônico de alto peso molecular tem um tempo de permanência intra-articular superior, o que é crucial para o tratamento eficaz da osteoartrite de joelho (Bannuru et al., 2009; Altman et al., 2015). A meta-análise de Altman et al. (2015) evidenciou a eficácia superior da viscossuplementação com ácido hialurônico de alto peso molecular em comparação a formulações de menor peso molecular. A não realização do procedimento implica em progressão da degeneração articular, com potencial para perda funcional irreversível e possível evolução para necessidade de artroplastia total, conforme evidenciado por Anil et al. (2021). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura dos procedimentos citados como de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica Cap. I, V.
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
   1. Altman et al., 2015 [internal]
-  2. Bellamy et al., 2006 [internal]
-  3. Bannuru et al., 2009 [internal]
-  4. Agarwal et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/34206010/
-  5. Han et al., 2025 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/39914607/
+  2. Bannuru et al., 2009 [internal]
+  3. Anil et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/34500430/
 
 --- AUDIT LOG ---
   [correcao] CID: CID ausente no texto
-  [validacao] peso_molecular: Conforme ficha oficial
-  [validacao] concentracao: Conforme ficha oficial
-  [validacao] referencia: Autor presente na lista de referências do produto
-  [validacao] referencia: Autor presente na lista de referências do produto
-  [validacao] referencia: Autor presente na lista de referências do produto
-  [validacao] referencia: Autor presente na lista de referências do produto
-  [validacao] referencia: Autor presente na lista de referências do produto
+  [validacao] peso_molecular: Dado conforme ficha oficial
+  [validacao] concentracao: Dado conforme ficha oficial
+  [validacao] referencia: Referência válida
+  [validacao] referencia: Referência válida
+  [validacao] referencia: Referência válida
 
 --- ANÁLISE CRÍTICA ---
-  ? GAP: Status Anvisa não verificado
+  ✓ Nenhum problema detectado

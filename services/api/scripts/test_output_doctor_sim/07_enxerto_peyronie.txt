@@ -12,29 +12,40 @@ ESPECIALIDADE: Urologia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 271
+PALAVRAS: 280
 SCORE: 99.0/100 (alto)
 MODO: cobertura_direta
-TEMPO: 34.1s
+TEMPO: 55.5s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=9/10
 
 --- RELATÓRIO GERADO ---
-O paciente Roberto Augusto Lima apresenta diagnóstico de Doença de Peyronie com curvatura peniana superior a 60 graus, placa estável e disfunção erétil (CID N48.6). A condição do paciente é caracterizada por fibrose da túnica albugínea, resultando em deformidade peniana significativa e comprometimento funcional. A manutenção do quadro sem intervenção adequada pode levar a um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que aceleram a fibrose e a perda funcional irreversível. O tratamento conservador, incluindo o uso de medicamentos orais e fisioterapia, foi exaurido por mais de seis meses sem melhora significativa, comprovando a refratariedade do quadro e a necessidade de intervenção cirúrgica com OPME.
-A utilização do Kit EC2 - Enxerto Composto é tecnicamente superior e clinicamente necessária para este caso. O kit permite a colheita e reimplantação de enxerto composto autólogo rico em células do estroma vascular (SVF), promovendo vasculogênese e angiogênese essenciais para a reparação tecidual e modulação do processo inflamatório e cicatricial (Zuk et al., 2001; Soebadi et al., 2017). Diferente de abordagens genéricas, o gel carreador do kit preserva a viabilidade celular entre a colheita e a reimplantação, evitando degradação ou contaminação do tecido coletado (Levy et al., 2016; Gokce et al., 2014).
-A não realização do procedimento com o Kit EC2 pode resultar em progressão da doença, com aumento da curvatura peniana e agravamento da disfunção erétil, potencialmente exigindo procedimentos futuros de maior porte e morbidade. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+O paciente Roberto Augusto Lima apresenta diagnóstico de Doença de Peyronie com curvatura peniana superior a 60 graus, placa estável e disfunção erétil (CID N48.6). Esta condição é caracterizada por uma desordem do tecido conjuntivo que afeta a túnica albugínea do pênis, resultando em fibrose e formação de placas que levam à curvatura peniana e disfunção erétil. A manutenção deste quadro sem intervenção adequada pode resultar em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, acelerando a apoptose celular e a degradação irreversível da matriz extracelular (Giagulli et al., 2024; Gokce et al., 2014).
+O tratamento conservador, incluindo o uso de anti-inflamatórios não esteroides (AINEs), fisioterapia e infiltrações, mostrou-se ineficaz na reversão do quadro clínico, comprovando a refratariedade da condição e a necessidade de intervenção cirúrgica com o uso de OPME. A aplicação do Kit EC2 - Enxerto Composto é tecnicamente superior devido à sua capacidade de promover vasculogênese e angiogênese, essenciais para a modulação do processo inflamatório e cicatricial, conforme evidenciado por Levy et al. (2016) e Soebadi et al. (2017). O enxerto composto é rico em células do estroma vascular (SVF), que são fundamentais para a reparação tecidual e regeneração celular (Bourin et al., 2013; Zuk et al., 2001).
+A não realização deste procedimento pode levar à progressão da doença, com piora funcional significativa e eventual necessidade de procedimentos cirúrgicos de maior porte e morbidade, como a colocação de próteses penianas (Asmundo et al., 2024; Alkandari et al., 2022). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-RN 424: Cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). RN 428/465: Os procedimentos citados são de cobertura mínima obrigatória pela ANS. RN 395: Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. Código de Ética Médica Cap. I, V: Compete ao médico usar o melhor do progresso científico em benefício do paciente.
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
-  1. Zuk et al., 2001 [internal]
-  2. Soebadi et al., 2017 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/28041853/
+  1. Giagulli et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38196188/
+  2. Gokce et al., 2014 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/24574095/
   3. Levy et al., 2016 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26745574/
-  4. Gokce et al., 2014 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/24574095/
+  4. Soebadi et al., 2017 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/28041853/
+  5. Bourin et al., 2013 [internal]
+  6. Zuk et al., 2001 [internal]
+  7. Asmundo et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38811395/
+  8. Alkandari et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/34219010/
 
 --- AUDIT LOG ---
-  [correcao] CID: CID ausente no texto
-  [validacao] referencia: Referência preservada: autor encontrado na lista de autores conhecidos.
+  [correcao] CID: CID presente no texto
+  [validacao] referencia: Autor conhecido
+  [validacao] referencia: Autor conhecido
+  [validacao] referencia: Autor conhecido
+  [validacao] referencia: Autor conhecido
+  [validacao] referencia: Autor conhecido
+  [validacao] referencia: Autor conhecido
+  [validacao] referencia: Autor conhecido
+  [validacao] referencia: Autor conhecido
 
 --- ANÁLISE CRÍTICA ---
   ✓ Nenhum problema detectado

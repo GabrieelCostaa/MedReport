@@ -73,7 +73,7 @@ PRODUCTS_SEED = [
         "viscosidade": "10.000 - 29.000 mPa.s",
         "peso_molecular": "Não aplicável (barreira anti-aderência)",
         "concentracao": "CMC sódica + ácido hialurônico em proporção proprietária",
-        "registro_anvisa": "80145900901",
+        "registro_anvisa": "80030810132",
         "codigo_tuss_sugerido": "30715016",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [
@@ -106,7 +106,7 @@ PRODUCTS_SEED = [
         "viscosidade": "80.000 - 120.000 mPa.s",
         "peso_molecular": "6.000 kDa",
         "concentracao": "10 mg/mL de hialuronato de sódio",
-        "registro_anvisa": "80149670008",
+        "registro_anvisa": "80030810176",
         "codigo_tuss_sugerido": "30713137",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [
@@ -135,7 +135,7 @@ PRODUCTS_SEED = [
         "viscosidade": "Não aplicável (dispositivo sólido)",
         "peso_molecular": "Não aplicável (polímero PLLA)",
         "concentracao": "Não aplicável",
-        "registro_anvisa": "10345500142",
+        "registro_anvisa": "80804050173",
         "codigo_tuss_sugerido": "30727049",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [
@@ -190,7 +190,7 @@ PRODUCTS_SEED = [
         "viscosidade": "Não aplicável (grânulos sólidos)",
         "peso_molecular": "Não aplicável",
         "concentracao": "Não aplicável (biovidro 100%)",
-        "registro_anvisa": "80145900901",
+        "registro_anvisa": "80030810167",
         "codigo_tuss_sugerido": "30727154",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [
@@ -221,7 +221,7 @@ PRODUCTS_SEED = [
         "viscosidade": "Não aplicável (grânulos sólidos)",
         "peso_molecular": "Não aplicável",
         "concentracao": "HA 60% / β-TCP 40%",
-        "registro_anvisa": "80145900901",
+        "registro_anvisa": "80030810162",
         "codigo_tuss_sugerido": "30713048",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [
@@ -253,7 +253,7 @@ PRODUCTS_SEED = [
         "viscosidade": "Não aplicável (kit cirúrgico)",
         "peso_molecular": "Não aplicável",
         "concentracao": "Não aplicável (enxerto autólogo)",
-        "registro_anvisa": "80145900901",
+        "registro_anvisa": "80030810130",
         "codigo_tuss_sugerido": "30101310",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [
@@ -285,7 +285,7 @@ PRODUCTS_SEED = [
         "viscosidade": "Não aplicável (dispositivo óptico)",
         "peso_molecular": "Não aplicável",
         "concentracao": "Não aplicável",
-        "registro_anvisa": "80145900901",
+        "registro_anvisa": "80030810086",
         "codigo_tuss_sugerido": "30501458",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [

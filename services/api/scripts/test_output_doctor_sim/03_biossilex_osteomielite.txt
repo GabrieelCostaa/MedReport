@@ -12,29 +12,33 @@ ESPECIALIDADE: Ortopedia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 270
+PALAVRAS: 301
 SCORE: 100.0/100 (alto)
 MODO: cobertura_direta
-TEMPO: 47.2s
+TEMPO: 36.8s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-O paciente Antonio Carlos da Silva apresenta diagnóstico de osteomielite crônica (CID M86.6), uma condição que frequentemente resulta em complicações severas devido à persistência de infecções ósseas e à dificuldade de tratamento, especialmente em casos refratários a terapias convencionais. A osteomielite crônica é caracterizada por um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que promovem a degradação óssea e a falha na cicatrização. O tratamento conservador, incluindo antibioticoterapia sistêmica e desbridamento cirúrgico, tem se mostrado insuficiente para controlar a infecção e promover a regeneração óssea adequada neste caso.
-O uso do Biossilex - Biovidro, um material composto por biovidro (SiO2-CaO-Na2O-P2O5), é tecnicamente superior e clinicamente necessário para este paciente. Este material possui propriedades antibacterianas intrínsecas, devido à sua capacidade de elevar o pH local, inibindo a colonização bacteriana, o que é ideal para cavidades pós-osteomielite (Drago et al., 2013). Além disso, o biovidro promove osteocondução e osteoestimulação, facilitando a regeneração óssea e substituindo gradualmente o material por osso neoformado (van Gestel et al., 2015; Lindfors et al., 2010). Diferente de enxertos autólogos, o uso do Biossilex elimina a necessidade de coleta de enxerto, evitando a morbidade associada ao sítio doador (Van Vugt et al., 2021).
-A não utilização deste material pode resultar na progressão da infecção, levando a uma deterioração funcional significativa e potencialmente à necessidade de procedimentos cirúrgicos mais invasivos e de maior morbidade no futuro (Gatti et al., 2024). A substituição deste material por opções de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+O paciente Antonio Carlos da Silva apresenta diagnóstico de osteomielite crônica da tíbia proximal (CID M86.6), com defeito ósseo segmentar persistente após dois desbridamentos cirúrgicos. A manutenção do quadro inflamatório crônico, sem a devida intervenção, resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que favorecem a persistência da infecção e a degradação óssea progressiva. O insucesso das tentativas conservadoras, incluindo antibioticoterapia sistêmica e desbridamentos repetidos, comprova a refratariedade do quadro, sendo a progressão para intervenção com o uso de Biossilex - Biovidro não apenas indicada, mas mandatória para prevenir deterioração funcional progressiva (Gatti et al., 2024; Drago et al., 2013).
+O Biossilex - Biovidro é um material tecnicamente superior, composto por biovidro (SiO2-CaO-Na2O-P2O5), que possui propriedades antibacterianas intrínsecas devido à elevação do pH local, inibindo a colonização bacteriana, o que é ideal para cavidades pós-osteomielite (van Gestel et al., 2015; Bigoni et al., 2019). Além disso, o biovidro promove osteocondução e osteoestimulação, facilitando a regeneração óssea e substituição gradual por osso neoformado, eliminando a necessidade de coleta de enxerto autólogo e a morbidade associada ao sítio doador (Lindfors et al., 2010; Van Vugt et al., 2021). Estudos demonstram que o biovidro é eficaz no manejo de espaços mortos após desbridamento cirúrgico, promovendo a cicatrização óssea e prevenindo infecções (Gatti et al., 2024; Malat et al., 2018).
+A não aprovação deste material pode resultar na progressão da osteomielite para estágios mais graves, com risco de perda funcional irreversível da extremidade afetada e necessidade de procedimentos futuros de maior porte e morbidade, como amputações (Nguyen et al., 2025; Lindfors et al., 2026). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece que os procedimentos citados são de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica Cap. I, V.
+Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS para os procedimentos citados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
-  1. Drago et al., 2013 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/24325278/
-  2. van Gestel et al., 2015 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26504821/
-  3. Lindfors et al., 2010 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/20624692/
-  4. Van Vugt et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33039177/
-  5. Gatti et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38195783/
+  1. Gatti et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38195783/
+  2. Drago et al., 2013 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/24325278/
+  3. van Gestel et al., 2015 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26504821/
+  4. Bigoni et al., 2019 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/30977891/
+  5. Lindfors et al., 2010 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/20624692/
+  6. Van Vugt et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33039177/
+  7. Malat et al., 2018 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/29665602/
+  8. Nguyen et al., 2025 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/40424253/
+  9. Lindfors et al., 2026 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/20624692/
 
 --- AUDIT LOG ---
-  [correcao] composição: Ajuste para conformidade com a ficha oficial do produto
+  [correcao] composicao: Ajuste para conformidade com a ficha oficial
   [correcao] CID: CID ausente no texto
 
 --- ANÁLISE CRÍTICA ---
