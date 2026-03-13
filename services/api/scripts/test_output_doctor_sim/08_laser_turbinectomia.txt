@@ -12,35 +12,36 @@ ESPECIALIDADE: Otorrinolaringologia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 315
+PALAVRAS: 305
 SCORE: 100.0/100 (alto)
-MODO: cobertura_direta
-TEMPO: 37.9s
+MODO: fora_do_rol
+TEMPO: 38.4s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-A paciente Fernanda Costa Ribeiro apresenta diagnóstico de hipertrofia de cornetos inferiores bilateral (CID J34.3), resultando em obstrução nasal crônica refratária a tratamento clínico por 10 meses. A manutenção deste quadro sem intervenção adequada perpetua um ambiente inflamatório crônico, exacerbando a hipertrofia dos cornetos e comprometendo a função respiratória nasal. A falha das abordagens conservadoras, incluindo o uso de corticosteroides tópicos e descongestionantes, evidencia a necessidade de intervenção cirúrgica para evitar a progressão para complicações mais severas, como apneia do sono e sinusite crônica.
-O uso do Kit FO - Laser Cirúrgico é tecnicamente superior e clinicamente necessário para o tratamento da hipertrofia dos cornetos inferiores. Este laser de diodo, com emissão simultânea de 980 nm e 1470 nm, permite corte e coagulação simultâneos, minimizando o sangramento intraoperatório e reduzindo o tempo cirúrgico. A precisão cirúrgica proporcionada por este laser diminui o dano térmico aos tecidos adjacentes, resultando em menor formação de crostas e eliminando a necessidade de tamponamento nasal pós-operatório, conforme demonstrado por Janda et al. (2001). Estudos comparativos, como os de Passàli et al. (2003) e Kankaanpää et al. (2021), corroboram a eficácia do laser de diodo em melhorar a qualidade de vida dos pacientes, superando técnicas convencionais como a turbinectomia e a eletrocauterização.
-A não realização do procedimento com o material solicitado pode levar a um agravamento do quadro clínico, com aumento do risco de complicações respiratórias e necessidade de intervenções futuras mais complexas e onerosas. A intervenção precoce com o Kit FO - Laser Cirúrgico é custo-efetiva, prevenindo a progressão para condições que demandariam hospitalizações prolongadas e tratamentos mais invasivos, conforme evidenciado por Mohamed et al. (2022) e Harju et al. (2021).
+A paciente Fernanda Costa Ribeiro apresenta diagnóstico de hipertrofia de cornetos inferiores bilateral (CID J34.3), resultando em obstrução nasal crônica refratária a tratamento clínico por 10 meses. A manutenção deste quadro inflamatório crônico, sem a devida intervenção, cria um ambiente bioquímico hostil que perpetua a obstrução nasal e compromete a qualidade de vida da paciente. Tentativas de manejo conservador, incluindo o uso de corticosteroides tópicos e anti-histamínicos, não conseguiram proporcionar alívio significativo dos sintomas, evidenciando a refratariedade do quadro e a necessidade de intervenção cirúrgica com OPME.
+O Kit FO - Laser Cirúrgico, com registro ANVISA 80145900901, é tecnicamente superior para este procedimento devido à sua capacidade de corte e coagulação simultâneos, reduzindo o sangramento intraoperatório e preservando os tecidos adjacentes com precisão micrométrica. A fibra óptica flexível permite acesso minimamente invasivo às vias aéreas superiores, essencial para a preservação da função mucociliar e redução do risco de complicações pós-operatórias. Estudos demonstram que o uso do laser diodo é eficaz na redução dos cornetos inferiores, resultando em melhorias significativas nos sintomas nasais e na qualidade de vida dos pacientes (Kankaanpää et al., 2021; Harju et al., 2021; Mohamed et al., 2022).
+A não realização deste procedimento com o Kit FO - Laser Cirúrgico pode resultar em progressão para um estado de obstrução nasal mais grave, exigindo intervenções futuras de maior porte e custo. Além disso, a persistência da obstrução nasal crônica está associada a um aumento na morbidade, potencializando a necessidade de internações e tratamentos adicionais, o que representa um custo significativamente maior para a operadora de saúde (Calvo-Henriquez et al., 2020; Zhang et al., 2023).
 A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 estabelece a cobertura obrigatória dos procedimentos, e a RN 395 exige justificativa de negativa por escrito. O Código de Ética Médica garante o uso do melhor progresso científico em benefício do paciente.
+Conforme RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme Código de Ética Médica Cap. I, V.
 
 --- REFERÊNCIAS ---
-  1. Janda et al. (2001) [internal]
-  2. Passàli et al. (2003) [pubmed] — https://pubmed.ncbi.nlm.nih.gov/12940665/
-  3. Kankaanpää et al. (2021) [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32453643/
-  4. Mohamed et al. (2022) [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33389308/
-  5. Harju et al. (2021) [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
+  1. Kankaanpää et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32453643/
+  2. Harju et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
+  3. Mohamed et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33389308/
+  4. Calvo-Henriquez et al., 2020 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32485468/
+  5. Zhang et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/36315624/
 
 --- AUDIT LOG ---
-  [correcao] CID: CID ausente no texto
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
+  [correcao] diagnostico: CID presente no texto
+  [validacao] registro_anvisa: Registro ANVISA correto
+  [validacao] referencia: Referência válida
+  [validacao] referencia: Referência válida
+  [validacao] referencia: Referência válida
+  [validacao] referencia: Referência válida
+  [validacao] referencia: Referência válida
 
 --- ANÁLISE CRÍTICA ---
   ✓ Nenhum problema detectado

@@ -161,11 +161,137 @@ PRODUCTS_SEED = [
         "peso_molecular": "Não aplicável",
         "concentracao": "Não aplicável",
         "registro_anvisa": "80145900901",
-        "codigo_tuss_sugerido": "30604020",
+        "codigo_tuss_sugerido": "31009107",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [
             "Lichtenstein IL, et al. The tension-free hernioplasty. Am J Surg. 1989;157(2):188-93.",
             "EU Hernia Trialists Collaboration. Mesh compared with non-mesh methods. Br J Surg. 2000;87(7):854-9.",
+        ],
+    },
+    {
+        "nome": "Biossilex - Biovidro",
+        "linha": "Biossilex",
+        "descricao_tecnica": (
+            "Substituto ósseo sintético à base de biovidro (SiO2-CaO-Na2O-P2O5). "
+            "Grânulos bioativos que promovem osteocondução e osteoestimulação por meio da "
+            "liberação iônica controlada de cálcio, silício e fósforo na interface óssea."
+        ),
+        "diferenciais_clinicos": (
+            "Biovidro com propriedade antibacteriana intrínseca: elevação de pH local inibe "
+            "colonização bacteriana, ideal para cavidades pós-osteomielite. Osteocondução e "
+            "osteoestimulação comprovadas. Reabsorção gradual com substituição por osso neoformado. "
+            "Dispensa coleta de enxerto autólogo (elimina morbidade do sítio doador)."
+        ),
+        "indicacoes": (
+            "Preenchimento de defeitos ósseos pós-osteomielite, pseudoartroses, artrodeses, "
+            "tumores ósseos, fraturas complexas com perda de substância, reconstrução craniofacial."
+        ),
+        "contraindicacoes": "Infecção ativa não desbridada. Defeitos sem contenção óssea ou de tecidos moles.",
+        "viscosidade": "Não aplicável (grânulos sólidos)",
+        "peso_molecular": "Não aplicável",
+        "concentracao": "Não aplicável (biovidro 100%)",
+        "registro_anvisa": "80145900901",
+        "codigo_tuss_sugerido": "30727154",
+        "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
+        "referencias_bibliograficas": [
+            "Hench LL. The story of Bioglass. J Mater Sci Mater Med. 2006;17(11):967-78.",
+            "Fernandes HR, et al. Bioactive glasses and glass-ceramics for healthcare applications. Int J Appl Glass Sci. 2018;9(2):174-190.",
+            "Rahaman MN, et al. Bioactive glass in tissue engineering. Acta Biomater. 2011;7(6):2355-73.",
+        ],
+    },
+    {
+        "nome": "Vitagraft - Enxerto Bifásico",
+        "linha": "Vitagraft",
+        "descricao_tecnica": (
+            "Substituto ósseo bifásico composto por hidroxiapatita (HA) e beta-tricálcio fosfato "
+            "(β-TCP) na proporção 60:40. Grânulos porosos com macro e microporos interconectados "
+            "que mimetizam a estrutura do osso esponjoso."
+        ),
+        "diferenciais_clinicos": (
+            "Composição bifásica combina estabilidade estrutural da HA com reabsorção controlada "
+            "do β-TCP, promovendo osteocondução progressiva. Porosidade interconectada favorece "
+            "vascularização e migração celular. Elimina necessidade de enxerto autólogo e morbidade "
+            "do sítio doador. Aplicável em defeitos ósseos de múltiplas localizações anatômicas."
+        ),
+        "indicacoes": (
+            "Pseudoartroses, artrodeses (coluna, membros superiores e inferiores), defeitos ósseos "
+            "pós-ressecção tumoral, reconstrução craniana e craniofacial, perda de substância óssea."
+        ),
+        "contraindicacoes": "Infecção ativa no sítio de implante. Defeitos sem vascularização adequada.",
+        "viscosidade": "Não aplicável (grânulos sólidos)",
+        "peso_molecular": "Não aplicável",
+        "concentracao": "HA 60% / β-TCP 40%",
+        "registro_anvisa": "80145900901",
+        "codigo_tuss_sugerido": "30713048",
+        "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
+        "referencias_bibliograficas": [
+            "Daculsi G, et al. Biphasic calcium phosphate concept applied to artificial bone, implant coating and injectable bone substitute. Biomaterials. 1998;19(16):1473-8.",
+            "LeGeros RZ. Calcium phosphate-based osteoinductive materials. Chem Rev. 2008;108(11):4742-53.",
+            "Ebrahimi M, et al. Biphasic calcium phosphates bioceramics: an overview. J Mater Sci Mater Med. 2017;28(1):6.",
+        ],
+    },
+    {
+        "nome": "Kit EC2 - Enxerto Composto",
+        "linha": "EC2",
+        "descricao_tecnica": (
+            "Sistema para colheita, processamento e aplicação de enxerto composto de tecido "
+            "celular subcutâneo autólogo contendo fração vascular estromal (SVF). Composto por "
+            "cânulas de acesso e colheita, gel carreador para preservação do enxerto."
+        ),
+        "diferenciais_clinicos": (
+            "Permite colheita e reimplantação de enxerto composto autólogo rico em células do "
+            "estroma vascular (SVF) para promoção de vasculogênese e angiogênese. Gel carreador "
+            "preserva viabilidade celular entre colheita e reimplantação. Modulação do processo "
+            "inflamatório e cicatricial. Aplicação em urologia (Peyronie, disfunção erétil, "
+            "estenose uretral) e medicina regenerativa."
+        ),
+        "indicacoes": (
+            "Doença de Peyronie, disfunção erétil com componente vascular, estenose uretral, "
+            "reparação de corpo cavernoso, aplicações em medicina regenerativa."
+        ),
+        "contraindicacoes": "Infecção ativa no sítio de colheita ou implante. Coagulopatia não controlada.",
+        "viscosidade": "Não aplicável (kit cirúrgico)",
+        "peso_molecular": "Não aplicável",
+        "concentracao": "Não aplicável (enxerto autólogo)",
+        "registro_anvisa": "80145900901",
+        "codigo_tuss_sugerido": "30101310",
+        "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
+        "referencias_bibliograficas": [
+            "Zuk PA, et al. Multilineage cells from human adipose tissue. Tissue Eng. 2001;7(2):211-28.",
+            "Bourin P, et al. Stromal cells from the adipose tissue-derived stromal vascular fraction. Cytotherapy. 2013;15(6):641-8.",
+            "Haack-Sørensen M, et al. Mesenchymal stromal cell therapy for ischemic heart disease. Nat Rev Cardiol. 2019;16:727-740.",
+        ],
+    },
+    {
+        "nome": "Kit FO - Laser Cirúrgico",
+        "linha": "Laser Dual",
+        "descricao_tecnica": (
+            "Sistema de fibra óptica para acoplamento em fonte de laser cirúrgico (diodo ou CO2). "
+            "Fibras descartáveis estéreis com ponteiras anguladas para acesso endoscópico em "
+            "cavidades nasais, laríngeas e brônquicas."
+        ),
+        "diferenciais_clinicos": (
+            "Fibra óptica flexível permite acesso minimamente invasivo a vias aéreas superiores e "
+            "inferiores. Corte e coagulação simultâneos reduzem sangramento intraoperatório. "
+            "Precisão micrométrica preserva tecidos adjacentes. Ponteiras descartáveis eliminam "
+            "risco de contaminação cruzada. Compatível com endoscópios rígidos e flexíveis."
+        ),
+        "indicacoes": (
+            "Turbinectomia/turbinoplastia, ressecção de papiloma laríngeo, adenoidectomia, "
+            "uvulopalatofaringoplastia (SAHOS), desobstrução brônquica, exérese de tumores "
+            "de vias aéreas, cauterização nasal, sinequiotomia."
+        ),
+        "contraindicacoes": "Uso próximo a materiais inflamáveis. Coagulopatia severa não corrigida.",
+        "viscosidade": "Não aplicável (dispositivo óptico)",
+        "peso_molecular": "Não aplicável",
+        "concentracao": "Não aplicável",
+        "registro_anvisa": "80145900901",
+        "codigo_tuss_sugerido": "30501458",
+        "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
+        "referencias_bibliograficas": [
+            "Shapshay SM, et al. Laser surgery for laryngeal and pharyngeal disorders. Otolaryngol Clin North Am. 1996;29(6):941-54.",
+            "Remacle M, et al. Laser-assisted surgery of the upper aero-digestive tract. Eur Arch Otorhinolaryngol. 2008;265(6):609-15.",
+            "Janda P, et al. Diode laser treatment of hyperplasia of the inferior nasal turbinates. Lasers Surg Med. 2001;28(5):404-13.",
         ],
     },
 ]
@@ -303,7 +429,7 @@ PRODUCT_TUSS_MAPPINGS_SEED = {
         {"tuss_code": "30727049", "procedure_name": "Reconstrução de LCA", "subgroup": "Ortopedia", "applications": "Reconstrução ligamentar, LCA, ligamento cruzado anterior, joelho, fixação de enxerto", "is_primary": True},
     ],
     "Tela de Polipropileno Macroporosa": [
-        {"tuss_code": "30604020", "procedure_name": "Herniorrafia com tela", "subgroup": "Cirurgia Geral", "applications": "Hérnia incisional, hérnia inguinal, herniorrafia, hernioplastia, tela, polipropileno", "is_primary": True},
+        {"tuss_code": "31009107", "procedure_name": "Herniorrafia incisional", "subgroup": "Cirurgia Geral", "applications": "Hérnia incisional, hérnia inguinal, herniorrafia, hernioplastia, tela, polipropileno", "is_primary": True},
     ],
     "Vitagraft - Enxerto Bifásico": [
         {"tuss_code": "30713048", "procedure_name": "Enxertos em pseudartroses", "subgroup": "Ortopedia", "applications": "Pseudoartrose, enxerto ósseo, não consolidação, defeito ósseo", "is_primary": True},
@@ -549,7 +675,7 @@ async def seed():
             ("30715016", "Implante de barreira anti-aderência"),
             ("20104120", "Viscossuplementação articular"),
             ("30727049", "Reconstrução de ligamento cruzado anterior"),
-            ("30604020", "Herniorrafia com tela"),
+            ("31009107", "Herniorrafia incisional"),
         ]:
             t = TussTerm(code=code, term=term, table_source="procedimentos")
             db.add(t)

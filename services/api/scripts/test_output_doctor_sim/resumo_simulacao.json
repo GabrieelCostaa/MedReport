@@ -6,15 +6,15 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 271,
+    "word_count": 282,
     "score": 100.0,
     "nivel": "alto",
     "mode": "cobertura_direta",
     "issues_count": 1,
     "issues": [
-      "DADO REMOVIDO PELO AUDITOR: reticulação polimérica tridimensional: dado sem evidência"
+      "GAP: Status Anvisa não verificado"
     ],
-    "elapsed": 27.5
+    "elapsed": 67.4
   },
   {
     "id": "02_parafuso_lca",
@@ -23,13 +23,16 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 326,
+    "word_count": 287,
     "score": 100.0,
     "nivel": "alto",
     "mode": "cobertura_direta",
-    "issues_count": 0,
-    "issues": [],
-    "elapsed": 52.2
+    "issues_count": 2,
+    "issues": [
+      "ALERTA: Referência com formato duvidoso: Konan e Haddad, 2009",
+      "DADO REMOVIDO PELO AUDITOR: custo: dado sem evidência"
+    ],
+    "elapsed": 45.6
   },
   {
     "id": "03_biossilex_osteomielite",
@@ -38,31 +41,36 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 312,
+    "word_count": 311,
     "score": 100.0,
     "nivel": "alto",
     "mode": "cobertura_direta",
-    "issues_count": 0,
-    "issues": [],
-    "elapsed": 43.1
+    "issues_count": 1,
+    "issues": [
+      "DADO REMOVIDO PELO AUDITOR: valor monetário: dado sem evidência"
+    ],
+    "elapsed": 54.8
   },
   {
     "id": "04_vitagraft_pseudoartrose",
     "descricao": "Vitagraft — Pseudoartrose de úmero",
     "product": "Vitagraft - Enxerto Bifásico",
-    "aprovado": true,
+    "aprovado": false,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 261,
+    "word_count": 295,
     "score": 100.0,
     "nivel": "alto",
     "mode": "fora_do_rol",
-    "issues_count": 2,
+    "issues_count": 5,
     "issues": [
-      "ALERTA: Apenas referências internas — sem PubMed",
-      "VERIFICAR: Percentual 85% no texto — confirmar se tem evidência"
+      "ALERTA: Referência com formato duvidoso: LeGeros, 2008",
+      "VERIFICAR: Percentual 60% no texto — confirmar se tem evidência",
+      "CORREÇÃO HARD: concentracao: [BLOQUEANTE] discrepancia: valor no texto '40%' diverge do oficial 'HA 60% / β-TCP 40%'",
+      "DADO REMOVIDO PELO AUDITOR: custo: dado sem evidência",
+      "BLOQUEIO: O valor '40%' foi identificado como concentracao incorreto. O valor oficial é 'HA 60% / β-TCP 40%'."
     ],
-    "elapsed": 31.7
+    "elapsed": 39.3
   },
   {
     "id": "05_tela_hernia_incisional",
@@ -71,34 +79,30 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 280,
-    "score": 85.0,
+    "word_count": 264,
+    "score": 100.0,
     "nivel": "alto",
-    "mode": "fora_do_rol",
+    "mode": "cobertura_direta",
     "issues_count": 1,
     "issues": [
-      "GAP: Código TUSS 30604020: Código TUSS 30604020 não encontrado na base oficial (Tabelas 19 e 22)"
+      "DADO REMOVIDO PELO AUDITOR: resistencia_mecanica: dado sem evidência"
     ],
-    "elapsed": 36.8
+    "elapsed": 42.9
   },
   {
     "id": "06_adhesion_lise_aderencias",
     "descricao": "Adhesion STP+ — Lise de aderências abdominais",
     "product": "Adhesion STP+",
     "aprovado": true,
-    "checklist_ok": 5,
+    "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 302,
+    "word_count": 311,
     "score": 100.0,
     "nivel": "alto",
     "mode": "fora_do_rol",
-    "issues_count": 3,
-    "issues": [
-      "CRÍTICO: Checklist incompleto — faltam: falha_terapeutica",
-      "VERIFICAR: Percentual 80% no texto — confirmar se tem evidência",
-      "DADO REMOVIDO PELO AUDITOR: falha_terapeutica: Falha terapêutica prévia não mencionada"
-    ],
-    "elapsed": 36.8
+    "issues_count": 0,
+    "issues": [],
+    "elapsed": 44.9
   },
   {
     "id": "07_enxerto_peyronie",
@@ -107,15 +111,15 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 304,
-    "score": 93.0,
+    "word_count": 292,
+    "score": 99.0,
     "nivel": "alto",
     "mode": "cobertura_direta",
     "issues_count": 1,
     "issues": [
-      "DADO REMOVIDO PELO AUDITOR: taxa de sucesso: dado sem evidência"
+      "DADO REMOVIDO PELO AUDITOR: custos significativamente maiores: dado sem evidência"
     ],
-    "elapsed": 37.7
+    "elapsed": 58.7
   },
   {
     "id": "08_laser_turbinectomia",
@@ -124,12 +128,12 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 315,
+    "word_count": 305,
     "score": 100.0,
     "nivel": "alto",
-    "mode": "cobertura_direta",
+    "mode": "fora_do_rol",
     "issues_count": 0,
     "issues": [],
-    "elapsed": 37.9
+    "elapsed": 38.4
   }
 ]

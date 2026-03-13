@@ -12,32 +12,39 @@ ESPECIALIDADE: Ortopedia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 271
+PALAVRAS: 282
 SCORE: 100.0/100 (alto)
 MODO: cobertura_direta
-TEMPO: 27.5s
+TEMPO: 67.4s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
+GAPS: Status Anvisa não verificado
 
 --- RELATÓRIO GERADO ---
-O paciente José Ricardo Mendes apresenta diagnóstico de gonartrose primária unilateral do joelho direito, classificada como grau III pela escala de Kellgren-Lawrence (CID M17.1), com dor crônica persistente há 2 anos. O tratamento conservador, incluindo fisioterapia, uso de anti-inflamatórios não esteroidais (AINEs) e infiltrações, foi realizado por mais de 6 meses sem melhora significativa, evidenciando a refratariedade do quadro e a necessidade de intervenção com OPME para evitar a progressão da deterioração funcional.
-A indicação do Kit EC2 - Linha Opus, que contém ácido hialurônico de alto peso molecular (6.000 kDa), é tecnicamente superior e clinicamente necessária para o reestabelecimento da homeostase articular e viscoindução. Diferente de formulações de menor peso molecular, o Kit EC2 proporciona maior tempo de permanência intra-articular devido ao seu alto peso molecular, garantindo alívio prolongado da dor e melhora funcional significativa (Bellamy et al., 2006; Anil et al., 2021).
-A não realização do procedimento implica em risco de evolução para artroplastia total do joelho, um procedimento de maior morbidade e custo para a operadora, além de potencializar a necessidade de internações futuras devido à progressão da doença (Ahmad et al., 2022; Wu et al., 2022). Estudos demonstram que a viscossuplementação com ácido hialurônico de alto peso molecular é eficaz na redução da dor e melhora da função articular, sendo uma alternativa custo-efetiva em comparação a intervenções cirúrgicas mais invasivas (Meng et al., 2023; Lopes et al., 2024).
-A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+O paciente José Ricardo Mendes apresenta diagnóstico de gonartrose primária unilateral do joelho direito, classificada como grau III pela escala de Kellgren-Lawrence (CID M17.1), com dor crônica persistente há 2 anos. O quadro clínico é caracterizado por dor articular significativa e limitação funcional que afeta as atividades diárias. Após insucesso com tratamento conservador, incluindo analgésicos, anti-inflamatórios não esteroidais e fisioterapia por mais de 6 meses sem melhora significativa, indica-se a viscossuplementação com o Kit EC2 - Linha Opus, que contém ácido hialurônico de alto peso molecular (6.000 kDa) e concentração de 10 mg/mL.
+O Kit EC2 é tecnicamente superior devido à sua alta viscosidade (80.000 - 120.000 mPa.s), que proporciona restauração das propriedades viscoelásticas do líquido sinovial, alívio prolongado da dor e melhora funcional. Diferente de formulações de menor peso molecular, o ácido hialurônico de alto peso molecular presente no Kit EC2 oferece maior tempo de permanência intra-articular, retardando a degradação enzimática e promovendo a homeostase articular (Altman et al., 2015; Bannuru et al., 2009). Estudos demonstram que a viscossuplementação com ácido hialurônico é eficaz no tratamento da osteoartrite do joelho, especialmente em casos refratários a tratamentos conservadores (Bellamy et al., 2006; Anil et al., 2021).
+A não realização do procedimento pode resultar em progressão da degeneração articular, levando a perda funcional irreversível e necessidade de procedimentos cirúrgicos de maior porte, como artroplastia total, que apresentam maior morbidade e custo para a operadora de saúde (Agarwal et al., 2021; Han et al., 2025). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. Em caso de divergência, a RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
-  1. Bellamy et al., 2006 [internal]
-  2. Anil et al., 2021 [internal]
-  3. Ahmad et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/34654554/
-  4. Wu et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/34971318/
-  5. Meng et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35024906/
-  6. Lopes et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/37669706/
+  1. Altman et al., 2015 [internal]
+  2. Bannuru et al., 2009 [internal]
+  3. Bellamy et al., 2006 [internal]
+  4. Anil et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/34500430/
+  5. Agarwal et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/34206010/
+  6. Han et al., 2025 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/39914607/
 
 --- AUDIT LOG ---
-  [correcao] CID: CID ausente no texto
-  [remocao] reticulação polimérica tridimensional: dado sem evidência
+  [validacao] viscosidade: dado conforme ficha oficial
+  [validacao] peso_molecular: dado conforme ficha oficial
+  [validacao] concentracao: dado conforme ficha oficial
+  [validacao] referencia: referência válida
+  [validacao] referencia: referência válida
+  [validacao] referencia: referência válida
+  [validacao] referencia: referência válida
+  [validacao] referencia: referência válida
+  [validacao] referencia: referência válida
 
 --- ANÁLISE CRÍTICA ---
-  ? DADO REMOVIDO PELO AUDITOR: reticulação polimérica tridimensional: dado sem evidência
+  ? GAP: Status Anvisa não verificado

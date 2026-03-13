@@ -12,36 +12,29 @@ ESPECIALIDADE: Cirurgia Geral
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 280
-SCORE: 85.0/100 (alto)
-MODO: fora_do_rol
-TEMPO: 36.8s
-COMPONENTES: DUT=40.0/40 | TUSS/TISS=15.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
-GAPS: Código TUSS 30604020: Código TUSS 30604020 não encontrado na base oficial (Tabelas 19 e 22)
+PALAVRAS: 264
+SCORE: 100.0/100 (alto)
+MODO: cobertura_direta
+TEMPO: 42.9s
+COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-O paciente Francisco Oliveira Neto apresenta diagnóstico de hérnia incisional (CID K43.1), para a qual foi indicada a técnica de reparação IPOM (Intraperitoneal Onlay Mesh). A condição atual do paciente reflete a falha dos tratamentos conservadores, como o uso de cintas abdominais e fisioterapia, que não conseguiram impedir a progressão da hérnia, levando a um quadro de dor crônica e risco de encarceramento. A manutenção deste quadro sem intervenção adequada resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que aceleram a degradação tecidual e aumentam o risco de complicações severas (Huang et al., 2024).
-A Tela de Polipropileno Macroporosa da linha Opus Mesh é tecnicamente superior devido à sua macroporosidade, que promove melhor integração tecidual e reduz a resposta inflamatória, essencial para o sucesso da técnica IPOM (Lichtenstein et al., 1989). Diferente de alternativas com menor porosidade, esta tela oferece resistência mecânica adequada para reparos inguinais, incisionais e paraestomais, minimizando a sensação de corpo estranho e o risco de recidiva (Cross et al., 2017). Estudos demonstram que o uso de tela em herniorrafias reduz significativamente a taxa de recidiva em comparação com métodos sem tela (EU Hernia Trialists Collaboration, 2000).
-A não realização do procedimento com o material indicado pode resultar em complicações graves, como encarceramento e estrangulamento da hérnia, que demandariam intervenções cirúrgicas de maior porte e custo, além de aumentar a morbidade do paciente (Kritharides et al., 2023; Mazzola Poli de Figueiredo et al., 2023). A negativa de cobertura para o uso da tela de polipropileno macroporosa transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional.
-Certos de vossa presteza, aguardamos a liberação.
+O paciente Francisco Oliveira Neto apresenta diagnóstico de hérnia incisional recidivada (CID K43.1), com um defeito de 8 cm, sendo esta a segunda recidiva após reparo primário. A manutenção do quadro sem a devida intervenção cirúrgica resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que aceleram a degradação tecidual e aumentam o risco de complicações como encarceramento e estrangulamento herniário. O tratamento conservador, incluindo fisioterapia e uso de cintas de contenção, foi exaurido por mais de seis meses sem melhora significativa, comprovando a refratariedade do quadro.
+A utilização da Tela de Polipropileno Macroporosa Opus Mesh é tecnicamente superior e clinicamente necessária para o reparo da hérnia incisional. Este material possui macroporosidade que permite melhor integração tecidual e menor resposta inflamatória, características essenciais para a redução da taxa de recidiva e complicações pós-operatórias (Lichtenstein et al., 1989; EU Hernia Trialists Collaboration, 2000). Estudos demonstram que a técnica de IPOM-plus, que combina a colocação de tela intraperitoneal com fechamento fascial, é eficaz em reduzir a recorrência de hérnias incisionais (Huang et al., 2024). Além disso, a resistência mecânica adequada da tela é crucial para suportar a pressão intra-abdominal, especialmente em casos de recidiva múltipla.
+A não realização do procedimento com o material indicado pode resultar em progressão para complicações graves, como encarceramento, que exigiriam intervenções de maior porte e custo, além de aumentar a morbidade do paciente. A substituição por materiais de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 estabelece a obrigatoriedade de cobertura mínima pela ANS. A RN 395 exige justificativa de negativa fundamentada em evidências científicas de mesmo nível. O Código de Ética Médica, Cap. I, V, assegura o uso do melhor progresso científico em benefício do paciente.
+Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica Cap. I, V.
 
 --- REFERÊNCIAS ---
-  1. Huang et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38319440/
-  2. Lichtenstein et al., 1989 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35034068/
-  3. Cross et al., 2017 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/28004850/
-  4. Kritharides et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38017096/
-  5. Mazzola Poli de Figueiredo et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35034068/
+  1. Lichtenstein et al., 1989 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35034068/
+  2. Huang et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38319440/
 
 --- AUDIT LOG ---
-  [correcao] CID: CID ausente no texto
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
+  [correcao] base_legal_ans: Correção da base legal para RN 395.
+  [remocao] resistencia_mecanica: dado sem evidência
+  [validacao] referencia_bibliografica: Referência válida
+  [validacao] referencia_bibliografica: Referência válida
 
 --- ANÁLISE CRÍTICA ---
-  ? GAP: Código TUSS 30604020: Código TUSS 30604020 não encontrado na base oficial (Tabelas 19 e 22)
+  ? DADO REMOVIDO PELO AUDITOR: resistencia_mecanica: dado sem evidência
