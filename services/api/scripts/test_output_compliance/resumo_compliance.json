@@ -73,10 +73,10 @@
       "nome": "Rol/DUT — Paciente atende todos os critérios",
       "status": "OK",
       "aprovado": true,
-      "palavras": 316,
-      "caracteres": 2255,
+      "palavras": 296,
+      "caracteres": 2179,
       "checklist": "6/6",
-      "compliance_mode": "cobertura_direta",
+      "compliance_mode": "fora_do_rol",
       "approval_score": 77.0,
       "approval_nivel": "medio",
       "approval_componentes": {
@@ -87,7 +87,7 @@
         "anvisa_status": "ativo"
       },
       "issues": [],
-      "tempo": "26.9s",
+      "tempo": "43.1s",
       "refs_count": 2,
       "arquivo": "scripts/test_output_compliance/01_rol_dut_atende.txt"
     },
@@ -96,10 +96,10 @@
       "nome": "Rol/DUT — Paciente atende parcialmente (dados faltantes)",
       "status": "OK",
       "aprovado": true,
-      "palavras": 345,
-      "caracteres": 2543,
+      "palavras": 300,
+      "caracteres": 2203,
       "checklist": "6/6",
-      "compliance_mode": "cobertura_direta",
+      "compliance_mode": "fora_do_rol",
       "approval_score": 77.0,
       "approval_nivel": "medio",
       "approval_componentes": {
@@ -110,7 +110,7 @@
         "anvisa_status": "ativo"
       },
       "issues": [],
-      "tempo": "34.0s",
+      "tempo": "48.9s",
       "refs_count": 3,
       "arquivo": "scripts/test_output_compliance/02_rol_dut_parcial.txt"
     },
@@ -119,8 +119,8 @@
       "nome": "Cobertura Direta — Procedimento no Rol sem DUT",
       "status": "OK",
       "aprovado": true,
-      "palavras": 282,
-      "caracteres": 2129,
+      "palavras": 296,
+      "caracteres": 2209,
       "checklist": "6/6",
       "compliance_mode": "cobertura_direta",
       "approval_score": 74.0,
@@ -133,7 +133,7 @@
         "anvisa_status": "ativo"
       },
       "issues": [],
-      "tempo": "26.2s",
+      "tempo": "39.7s",
       "refs_count": 2,
       "arquivo": "scripts/test_output_compliance/03_cobertura_direta.txt"
     },
@@ -142,10 +142,10 @@
       "nome": "Fora do Rol — Dossiê de Exceção + STF Checklist",
       "status": "OK",
       "aprovado": true,
-      "palavras": 298,
-      "caracteres": 2173,
+      "palavras": 304,
+      "caracteres": 2127,
       "checklist": "6/6",
-      "compliance_mode": "cobertura_direta",
+      "compliance_mode": "fora_do_rol",
       "approval_score": 72.0,
       "approval_nivel": "medio",
       "approval_componentes": {
@@ -156,7 +156,7 @@
         "anvisa_status": "ativo"
       },
       "issues": [],
-      "tempo": "21.3s",
+      "tempo": "33.3s",
       "refs_count": 1,
       "arquivo": "scripts/test_output_compliance/04_fora_do_rol.txt"
     },
@@ -165,8 +165,8 @@
       "nome": "Laser — Especialidade diferente (ORL)",
       "status": "OK",
       "aprovado": true,
-      "palavras": 267,
-      "caracteres": 1920,
+      "palavras": 299,
+      "caracteres": 2123,
       "checklist": "6/6",
       "compliance_mode": "cobertura_direta",
       "approval_score": 72.0,
@@ -178,7 +178,7 @@
         "robustez_evidencia": 2.0
       },
       "issues": [],
-      "tempo": "16.6s",
+      "tempo": "30.7s",
       "refs_count": 1,
       "arquivo": "scripts/test_output_compliance/05_laser_otorrino.txt"
     },
@@ -187,8 +187,8 @@
       "nome": "Biossilex — Osteomielite crônica",
       "status": "OK",
       "aprovado": true,
-      "palavras": 311,
-      "caracteres": 2266,
+      "palavras": 321,
+      "caracteres": 2313,
       "checklist": "6/6",
       "compliance_mode": "cobertura_direta",
       "approval_score": 72.0,
@@ -201,7 +201,7 @@
         "anvisa_status": "ativo"
       },
       "issues": [],
-      "tempo": "18.9s",
+      "tempo": "29.1s",
       "refs_count": 1,
       "arquivo": "scripts/test_output_compliance/06_biossilex_ortopedia.txt"
     }

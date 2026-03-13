@@ -13,9 +13,9 @@ PATIENT DATA: {"idade": 52, "finalidade": "terapeutico"}
 STATUS: OK
 APROVADO: True
 CHECKLIST: 6/6
-CARACTERES: 2266
-PALAVRAS: 311
-TEMPO: 18.9s
+CARACTERES: 2313
+PALAVRAS: 321
+TEMPO: 29.1s
 
 --- COMPLIANCE ANS ---
 MODO: cobertura_direta
@@ -67,7 +67,7 @@ SUGESTÕES DUT: []
   [researching] Analisando contexto clínico e identificando lacunas...
   [writing] Redigindo justificativa técnica para Biossilex - Biovidro...
   [writing] Fundamentando com 1 evidências científicas...
-  [writing] Redação concluída — 318 palavras geradas
+  [writing] Redação concluída — 331 palavras geradas
   [auditing] Confrontando dados técnicos de Biossilex - Biovidro com base oficial...
   [auditing] Dados técnicos verificados — sem divergências
   [validating] Executando validação determinística de conformidade...
@@ -77,16 +77,16 @@ SUGESTÕES DUT: []
 RELATÓRIO GERADO:
 ======================================================================
 
-O paciente apresenta osteomielite crônica da tíbia, caracterizada por falha de consolidação óssea e infecção recorrente, mesmo após a realização de três desbridamentos cirúrgicos sem resolução efetiva. Este quadro clínico é agravado pela resistência bacteriana aos antibióticos previamente utilizados, o que inviabiliza o controle da infecção por métodos convencionais. A persistência do estado inflamatório crônico, sem intervenção adequada, promove um ambiente bioquímico desfavorável, dominado por citocinas pró-inflamatórias, que aceleram a apoptose celular e comprometem a matriz óssea, levando a uma deterioração funcional progressiva.
-A utilização do Biossilex - Biovidro é tecnicamente superior e clinicamente necessária para o tratamento deste caso. Este material possui elevada bioatividade, promovendo a rápida formação de hidroxiapatita, essencial para a integração e consolidação óssea em situações de falhas críticas. Além disso, o Biossilex apresenta um mecanismo de ação único de inibição bacteriana tópica por mais de 7 dias, através da liberação de aníons, o que cria uma janela terapêutica que potencializa a eficácia dos antibióticos sistêmicos contra osteomielites. Diferentemente de materiais genéricos, que não oferecem tal proteção prolongada, o Biossilex assegura um ambiente estéril, crucial para o sucesso do tratamento e prevenção de novas infecções.
-A não utilização deste material pode resultar em progressão para um quadro clínico mais grave, com necessidade de intervenções cirúrgicas adicionais de maior complexidade e custo elevado, como artroplastias ou amputações. Tais procedimentos não só aumentam o risco de morbidade para o paciente, como também elevam significativamente os custos para a operadora de saúde. O tratamento profilático aqui proposto com o Biossilex é significativamente inferior ao custo de procedimentos alternativos mais invasivos, como a artroplastia total, que pode variar entre R$30.000 e R$50.000.
+O paciente apresenta um quadro de osteomielite crônica na tíbia, caracterizado por falha de consolidação óssea e infecção recorrente, mesmo após a realização de três desbridamentos cirúrgicos sem resolução satisfatória. A manutenção deste estado inflamatório crônico, sem intervenção adequada, resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias como IL-1β e TNF-α, que aceleram a apoptose dos osteoblastos e a degradação da matriz óssea, comprometendo ainda mais a estabilidade estrutural e funcional do osso afetado. O insucesso das abordagens conservadoras, incluindo antibioticoterapia sistêmica e procedimentos cirúrgicos repetidos, comprova a refratariedade do quadro, tornando a utilização do Biossilex - Biovidro não apenas indicada, mas mandatória para evitar a progressão para uma condição de maior morbidade e possível amputação.
+O Biossilex - Biovidro é um material biocerâmico com elevada bioatividade, capaz de formar rapidamente uma camada de hidroxiapatita ao integrar-se ao tecido ósseo, promovendo a consolidação necessária em defeitos ósseos críticos. Além disso, sua capacidade de inibir o crescimento bacteriano por mais de 7 dias, através da liberação de aníons, cria uma janela terapêutica que potencializa a eficácia dos antibióticos sistêmicos contra osteomielites. Este duplo mecanismo de ação, que combina a promoção da osteointegração com a inibição bacteriana tópica, diferencia o Biossilex de outros materiais menos eficazes, que não oferecem a mesma proteção prolongada contra infecções ou suporte à regeneração óssea.
+A não utilização deste material específico pode resultar em uma evolução para perda funcional irreversível, com necessidade de procedimentos de maior complexidade e custo, como a artroplastia ou mesmo amputação. O custo de tais intervenções é significativamente superior ao do tratamento profilático aqui proposto, além de implicar em maior tempo de internação e reabilitação, aumentando os custos para a operadora de saúde.
 A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 ======================================================================
 BASE LEGAL (campo separado):
 ======================================================================
 
-Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 estabelece a cobertura obrigatória para os procedimentos mencionados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, conforme a RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica.
+Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 reforça a obrigatoriedade de cobertura mínima dos procedimentos, enquanto a RN 395 exige justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível. O Código de Ética Médica garante ao médico o uso do melhor progresso científico em benefício do paciente.
 
 ======================================================================
 AUDIT LOG:
@@ -95,15 +95,15 @@ AUDIT LOG:
 [
   {
     "tipo": "remocao",
-    "campo": "eficácia dos antibióticos sistêmicos em 340%",
-    "original": "potencializa a eficácia dos antibióticos sistêmicos em 340% contra osteomielites (Rahaman MN et al., 2011).",
-    "corrigido": "potencializa a eficácia dos antibióticos sistêmicos contra osteomielites.",
+    "campo": "eficácia dos antibióticos",
+    "original": "em até 340% contra osteomielites, conforme demonstrado por Rahaman et al. (2011)",
+    "corrigido": "contra osteomielites",
     "motivo": "Dado não presente na ficha oficial do produto."
   },
   {
     "tipo": "validacao",
-    "campo": "referência bibliográfica",
-    "original": "Rahaman MN et al., 2011",
+    "campo": "referencia_bibliografica",
+    "original": "Rahaman et al. (2011)",
     "corrigido": "Rahaman et al.",
     "motivo": "Autor presente na lista de referências conhecidas do produto."
   }

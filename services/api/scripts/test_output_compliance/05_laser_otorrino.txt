@@ -13,9 +13,9 @@ PATIENT DATA: {"idade": 38, "tempo_tratamento_conservador_meses": 8, "finalidade
 STATUS: OK
 APROVADO: True
 CHECKLIST: 6/6
-CARACTERES: 1920
-PALAVRAS: 267
-TEMPO: 16.6s
+CARACTERES: 2123
+PALAVRAS: 299
+TEMPO: 30.7s
 
 --- COMPLIANCE ANS ---
 MODO: cobertura_direta
@@ -46,7 +46,7 @@ SUGESTÕES DUT: []
 }
 
 --- REFERÊNCIAS ---
-  1. Janda et al., 2001 [internal]
+  1. Janda et al. [internal]
 
 --- PROGRESS LOG ---
   [researching] Consultando base de evidências para CID J34.3...
@@ -64,9 +64,9 @@ SUGESTÕES DUT: []
   [researching] Analisando contexto clínico e identificando lacunas...
   [writing] Redigindo justificativa técnica para Kit FO - Laser Cirúrgico...
   [writing] Fundamentando com 1 evidências científicas...
-  [writing] Redação concluída — 274 palavras geradas
+  [writing] Redação concluída — 310 palavras geradas
   [auditing] Confrontando dados técnicos de Kit FO - Laser Cirúrgico com base oficial...
-  [auditing] 1 correção(ões) aplicada(s) para conformidade
+  [auditing] Dados técnicos verificados — sem divergências
   [validating] Executando validação determinística de conformidade...
   [done] Relatório finalizado
 
@@ -74,13 +74,16 @@ SUGESTÕES DUT: []
 RELATÓRIO GERADO:
 ======================================================================
 
-A paciente Ana Carolina Ferreira, de 38 anos, apresenta hipertrofia de cornetos nasais inferiores bilaterais, diagnosticada com CID J34.3, refratária a tratamento clínico por 8 meses. A manutenção do quadro inflamatório crônico, sem a devida intervenção cirúrgica, resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que pode levar a uma deterioração funcional progressiva, com risco de evolução para obstrução nasal crônica e suas complicações associadas, como apneia do sono e sinusite crônica. As tentativas de tratamento conservador, incluindo o uso de corticosteroides tópicos e anti-histamínicos, não resultaram em melhora significativa, comprovando a refratariedade do quadro. A turbinoplastia assistida por laser de diodo, utilizando o Kit FO - Laser Cirúrgico, é tecnicamente superior e clinicamente necessária para este caso. O Kit FO - Laser Cirúrgico permite corte e coagulação simultâneos, reduzindo significativamente a formação de crostas pós-operatórias e eliminando a necessidade de tamponamento nasal, o que possibilita a realização do procedimento em regime de Day Clinic (Janda et al., 2001). Diferentemente de técnicas convencionais, o uso do laser minimiza o dano térmico aos tecidos adjacentes, resultando em menor tempo cirúrgico e recuperação mais rápida do paciente. A não realização do procedimento com o material solicitado pode levar a um agravamento do quadro clínico, aumentando a probabilidade de intervenções futuras de maior complexidade e custo, como cirurgias mais invasivas ou tratamento de complicações decorrentes da obstrução nasal crônica. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+A paciente Ana Carolina Ferreira, de 38 anos, apresenta hipertrofia de cornetos nasais inferiores bilaterais, refratária a tratamento clínico por 8 meses. A condição tem resultado em obstrução nasal persistente, comprometendo sua qualidade de vida e aumentando o risco de complicações associadas, como apneia do sono e distúrbios respiratórios. A manutenção deste quadro sem intervenção cirúrgica adequada perpetua um ambiente inflamatório crônico, dominado por citocinas pró-inflamatórias, que pode levar a alterações estruturais irreversíveis nas vias aéreas superiores.
+A turbinoplastia assistida por laser de diodo, utilizando o Kit FO - Laser Cirúrgico, é tecnicamente superior às técnicas convencionais devido à sua capacidade de realizar corte e coagulação simultâneos, minimizando a perda sanguínea e o dano térmico aos tecidos adjacentes. O Kit FO - Laser Cirúrgico permite alta precisão cirúrgica, reduzindo significativamente a formação de crostas pós-operatórias e eliminando a necessidade de tamponamento nasal, o que favorece a recuperação em regime de Day Clinic. Diferente de métodos tradicionais, que podem resultar em maior tempo de recuperação e necessidade de reintervenções, o uso deste laser específico promove uma recuperação mais rápida e eficaz, com menor risco de complicações.
+A não realização deste procedimento com o material solicitado pode resultar em progressão da doença para estágios mais graves, aumentando a necessidade de intervenções futuras de maior custo e morbidade. A negativa do procedimento poderá culminar em internações prolongadas e custos adicionais para a operadora, além de impactar negativamente a saúde da paciente. Estudos indicam que intervenções precoces e eficazes são financeiramente mais vantajosas a longo prazo, reduzindo a carga sobre o sistema de saúde.
+A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 ======================================================================
 BASE LEGAL (campo separado):
 ======================================================================
 
-Conforme Resolução Normativa 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A Resolução Normativa 428/465 da ANS obriga a cobertura mínima dos procedimentos citados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme Código de Ética Médica Cap. I, V.
+Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A RN 428/465 garante a cobertura mínima obrigatória para os procedimentos indicados, e a RN 395 exige justificativa de negativa por escrito, baseada em evidências científicas de mesmo nível. O Código de Ética Médica assegura o uso do melhor progresso científico em benefício do paciente.
 
 ======================================================================
 AUDIT LOG:
@@ -88,17 +91,17 @@ AUDIT LOG:
 
 [
   {
-    "tipo": "correcao",
-    "campo": "diferenciais_oficiais",
-    "original": "O laser de diodo com emissão de 980 nm e 1470 nm permite corte e coagulação simultâneos",
-    "corrigido": "O Kit FO - Laser Cirúrgico permite corte e coagulação simultâneos",
-    "motivo": "Ajuste para refletir os diferenciais oficiais do produto."
+    "tipo": "remocao",
+    "campo": "emissão do laser",
+    "original": "emissão em 980 nm e 1470 nm",
+    "corrigido": "removido",
+    "motivo": "Dado técnico não presente na ficha oficial do produto."
   },
   {
     "tipo": "validacao",
-    "campo": "referencia_bibliografica",
+    "campo": "referencia",
     "original": "Janda P et al., 2001",
-    "corrigido": "Janda et al., 2001",
-    "motivo": "Correção de formatação para conformidade com referências conhecidas."
+    "corrigido": "Janda et al.",
+    "motivo": "Autor presente na lista de referências válidas."
   }
 ]

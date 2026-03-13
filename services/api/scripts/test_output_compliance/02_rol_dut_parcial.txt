@@ -13,12 +13,12 @@ PATIENT DATA: {"idade": 55}
 STATUS: OK
 APROVADO: True
 CHECKLIST: 6/6
-CARACTERES: 2543
-PALAVRAS: 345
-TEMPO: 34.0s
+CARACTERES: 2203
+PALAVRAS: 300
+TEMPO: 48.9s
 
 --- COMPLIANCE ANS ---
-MODO: cobertura_direta
+MODO: fora_do_rol
 SCORE: 77.0
 NÍVEL: medio
 COMPONENTES: {
@@ -32,6 +32,82 @@ EXPLICAÇÃO: ["DUT não avaliada — score parcial (20/40)", "Código TUSS 2010
 ALERTAS: []
 GAPS: []
 SUGESTÕES DUT: []
+STF CHECKLIST: {
+  "checklist": {
+    "1_prescricao_medica": {
+      "atendido": false,
+      "tipo": "automatizavel",
+      "evidencia": null
+    },
+    "2_sem_negativa_ans": {
+      "atendido": false,
+      "tipo": "declaratorio",
+      "evidencia": null,
+      "alerta": "Campo declaratório — não verificável automaticamente. Não existe fonte machine-readable para status de propostas na ANS."
+    },
+    "3_sem_alternativa_rol": {
+      "atendido": false,
+      "tipo": "automatizavel",
+      "evidencia": null,
+      "alternativas_analisadas": [
+        {
+          "codigo": "5-NUCLEOTIDASE",
+          "nome": ""
+        },
+        {
+          "codigo": "VITAMINA B12",
+          "nome": ""
+        },
+        {
+          "codigo": "ALFA-1-ANTITRIPSINA",
+          "nome": ""
+        },
+        {
+          "codigo": "FATOR 4 PLAQUETÁRIO",
+          "nome": ""
+        },
+        {
+          "codigo": "T3 LIVRE",
+          "nome": ""
+        }
+      ]
+    },
+    "4_evidencia_cientifica": {
+      "atendido": true,
+      "tipo": "automatizavel",
+      "evidencia": "14 referências",
+      "nivel": "medio"
+    },
+    "5_registro_anvisa": {
+      "atendido": true,
+      "tipo": "automatizavel",
+      "evidencia": "Registro 80149670008 ativo"
+    }
+  },
+  "all_met": false,
+  "alternativas": [
+    {
+      "codigo": "5-NUCLEOTIDASE",
+      "nome": ""
+    },
+    {
+      "codigo": "VITAMINA B12",
+      "nome": ""
+    },
+    {
+      "codigo": "ALFA-1-ANTITRIPSINA",
+      "nome": ""
+    },
+    {
+      "codigo": "FATOR 4 PLAQUETÁRIO",
+      "nome": ""
+    },
+    {
+      "codigo": "T3 LIVRE",
+      "nome": ""
+    }
+  ]
+}
 
 --- VERIFICAÇÃO DE QUALIDADE ---
   ✓ Sem problemas detectados
@@ -47,9 +123,9 @@ SUGESTÕES DUT: []
 }
 
 --- REFERÊNCIAS ---
-  1. Altman et al., 2015 [internal]
+  1. Tezel et al., 2008 [internal]
   2. Bannuru et al., 2009 [internal]
-  3. Tezel et al., 2008 [internal]
+  3. Altman et al., 2015 [internal]
 
 --- PROGRESS LOG ---
   [researching] Consultando base de evidências para CID M17.0...
@@ -58,19 +134,21 @@ SUGESTÕES DUT: []
   [researching] 10 artigo(s) científico(s) relevante(s) identificado(s)
   [researching] Verificando conformidade regulatória ANS...
   [compliance] Verificando cobertura do procedimento no Rol da ANS...
-  [compliance] Procedimento no Rol sem DUT condicionante — cobertura direta
+  [compliance] Procedimento não encontrado no Rol — modo Fora do Rol ativado
   [compliance] Validando código TUSS contra base oficial...
   [compliance] TUSS 20104120 válido: Fototerapia com UVA (PUVA) (por sessão)
   [compliance] Validando campo TISS para solicitação de OPME...
   [compliance] TISS OK: campo Procedimento (TISS: permitido)
   [compliance] Verificando registro Anvisa...
   [compliance] Anvisa: registro 80149670008 — ativo
+  [compliance] Construindo checklist STF (ADI 7.265)...
   [compliance] Calculando completude documental estimada...
   [compliance] Score de completude: 67.0/100 (medio)
+  [researching] Modo Fora do Rol ativado — Dossiê de Exceção será gerado
   [researching] Analisando contexto clínico e identificando lacunas...
   [writing] Redigindo justificativa técnica para Kit EC2 - Linha Opus...
   [writing] Fundamentando com 14 evidências científicas...
-  [writing] Redação concluída — 350 palavras geradas
+  [writing] Redação concluída — 305 palavras geradas
   [auditing] Confrontando dados técnicos de Kit EC2 - Linha Opus com base oficial...
   [auditing] 1 correção(ões) aplicada(s) para conformidade
   [validating] Executando validação determinística de conformidade...
@@ -80,16 +158,16 @@ SUGESTÕES DUT: []
 RELATÓRIO GERADO:
 ======================================================================
 
-A paciente Maria Fernanda Silva, com diagnóstico de gonartrose bilateral de joelhos, classificada como grau III pela escala de Kellgren-Lawrence, apresenta quadro clínico de sinovite crônica e derrame articular recorrente, resultando em dor significativa e limitação funcional. A manutenção do quadro inflamatório crônico, sem a devida intervenção, resulta em um ambiente bioquímico hostil dominado por citocinas pró-inflamatórias (IL-1β, TNF-α), acelerando a apoptose dos condrócitos e a degradação irreversível da matriz extracelular (Wang et al., 2006). O insucesso das tentativas conservadoras, incluindo o uso de anti-inflamatórios não esteroides (AINEs), fisioterapia cinesioterapêutica e infiltrações, comprova a refratariedade do quadro, sendo a progressão para intervenção com OPME não apenas indicada, mas mandatória para prevenir deterioração funcional progressiva.
-O Kit EC2 - Linha Opus, com hialuronato de sódio de alto peso molecular (6.000 kDa), é tecnicamente superior devido à sua capacidade de restaurar a viscoelasticidade do líquido sinovial e proporcionar alívio prolongado da dor. A reticulação polimérica tridimensional do produto cria uma barreira física e química que impede a degradação enzimática por hialuronidases, garantindo permanência intra-articular prolongada (Tezel et al., 2008). Estudos demonstram que o uso de ácido hialurônico de alta massa molar reduz a necessidade de artroplastia total em 54% dos pacientes com gonartrose grau III, comparado ao tratamento conservador isolado (Altman et al., 2015). Além disso, a viscossuplementação com hialuronato de alto peso molecular mostrou superioridade estatisticamente significativa sobre corticosteroides intra-articulares na manutenção do alívio álgico após 26 semanas (Bannuru et al., 2009).
-A não realização do procedimento implica em evolução para perda funcional irreversível, com necessidade de procedimento cirúrgico de maior porte, como artroplastia total, cujo custo para a operadora pode variar entre R$30.000 e R$50.000, significativamente superior ao custo do material aqui solicitado. Além disso, a progressão da doença para estágio mais grave aumentaria a morbidade, resultando em mais internações e custos adicionais para a operadora.
+A paciente Maria Fernanda Silva, com diagnóstico de gonartrose bilateral de joelhos grau III pela escala de Kellgren-Lawrence (CID M17.0), apresenta um quadro clínico caracterizado por sinovite crônica e derrame articular recorrente. A manutenção desse estado inflamatório crônico, sem intervenção adequada, resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias como IL-1β e TNF-α, acelerando a apoptose dos condrócitos e a degradação irreversível da matriz extracelular. A paciente já demonstrou intolerância a medicamentos orais, evidenciando a refratariedade do quadro ao tratamento conservador.
+A indicação do uso do Kit EC2 - Linha Opus, que contém hialuronato de sódio de alto peso molecular (6.000 kDa), é tecnicamente superior e clinicamente necessária. Este produto é formulado com reticulação polimérica tridimensional, proporcionando uma resistência à degradação enzimática por hialuronidases 3,5 vezes superior a formulações lineares, resultando em uma permanência intra-articular prolongada (Tezel et al., 2008). A viscossuplementação com hialuronato de alto peso molecular demonstrou superioridade estatisticamente significativa sobre corticosteroides intra-articulares na manutenção do alívio álgico após 26 semanas (Bannuru et al., 2009). Além disso, o uso de ácido hialurônico de alta massa molar reduziu a necessidade de artroplastia total em 54% dos pacientes com gonartrose grau III, comparado a tratamento conservador isolado (Altman et al., 2015).
+A não realização do procedimento implica em progressão para artroplastia total de joelho, um procedimento de maior custo que pode variar entre R$30.000 e R$50.000, além de maior morbidade e risco de complicações pós-operatórias. O tratamento profilático aqui proposto é significativamente inferior ao custo de uma artroplastia total, além de oferecer alívio prolongado da dor e melhora funcional.
 A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 ======================================================================
 BASE LEGAL (campo separado):
 ======================================================================
 
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 obriga a cobertura mínima dos procedimentos citados, e a RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas. Além disso, o Código de Ética Médica, Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 determina a obrigação de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Código de Ética Médica Cap. I, V: Compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 ======================================================================
 AUDIT LOG:
@@ -98,44 +176,37 @@ AUDIT LOG:
 [
   {
     "tipo": "correcao",
-    "campo": "registro_anvisa",
-    "original": "RN 424",
-    "corrigido": "RN 395",
-    "motivo": "Correção para a base legal correta conforme checklist."
+    "campo": "nome_oficial",
+    "original": "Kit EC2",
+    "corrigido": "Kit EC2 - Linha Opus",
+    "motivo": "Conformidade com o nome oficial do produto."
   },
   {
     "tipo": "validacao",
     "campo": "peso_molecular",
     "original": "6.000 kDa",
     "corrigido": "6.000 kDa",
-    "motivo": "Conforme ficha oficial do produto."
+    "motivo": "Conformidade com a ficha oficial do produto."
   },
   {
     "tipo": "validacao",
-    "campo": "concentracao",
-    "original": "10 mg/mL de hialuronato de sódio",
-    "corrigido": "10 mg/mL de hialuronato de sódio",
-    "motivo": "Conforme ficha oficial do produto."
-  },
-  {
-    "tipo": "validacao",
-    "campo": "referencia_bibliografica",
-    "original": "Altman RD et al., 2015",
-    "corrigido": "Altman et al., 2015",
-    "motivo": "Referência válida conforme lista de autores conhecidos."
-  },
-  {
-    "tipo": "validacao",
-    "campo": "referencia_bibliografica",
-    "original": "Bannuru RR et al., 2009",
-    "corrigido": "Bannuru et al., 2009",
-    "motivo": "Referência válida conforme lista de autores conhecidos."
-  },
-  {
-    "tipo": "validacao",
-    "campo": "referencia_bibliografica",
+    "campo": "referencia",
     "original": "Tezel A, Fredrickson GH et al., 2008",
     "corrigido": "Tezel et al., 2008",
-    "motivo": "Referência válida conforme lista de autores conhecidos."
+    "motivo": "Autor válido conforme lista de referências do produto."
+  },
+  {
+    "tipo": "validacao",
+    "campo": "referencia",
+    "original": "Bannuru RR et al., 2009",
+    "corrigido": "Bannuru et al., 2009",
+    "motivo": "Autor válido conforme lista de referências do produto."
+  },
+  {
+    "tipo": "validacao",
+    "campo": "referencia",
+    "original": "Altman RD et al., 2015",
+    "corrigido": "Altman et al., 2015",
+    "motivo": "Autor válido conforme lista de referências do produto."
   }
 ]

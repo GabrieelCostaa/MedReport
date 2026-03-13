@@ -13,12 +13,12 @@ PATIENT DATA: {"idade": 62, "imc": 28.5, "tempo_tratamento_conservador_meses": 1
 STATUS: OK
 APROVADO: True
 CHECKLIST: 6/6
-CARACTERES: 2255
-PALAVRAS: 316
-TEMPO: 26.9s
+CARACTERES: 2179
+PALAVRAS: 296
+TEMPO: 43.1s
 
 --- COMPLIANCE ANS ---
-MODO: cobertura_direta
+MODO: fora_do_rol
 SCORE: 77.0
 NÍVEL: medio
 COMPONENTES: {
@@ -32,6 +32,82 @@ EXPLICAÇÃO: ["DUT não avaliada — score parcial (20/40)", "Código TUSS 2010
 ALERTAS: []
 GAPS: []
 SUGESTÕES DUT: []
+STF CHECKLIST: {
+  "checklist": {
+    "1_prescricao_medica": {
+      "atendido": false,
+      "tipo": "automatizavel",
+      "evidencia": null
+    },
+    "2_sem_negativa_ans": {
+      "atendido": false,
+      "tipo": "declaratorio",
+      "evidencia": null,
+      "alerta": "Campo declaratório — não verificável automaticamente. Não existe fonte machine-readable para status de propostas na ANS."
+    },
+    "3_sem_alternativa_rol": {
+      "atendido": false,
+      "tipo": "automatizavel",
+      "evidencia": null,
+      "alternativas_analisadas": [
+        {
+          "codigo": "5-NUCLEOTIDASE",
+          "nome": ""
+        },
+        {
+          "codigo": "VITAMINA B12",
+          "nome": ""
+        },
+        {
+          "codigo": "ALFA-1-ANTITRIPSINA",
+          "nome": ""
+        },
+        {
+          "codigo": "FATOR 4 PLAQUETÁRIO",
+          "nome": ""
+        },
+        {
+          "codigo": "T3 LIVRE",
+          "nome": ""
+        }
+      ]
+    },
+    "4_evidencia_cientifica": {
+      "atendido": true,
+      "tipo": "automatizavel",
+      "evidencia": "12 referências",
+      "nivel": "medio"
+    },
+    "5_registro_anvisa": {
+      "atendido": true,
+      "tipo": "automatizavel",
+      "evidencia": "Registro 80149670008 ativo"
+    }
+  },
+  "all_met": false,
+  "alternativas": [
+    {
+      "codigo": "5-NUCLEOTIDASE",
+      "nome": ""
+    },
+    {
+      "codigo": "VITAMINA B12",
+      "nome": ""
+    },
+    {
+      "codigo": "ALFA-1-ANTITRIPSINA",
+      "nome": ""
+    },
+    {
+      "codigo": "FATOR 4 PLAQUETÁRIO",
+      "nome": ""
+    },
+    {
+      "codigo": "T3 LIVRE",
+      "nome": ""
+    }
+  ]
+}
 
 --- VERIFICAÇÃO DE QUALIDADE ---
   ✓ Sem problemas detectados
@@ -57,21 +133,23 @@ SUGESTÕES DUT: []
   [researching] 10 artigo(s) científico(s) relevante(s) identificado(s)
   [researching] Verificando conformidade regulatória ANS...
   [compliance] Verificando cobertura do procedimento no Rol da ANS...
-  [compliance] Procedimento no Rol sem DUT condicionante — cobertura direta
+  [compliance] Procedimento não encontrado no Rol — modo Fora do Rol ativado
   [compliance] Validando código TUSS contra base oficial...
   [compliance] TUSS 20104120 válido: Fototerapia com UVA (PUVA) (por sessão)
   [compliance] Validando campo TISS para solicitação de OPME...
   [compliance] TISS OK: campo Procedimento (TISS: permitido)
   [compliance] Verificando registro Anvisa...
   [compliance] Anvisa: registro 80149670008 — ativo
+  [compliance] Construindo checklist STF (ADI 7.265)...
   [compliance] Calculando completude documental estimada...
   [compliance] Score de completude: 67.0/100 (medio)
+  [researching] Modo Fora do Rol ativado — Dossiê de Exceção será gerado
   [researching] Analisando contexto clínico e identificando lacunas...
   [writing] Redigindo justificativa técnica para Kit EC2 - Linha Opus...
   [writing] Fundamentando com 12 evidências científicas...
-  [writing] Redação concluída — 320 palavras geradas
+  [writing] Redação concluída — 298 palavras geradas
   [auditing] Confrontando dados técnicos de Kit EC2 - Linha Opus com base oficial...
-  [auditing] 4 correção(ões) aplicada(s) para conformidade
+  [auditing] 1 correção(ões) aplicada(s) para conformidade
   [validating] Executando validação determinística de conformidade...
   [done] Relatório finalizado
 
@@ -79,16 +157,16 @@ SUGESTÕES DUT: []
 RELATÓRIO GERADO:
 ======================================================================
 
-O paciente Carlos Alberto Mendes, com diagnóstico de gonartrose primária unilateral de joelho direito (CID M17.1), apresenta quadro clínico compatível com osteoartrite de joelho, classificada como grau III pela escala de Kellgren-Lawrence, com dor articular significativa e limitação funcional que compromete as atividades diárias. Após 12 meses de tratamento conservador, incluindo fisioterapia, administração de anti-inflamatórios não esteroides (AINEs) e infiltrações, o quadro se mostrou refratário, evidenciando a progressão da doença e a necessidade de intervenção com OPME. A manutenção do quadro inflamatório crônico, sem a devida intervenção, resulta em ambiente bioquímico hostil dominado por citocinas pró-inflamatórias (IL-1β, TNF-α), acelerando a apoptose dos condrócitos e a degradação irreversível da matriz extracelular (Bellamy et al., 2006; Anil et al., 2021).
-A viscossuplementação com o Kit EC2 - Linha Opus é indicada, pois trata-se de um ácido hialurônico de alto peso molecular (6.000 kDa) que restaura as propriedades viscoelásticas do líquido sinovial. O mecanismo de ação do produto inclui uma reticulação polimérica tridimensional que impede o acesso das hialuronidases, garantindo permanência intra-articular prolongada, enquanto formulações lineares são degradadas em 48 horas. Estudos demonstram que a viscossuplementação com ácido hialurônico de alto peso molecular promove melhora funcional significativa por até 12 meses com aplicação única (Bellamy et al., 2006; Anil et al., 2021).
-A não realização do procedimento implica em progressão para necessidade de procedimento cirúrgico de maior porte, como artroplastia total de joelho, que custa à operadora entre R$30.000 e R$50.000, versus o custo do material aqui solicitado. Além disso, a progressão da doença para estágio mais grave pode resultar em maior morbidade e mais internações, aumentando os custos para a operadora (Ahmad et al., 2022; Wu et al., 2022).
+O paciente Carlos Alberto Mendes, com diagnóstico de gonartrose primária unilateral de joelho direito (CID M17.1), apresenta quadro clínico compatível com osteoartrite de joelho, classificada como grau III pela escala de Kellgren-Lawrence. Este quadro clínico se manifesta com dor articular significativa e limitação funcional, comprometendo as atividades diárias do paciente há 2 anos. Após 12 meses de tratamento conservador, incluindo fisioterapia, anti-inflamatórios não esteroidais (AINEs) e infiltrações, não houve melhora significativa, caracterizando refratariedade à conduta clínica conservadora.
+A indicação de viscossuplementação com o Kit EC2 - Linha Opus, que contém ácido hialurônico de alto peso molecular (6.000 kDa), é tecnicamente superior e clinicamente necessária. Este produto restaura as propriedades viscoelásticas do líquido sinovial, proporcionando alívio prolongado da dor em osteoartrite de joelho. O mecanismo de ação do ácido hialurônico de alto peso molecular envolve a formação de uma rede tridimensional que impede o acesso das hialuronidases, enzimas que degradam o ácido hialurônico, garantindo uma permanência intra-articular prolongada. Estudos demonstram que a viscossuplementação com ácido hialurônico de alto peso molecular promoveu melhora funcional significativa (WOMAC) por até 12 meses com aplicação única (Bellamy et al., 2006; Anil et al., 2021).
+A não realização do procedimento implica em progressão da doença para estágios mais graves, podendo evoluir para necessidade de artroplastia total de joelho, um procedimento de maior custo, que pode variar entre R$30.000 e R$50.000, enquanto o custo do material aqui solicitado é significativamente inferior. Além disso, a evolução para perda funcional irreversível resultaria em maior morbidade, internações frequentes e, consequentemente, mais custos para a operadora de saúde.
 A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 ======================================================================
 BASE LEGAL (campo separado):
 ======================================================================
 
-Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
+Conforme RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A RN 428/465 obriga a cobertura mínima dos procedimentos pela ANS. Solicito justificativa de negativa por escrito conforme RN 395, sob pena de descumprimento. Código de Ética Médica Cap. I, V: Compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 ======================================================================
 AUDIT LOG:
@@ -97,30 +175,16 @@ AUDIT LOG:
 [
   {
     "tipo": "correcao",
+    "campo": "base_legal_ans",
+    "original": "RN 424",
+    "corrigido": "RN 395",
+    "motivo": "Correção para a base legal correta conforme checklist."
+  },
+  {
+    "tipo": "validacao",
     "campo": "referencia_bibliografica",
     "original": "Bellamy N et al., 2006; Anil U et al., 2021",
     "corrigido": "Bellamy et al., 2006; Anil et al., 2021",
-    "motivo": "Correção de formatação para padrão correto."
-  },
-  {
-    "tipo": "correcao",
-    "campo": "nome_oficial",
-    "original": "Kit EC2 - Linha Opus",
-    "corrigido": "Kit EC2 - Linha Opus",
-    "motivo": "Nome oficial já estava correto."
-  },
-  {
-    "tipo": "correcao",
-    "campo": "peso_molecular",
-    "original": "6.000 kDa",
-    "corrigido": "6.000 kDa",
-    "motivo": "Peso molecular já estava correto."
-  },
-  {
-    "tipo": "correcao",
-    "campo": "registro_anvisa",
-    "original": "80149670008",
-    "corrigido": "80149670008",
-    "motivo": "Registro ANVISA já estava correto."
+    "motivo": "Correção de formatação para conformidade com referências conhecidas."
   }
 ]
