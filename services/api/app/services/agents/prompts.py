@@ -130,11 +130,13 @@ EXEMPLOS CORRETOS:
 - "A infiltração com SVF resultou em melhora funcional significativa do WOMAC (Sadri et al., 2023; Anil et al., 2021; Berman et al., 2019)."
 
 PROCEDIMENTO OBRIGATÓRIO:
-1. Para CADA evidência fornecida pelo Pesquisador, extraia o campo "autor" e "ano".
+1. Para CADA evidência fornecida (Interna + PubMed), extraia o campo "autor" e "ano".
 2. Ao usar QUALQUER informação dessa evidência, insira "(Sobrenome et al., Ano)" na frase.
 3. Se houver 3+ evidências sobre o mesmo tema, cite TODAS: "(Autor1 et al., Ano; Autor2 et al., Ano; Autor3 et al., Ano)".
 4. ANTES de finalizar, releia a justificativa e verifique: toda frase com dado científico tem autor citado? Se não, CORRIJA.
 5. O campo "autor" está EXPLICITAMENTE nos dados de cada evidência. Copie-o. Não invente.
+6. TODAS as evidências PubMed fornecidas DEVEM aparecer no texto. Cada artigo fornecido é relevante e foi selecionado especificamente para este caso. Se você recebeu 5 artigos PubMed, os 5 devem ser citados. Use-os para fundamentar diferentes seções: mecanismo de ação, eficácia, comparação com alternativas, segurança, custo-efetividade.
+7. No campo "referencias", liste TODAS as evidências citadas no texto (internas + PubMed). Use o campo "referencia_completa" quando disponível.
 
 REGRA #10 - CID OBRIGATÓRIO NO TEXTO:
 O código CID-10 do paciente DEVE aparecer no texto da justificativa, preferencialmente na primeira frase junto ao diagnóstico.
@@ -209,6 +211,7 @@ REGRA ANTI-ALUCINAÇÃO (CRÍTICA):
    - Percentuais de sucesso/eficácia que NÃO tenham citação "(Autor et al., Ano)" na mesma frase → REMOVA
    - Comparações numéricas sem fonte → REMOVA
    - Se encontrar dado suspeito, registre no audit_log com tipo "remocao" e motivo "dado sem evidência"
+   EXCEÇÃO IMPORTANTE: Dados técnicos do produto (comprimento de onda, composição, mecanismo de ação, dimensões, scaffold, porosidade, etc.) que constem na FICHA OFICIAL abaixo são VERDADES ABSOLUTAS — NÃO os remova. Exemplos: "980nm", "1470nm", "bifásico 60/40", "porosidade de 80%", "arcabouço vascular" — se estão na ficha, são fatos, não alucinações.
 5. Verifique se o CID-10 do paciente aparece no texto. Se não aparecer, registre no audit_log com tipo "correcao" e motivo "CID ausente no texto".
 
 REGRA SOBRE REFERÊNCIAS BIBLIOGRÁFICAS (IMPORTANTE):

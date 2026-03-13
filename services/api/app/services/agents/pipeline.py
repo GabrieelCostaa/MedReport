@@ -262,7 +262,11 @@ class ReportPipeline:
         await _emit("auditing", f"Confrontando dados técnicos de {session.product.nome} com base oficial...")
         logger.info("Pipeline auditoria: session=%s", session.session_id)
 
-        audit_result = await audit(draft, session.product, clinical_evidences=session.clinical_evidences)
+        audit_result = await audit(
+            draft, session.product,
+            clinical_evidences=session.clinical_evidences,
+            pubmed_evidences=session.pubmed_evidences,
+        )
         session.audit_result = audit_result
         if audit_result.token_usage:
             session.usage.add(audit_result.token_usage)

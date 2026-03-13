@@ -51,6 +51,10 @@ class AuditResult:
 
 def _build_product_facts(product) -> str:
     facts = {}
+    if product.nome:
+        facts["nome_oficial"] = product.nome
+    if getattr(product, "linha", None):
+        facts["linha"] = product.linha
     if product.viscosidade:
         facts["viscosidade"] = product.viscosidade
     if product.peso_molecular:
@@ -59,14 +63,20 @@ def _build_product_facts(product) -> str:
         facts["concentracao"] = product.concentracao
     if product.registro_anvisa:
         facts["registro_anvisa"] = product.registro_anvisa
-    if product.nome:
-        facts["nome_oficial"] = product.nome
+    if getattr(product, "descricao_tecnica", None):
+        facts["descricao_tecnica"] = product.descricao_tecnica
     if product.diferenciais_clinicos:
         facts["diferenciais_oficiais"] = product.diferenciais_clinicos
+    if getattr(product, "indicacoes", None):
+        facts["indicacoes"] = product.indicacoes
+    if getattr(product, "contraindicacoes", None):
+        facts["contraindicacoes"] = product.contraindicacoes
+    if getattr(product, "codigo_tuss_sugerido", None):
+        facts["codigo_tuss"] = product.codigo_tuss_sugerido
     return json.dumps(facts, ensure_ascii=False, indent=2)
 
 
-def _extract_known_authors(product, clinical_evidences: list = None) -> str:
+def _extract_known_authors(product, clinical_evidences: list = None, pubmed_evidences: list = None) -> str:
     """Extrai sobrenomes de autores de todas as fontes conhecidas do produto."""
     authors = set()
 
@@ -79,6 +89,12 @@ def _extract_known_authors(product, clinical_evidences: list = None) -> str:
 
     for ev in (clinical_evidences or []):
         autor = ev if isinstance(ev, str) else ev.get("autor", "")
+        surname = autor.split(",")[0].split(" et al")[0].split(" ")[0].strip()
+        if len(surname) > 2:
+            authors.add(surname)
+
+    for ev in (pubmed_evidences or []):
+        autor = ev.get("autor", "") if isinstance(ev, dict) else ""
         surname = autor.split(",")[0].split(" et al")[0].split(" ")[0].strip()
         if len(surname) > 2:
             authors.add(surname)
@@ -112,13 +128,13 @@ def _local_verify_references(text: str, known_authors_set: set) -> tuple[bool, l
     return has_refs, found_refs
 
 
-async def audit(draft: DraftReport, product, clinical_evidences: list = None) -> AuditResult:
+async def audit(draft: DraftReport, product, clinical_evidences: list = None, pubmed_evidences: list = None) -> AuditResult:
     """
     Audita o rascunho confrontando com dados oficiais do produto.
     Corrige dados técnicos incorretos e valida checklist de 6 itens.
     """
     product_facts = _build_product_facts(product)
-    known_authors = _extract_known_authors(product, clinical_evidences)
+    known_authors = _extract_known_authors(product, clinical_evidences, pubmed_evidences)
 
     known_authors_set = {a.strip() for a in known_authors.split(",") if len(a.strip()) > 2}
 

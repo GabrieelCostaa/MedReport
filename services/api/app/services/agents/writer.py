@@ -92,17 +92,25 @@ async def write_justification(
             )
 
     if pubmed_evidences:
-        evidence_parts.append("\n=== EVIDÊNCIAS PUBMED (cite AUTOR, ANO e PMID) ===")
+        n_pubmed = min(len(pubmed_evidences), 10)
+        evidence_parts.append(
+            f"\n=== EVIDÊNCIAS PUBMED — {n_pubmed} artigos (VOCÊ DEVE citar TODOS no texto) ==="
+        )
         offset = len(clinical_evidences or [])
         for i, ev in enumerate(pubmed_evidences[:10], 1):
             evidence_parts.append(
                 f"[PubMed {offset + i}] Autor: {ev['autor']} | Ano: {ev['ano']} | "
                 f"PMID: {ev.get('pmid', '')} | Tipo: {ev.get('tipo', 'article')}\n"
                 f"    Journal: {ev.get('journal', '')}\n"
-                f"    Resumo: {ev['snippet'][:300]}\n"
+                f"    Resumo: {ev['snippet'][:500]}\n"
                 f"    Referência completa: {ev.get('referencia_completa', '')}\n"
                 f"    Citação: ({ev['autor']} et al., {ev['ano']})"
             )
+        evidence_parts.append(
+            f"\n⚠️ ATENÇÃO: Você recebeu {n_pubmed} evidências PubMed acima. "
+            f"CADA UMA deve ser citada pelo menos 1x no texto com (Autor et al., Ano). "
+            f"Se você não citar todas, o relatório será REPROVADO na auditoria."
+        )
 
     researcher_evidence = "\n".join(
         f"- {e.texto} (Ref: {e.referencia})" for e in research.evidencias
