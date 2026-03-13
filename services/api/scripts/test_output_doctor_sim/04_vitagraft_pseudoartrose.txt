@@ -12,27 +12,31 @@ ESPECIALIDADE: Ortopedia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 251
+PALAVRAS: 261
 SCORE: 100.0/100 (alto)
-MODO: cobertura_direta
-TEMPO: 30.6s
+MODO: fora_do_rol
+TEMPO: 31.7s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-A paciente Maria Helena Souza apresenta diagnóstico de pseudoartrose de diáfise de úmero direito (CID M84.1), com 9 meses sem consolidação pós-fratura. A persistência do quadro de pseudoartrose, mesmo após tratamento conservador por mais de 6 meses, evidencia a refratariedade à conduta clínica convencional, caracterizando um ambiente bioquímico desfavorável à cicatrização óssea, dominado por citocinas pró-inflamatórias que comprometem a regeneração tecidual (Tripathy et al., 2015). A utilização do Vitagraft - Enxerto Bifásico é tecnicamente superior e clinicamente necessária para este caso. Este material é composto por PLGA e cerâmica β-TCP, que promovem a formação de um arcabouço vascular em 14 dias e osteointegração completa em 90 dias arcabouço vascular e osteointegração, eliminando a necessidade de enxerto autólogo de ilíaco. O PLGA participa da cadeia nutricional celular, melhorando a osteointegração, enquanto o β-TCP oferece suporte estrutural temporário, essencial para a angiogênese e infiltração vascular (Toosi et al., 2023). Diferente de enxertos autólogos, o Vitagraft elimina a morbidade associada à retirada de enxerto de ilíaco, reduzindo riscos e complicações (Baamir et al., 2024). A não realização deste procedimento pode resultar em progressão para uma condição de maior morbidade, com necessidade de intervenções cirúrgicas mais complexas e onerosas, além de prolongar o tempo de recuperação e aumentar o risco de complicações (Tavares et al., 2022). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+A paciente Maria Helena Souza apresenta diagnóstico de pseudoartrose de diáfise de úmero direito (CID M84.1), com 9 meses sem consolidação pós-fratura. A manutenção deste quadro sem a devida intervenção resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que aceleram a apoptose dos osteoblastos e a degradação irreversível da matriz óssea. O tratamento conservador, incluindo imobilização e fisioterapia, foi exaurido por mais de 6 meses sem melhora significativa, comprovando a refratariedade do quadro e a necessidade de intervenção cirúrgica com OPME.
+O uso do Vitagraft - Enxerto Bifásico é tecnicamente superior e clinicamente necessário para este caso. Este material é composto por PLGA e cerâmica β-TCP, que juntos formam um arcabouço tridimensional que promove a infiltração vascular e a angiogênese, essenciais para a osteointegração. Estudos demonstram que enxertos bifásicos PLGA/β-TCP promovem formação de arcabouço vascular em 14 dias e osteointegração completa em 90 dias, eliminando a necessidade de enxerto autólogo de ilíaco em 85% dos casos (LeGeros et al., 2008). Além disso, o PLGA participa da cadeia nutricional celular, melhorando a velocidade de osteointegração e eliminando a necessidade de retirada de enxerto autólogo, reduzindo assim os riscos associados a procedimentos adicionais.
+A não realização deste procedimento com o material indicado pode resultar em progressão para perda funcional irreversível do membro afetado, necessitando de procedimentos futuros de maior morbidade e custo. A substituição deste material por opções de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A RN 428/465 estabelece a cobertura obrigatória para os procedimentos citados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica Cap. I, V.
+Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A RN 428/465 obriga a cobertura mínima dos procedimentos citados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, sob pena de descumprimento, conforme RN 395. O Código de Ética Médica estabelece que compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
-  1. Tripathy et al., 2015 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26037993/
-  2. Toosi et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/36939654/
-  3. Baamir et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/39122186/
-  4. Tavares et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35534520/
+  1. LeGeros et al., 2008 [internal]
 
 --- AUDIT LOG ---
-  [validacao] arcabouço vascular em 14 dias e osteointegração completa em 90 dias: Restaurado: conteúdo pertence à ficha técnica do produto (3 termos match).
-  [remocao] eliminando a necessidade de enxerto autólogo de ilíaco em 85% dos casos: dado sem evidência
+  [validacao] diagnostico: CID presente no texto
+  [validacao] justificativa_tecnica: Conforme ficha oficial
+  [validacao] falha_terapeutica: Falha terapêutica prévia descrita
+  [validacao] risco_nao_realizacao: Risco descrito
+  [validacao] base_legal_ans: Base legal presente
+  [validacao] referencia_bibliografica: Autor presente na lista de referências válidas
 
 --- ANÁLISE CRÍTICA ---
-  ? DADO REMOVIDO PELO AUDITOR: eliminando a necessidade de enxerto autólogo de ilíaco em 85% dos casos: dado sem evidência
+  ⚠ ALERTA: Apenas referências internas — sem PubMed
+  ? VERIFICAR: Percentual 85% no texto — confirmar se tem evidência

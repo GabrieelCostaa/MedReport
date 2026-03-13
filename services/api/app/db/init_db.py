@@ -6,7 +6,7 @@ from app.db.session import engine, Base, AsyncSessionLocal
 from app.db.models import (
     User, TussTerm, UserRole, Product, ReportTemplate,
     TussMaterial, RolVersion, DutVersion, RolProcedure, DutRule,
-    AnvisaProduct, TissRule,
+    AnvisaProduct, TissRule, ProductTussMapping,
 )
 from app.core.security import get_password_hash
 
@@ -107,7 +107,7 @@ PRODUCTS_SEED = [
         "peso_molecular": "6.000 kDa",
         "concentracao": "10 mg/mL de hialuronato de sódio",
         "registro_anvisa": "80149670008",
-        "codigo_tuss_sugerido": "20104120",
+        "codigo_tuss_sugerido": "30713137",
         "bula_url": "https://consultas.anvisa.gov.br/#/medicamentos/",
         "referencias_bibliograficas": [
             "Altman RD, et al. Hyaluronic acid injections for knee osteoarthritis. Semin Arthritis Rheum. 2015;45(2):140-9.",
@@ -242,6 +242,207 @@ TEMPLATES_SEED = [
 ]
 
 
+# ============================================================================
+# Mapeamento Produto → TUSS (fonte: documentos oficiais Hugo/Rastriall)
+# ============================================================================
+PRODUCT_TUSS_MAPPINGS_SEED = {
+    "Adhesion STP+": [
+        {"tuss_code": "31307051", "procedure_name": "Aplicação de membranas antiaderentes", "subgroup": "Cirurgia Geral", "applications": "Cirurgias abdominais, peritoneais, aplicação de barreira anti-aderência, prevenção de aderências", "is_primary": True},
+        {"tuss_code": "31009174", "procedure_name": "Laparotomia exploradora para liberação de bridas", "subgroup": "Cirurgia Geral", "applications": "Laparotomia, biópsia, drenagem de abscesso, liberação de bridas, oclusão intestinal"},
+        {"tuss_code": "31009352", "procedure_name": "Videolaparoscopia para liberação de bridas/aderências", "subgroup": "Cirurgia Geral", "applications": "Videolaparoscopia, diagnóstico, biópsia, drenagem, liberação de bridas e aderências, rafias"},
+        {"tuss_code": "31307078", "procedure_name": "Liberação de aderências pélvicas", "subgroup": "Ginecologia", "applications": "Aderências pélvicas, ressecção de cistos peritoneais, salpingólise, ginecologia"},
+        {"tuss_code": "31303170", "procedure_name": "Lise de sinéquias uterinas", "subgroup": "Ginecologia", "applications": "Sinéquias uterinas, lise, ginecologia"},
+        {"tuss_code": "30914116", "procedure_name": "Marsupialização de linfocele", "subgroup": "Urologia/Nefrologia", "applications": "Sistema linfático, nefrectomia, linfocele"},
+        {"tuss_code": "30915040", "procedure_name": "Pericardiectomia", "subgroup": "Cirurgia Cardiovascular", "applications": "Pericárdio, pericardiectomia, sistema cardiocirculatório"},
+        {"tuss_code": "82000468", "procedure_name": "Controle de hemorragia com agente hemostático", "subgroup": "Bucomaxilofacial", "applications": "Cabeça e pescoço, maxilofacial, hemostasia, hemorragia"},
+        {"tuss_code": "82001545", "procedure_name": "Bridectomia/Bridotomia", "subgroup": "Cirurgia Plástica", "applications": "Bridas constritivas, cabeça e pescoço, bridectomia"},
+        {"tuss_code": "30722179", "procedure_name": "Bridas congênitas - tratamento cirúrgico", "subgroup": "Ortopedia", "applications": "Bridas congênitas, sistema musculoesquelético"},
+        {"tuss_code": "30101824", "procedure_name": "Tratamento cirúrgico de bridas constritivas", "subgroup": "Cirurgia Plástica", "applications": "Pele, tecido celular subcutâneo, bridas constritivas"},
+        {"tuss_code": "31403360", "procedure_name": "Tratamento cirúrgico das neuropatias compressivas", "subgroup": "Neurocirurgia", "applications": "Sistema nervoso, neuropatias compressivas, neurocirurgia"},
+        {"tuss_code": "30733030", "procedure_name": "Artroscopia para aderências", "subgroup": "Ortopedia", "applications": "Artroscopia, infecção, corpos estranhos, sinovectomia, aderências, desbridamento"},
+    ],
+    "Biossilex - Biovidro": [
+        {"tuss_code": "30727154", "procedure_name": "Osteomielite dos ossos da perna", "subgroup": "Ortopedia", "applications": "Osteomielite, perna, tíbia, fíbula, infecção óssea", "is_primary": True},
+        {"tuss_code": "30722519", "procedure_name": "Tratamento cirúrgico da osteomielite", "subgroup": "Ortopedia", "applications": "Osteomielite, tratamento cirúrgico geral, infecção óssea"},
+        {"tuss_code": "30215099", "procedure_name": "Osteomielite de crânio - tratamento cirúrgico", "subgroup": "Neurocirurgia", "applications": "Osteomielite, crânio, cabeça"},
+        {"tuss_code": "30601258", "procedure_name": "Osteomielite de costela ou esterno", "subgroup": "Cirurgia Torácica", "applications": "Osteomielite, costela, esterno, parede torácica"},
+        {"tuss_code": "30717124", "procedure_name": "Osteomielite da cintura escapular", "subgroup": "Ortopedia", "applications": "Osteomielite, cintura escapular, ombro"},
+        {"tuss_code": "30718082", "procedure_name": "Osteomielite de úmero", "subgroup": "Ortopedia", "applications": "Osteomielite, úmero, braço"},
+        {"tuss_code": "30720125", "procedure_name": "Osteomielite dos ossos do antebraço", "subgroup": "Ortopedia", "applications": "Osteomielite, antebraço, rádio, ulna"},
+        {"tuss_code": "30723078", "procedure_name": "Osteomielite da pelve", "subgroup": "Ortopedia", "applications": "Osteomielite, pelve, cintura pélvica"},
+        {"tuss_code": "30725143", "procedure_name": "Osteomielite de membros inferiores", "subgroup": "Ortopedia", "applications": "Osteomielite, membros inferiores, fêmur"},
+        {"tuss_code": "30729033", "procedure_name": "Osteomielite dos ossos do pé", "subgroup": "Ortopedia", "applications": "Osteomielite, pé, artrite, osteoartrite"},
+        {"tuss_code": "30713048", "procedure_name": "Enxertos em pseudartroses", "subgroup": "Ortopedia", "applications": "Pseudoartrose, enxerto ósseo, não consolidação"},
+        {"tuss_code": "30715245", "procedure_name": "Pseudoartrose de coluna", "subgroup": "Ortopedia", "applications": "Pseudoartrose, coluna vertebral"},
+        {"tuss_code": "30720133", "procedure_name": "Pseudoartrose com ou sem fixador externo", "subgroup": "Ortopedia", "applications": "Pseudoartrose, osteotomia, fixador externo"},
+        {"tuss_code": "30722306", "procedure_name": "Enxerto ósseo - perda de substância", "subgroup": "Ortopedia", "applications": "Enxerto ósseo, perda de substância, defeito ósseo, membros superiores"},
+        {"tuss_code": "30732115", "procedure_name": "Tumor ósseo - ressecção e enxerto", "subgroup": "Ortopedia", "applications": "Tumor ósseo, ressecção, enxerto, neoplasia"},
+        {"tuss_code": "30715016", "procedure_name": "Artrodese de coluna com instrumentação", "subgroup": "Ortopedia", "applications": "Artrodese, coluna, instrumentação, fusão vertebral"},
+        {"tuss_code": "30715024", "procedure_name": "Artrodese de coluna via anterior/posterolateral", "subgroup": "Ortopedia", "applications": "Artrodese, coluna, via anterior, posterolateral"},
+        {"tuss_code": "30715210", "procedure_name": "Osteomielite de coluna", "subgroup": "Ortopedia", "applications": "Osteomielite, coluna, espondilodiscite"},
+        {"tuss_code": "30717019", "procedure_name": "Artrodese de ombro", "subgroup": "Ortopedia", "applications": "Artrodese, ombro, cintura escapular"},
+        {"tuss_code": "30719011", "procedure_name": "Artrodese de cotovelo/braço", "subgroup": "Ortopedia", "applications": "Artrodese, cotovelo, membros superiores"},
+        {"tuss_code": "30721032", "procedure_name": "Artrodese entre ossos do carpo", "subgroup": "Ortopedia", "applications": "Artrodese, carpo, punho, mão"},
+        {"tuss_code": "30721059", "procedure_name": "Artrodese radiocárpica/punho", "subgroup": "Ortopedia", "applications": "Artrodese, radiocárpica, punho"},
+        {"tuss_code": "30722110", "procedure_name": "Artrodese interfalangeana/metacarpofalangeana", "subgroup": "Ortopedia", "applications": "Artrodese, dedo, interfalangeana, metacarpofalangeana"},
+        {"tuss_code": "30723086", "procedure_name": "Osteotomias/artrodeses pélvicas", "subgroup": "Ortopedia", "applications": "Osteotomia, artrodese, pelve, cintura pélvica"},
+        {"tuss_code": "30724023", "procedure_name": "Artrose com ou sem fixador externo", "subgroup": "Ortopedia", "applications": "Artrose, fixador externo, tratamento cirúrgico"},
+        {"tuss_code": "30724031", "procedure_name": "Artrodese coxofemoral", "subgroup": "Ortopedia", "applications": "Artrodese, coxofemoral, quadril"},
+        {"tuss_code": "30726026", "procedure_name": "Artrodese de joelho", "subgroup": "Ortopedia", "applications": "Artrodese, joelho"},
+        {"tuss_code": "30728045", "procedure_name": "Artrodese de tornozelo", "subgroup": "Ortopedia", "applications": "Artrodese, tornozelo"},
+        {"tuss_code": "30729041", "procedure_name": "Artrodese de tarso/médio pé", "subgroup": "Ortopedia", "applications": "Artrodese, tarso, médio pé"},
+        {"tuss_code": "30729050", "procedure_name": "Artrodese metatarso-falângica", "subgroup": "Ortopedia", "applications": "Artrodese, metatarso, falângica, pé"},
+        {"tuss_code": "30207193", "procedure_name": "Fraturas complexas do terço médio da face", "subgroup": "Bucomaxilofacial", "applications": "Fratura, face, terço médio, enxerto ósseo, trauma craniomaxilofacial"},
+        {"tuss_code": "30208106", "procedure_name": "Hemimandibulectomia/reconstrução mandíbula", "subgroup": "Cabeça e Pescoço", "applications": "Hemimandibulectomia, reconstrução, mandíbula, maxila, enxerto ósseo"},
+        {"tuss_code": "30211050", "procedure_name": "Mandibulectomia com/sem enxerto ósseo", "subgroup": "Cabeça e Pescoço", "applications": "Mandibulectomia, esvaziamento ganglionar, enxerto ósseo"},
+    ],
+    "Kit EC2 - Linha Opus": [
+        {"tuss_code": "30713137", "procedure_name": "Punção/infiltração articular diagnóstica ou terapêutica", "subgroup": "Ortopedia", "applications": "Viscossuplementação, infiltração articular, ácido hialurônico, osteoartrite, gonartrose, joelho", "is_primary": True},
+    ],
+    "Parafuso de Interferência Bioabsorvível": [
+        {"tuss_code": "30727049", "procedure_name": "Reconstrução de LCA", "subgroup": "Ortopedia", "applications": "Reconstrução ligamentar, LCA, ligamento cruzado anterior, joelho, fixação de enxerto", "is_primary": True},
+    ],
+    "Tela de Polipropileno Macroporosa": [
+        {"tuss_code": "30604020", "procedure_name": "Herniorrafia com tela", "subgroup": "Cirurgia Geral", "applications": "Hérnia incisional, hérnia inguinal, herniorrafia, hernioplastia, tela, polipropileno", "is_primary": True},
+    ],
+    "Vitagraft - Enxerto Bifásico": [
+        {"tuss_code": "30713048", "procedure_name": "Enxertos em pseudartroses", "subgroup": "Ortopedia", "applications": "Pseudoartrose, enxerto ósseo, não consolidação, defeito ósseo", "is_primary": True},
+        {"tuss_code": "30722306", "procedure_name": "Enxerto ósseo - perda de substância", "subgroup": "Ortopedia", "applications": "Enxerto ósseo, perda de substância, defeito ósseo"},
+        {"tuss_code": "30715245", "procedure_name": "Pseudoartrose de coluna", "subgroup": "Ortopedia", "applications": "Pseudoartrose, coluna vertebral"},
+        {"tuss_code": "30720133", "procedure_name": "Pseudoartrose com ou sem fixador externo", "subgroup": "Ortopedia", "applications": "Pseudoartrose, osteotomia, fixador externo"},
+        {"tuss_code": "30732115", "procedure_name": "Tumor ósseo - ressecção e enxerto", "subgroup": "Ortopedia", "applications": "Tumor ósseo, ressecção, enxerto"},
+        {"tuss_code": "30715016", "procedure_name": "Artrodese de coluna com instrumentação", "subgroup": "Ortopedia", "applications": "Artrodese, coluna, instrumentação, fusão vertebral"},
+        {"tuss_code": "30715024", "procedure_name": "Artrodese de coluna via anterior/posterolateral", "subgroup": "Ortopedia", "applications": "Artrodese, coluna, via anterior, posterolateral"},
+        {"tuss_code": "30215048", "procedure_name": "Reconstrução craniana ou craniofacial", "subgroup": "Neurocirurgia", "applications": "Reconstrução craniana, craniofacial, cranioplastia"},
+        {"tuss_code": "30717019", "procedure_name": "Artrodese de ombro", "subgroup": "Ortopedia", "applications": "Artrodese, ombro"},
+        {"tuss_code": "30719011", "procedure_name": "Artrodese de cotovelo", "subgroup": "Ortopedia", "applications": "Artrodese, cotovelo"},
+        {"tuss_code": "30721032", "procedure_name": "Artrodese entre ossos do carpo", "subgroup": "Ortopedia", "applications": "Artrodese, carpo, punho"},
+        {"tuss_code": "30724031", "procedure_name": "Artrodese coxofemoral", "subgroup": "Ortopedia", "applications": "Artrodese, coxofemoral, quadril"},
+        {"tuss_code": "30726026", "procedure_name": "Artrodese de joelho", "subgroup": "Ortopedia", "applications": "Artrodese, joelho"},
+        {"tuss_code": "30728045", "procedure_name": "Artrodese de tornozelo", "subgroup": "Ortopedia", "applications": "Artrodese, tornozelo"},
+        {"tuss_code": "30729041", "procedure_name": "Artrodese de tarso/médio pé", "subgroup": "Ortopedia", "applications": "Artrodese, tarso, médio pé"},
+        {"tuss_code": "30729050", "procedure_name": "Artrodese metatarso-falângica", "subgroup": "Ortopedia", "applications": "Artrodese, metatarso, falângica"},
+        {"tuss_code": "30601169", "procedure_name": "Toracoplastia", "subgroup": "Cirurgia Torácica", "applications": "Toracoplastia, parede torácica"},
+        {"tuss_code": "30601096", "procedure_name": "Reconstrução da parede torácica", "subgroup": "Cirurgia Torácica", "applications": "Reconstrução, parede torácica, enxerto, prótese"},
+        {"tuss_code": "30207193", "procedure_name": "Fraturas complexas do terço médio da face", "subgroup": "Bucomaxilofacial", "applications": "Fratura, face, terço médio, enxerto ósseo"},
+        {"tuss_code": "30208106", "procedure_name": "Hemimandibulectomia/reconstrução mandíbula", "subgroup": "Cabeça e Pescoço", "applications": "Hemimandibulectomia, reconstrução, mandíbula, maxila"},
+        {"tuss_code": "30211050", "procedure_name": "Mandibulectomia com/sem enxerto ósseo", "subgroup": "Cabeça e Pescoço", "applications": "Mandibulectomia, esvaziamento ganglionar"},
+        {"tuss_code": "30723086", "procedure_name": "Osteotomias/artrodeses pélvicas", "subgroup": "Ortopedia", "applications": "Osteotomia, artrodese, pelve"},
+        {"tuss_code": "30724023", "procedure_name": "Artrose com ou sem fixador externo", "subgroup": "Ortopedia", "applications": "Artrose, fixador externo"},
+    ],
+    "Kit EC2 - Enxerto Composto": [
+        {"tuss_code": "30101310", "procedure_name": "Enxerto composto - tecido celular subcutâneo", "subgroup": "Cirurgia Geral", "applications": "Enxerto composto, tecido celular subcutâneo, SVF, estroma vascular, medicina regenerativa", "is_primary": True},
+        {"tuss_code": "31206204", "procedure_name": "Plástica de corpo cavernoso", "subgroup": "Urologia", "applications": "Corpo cavernoso, disfunção erétil, Peyronie, curvatura peniana"},
+        {"tuss_code": "31206042", "procedure_name": "Doença de Peyronie - tratamento cirúrgico", "subgroup": "Urologia", "applications": "Peyronie, curvatura peniana, placa fibrosa"},
+        {"tuss_code": "31206263", "procedure_name": "Revascularização peniana", "subgroup": "Urologia", "applications": "Revascularização, disfunção erétil, insuficiência vascular peniana"},
+        {"tuss_code": "31104142", "procedure_name": "Meatotomia uretral", "subgroup": "Urologia", "applications": "Estenose uretral, meatotomia, meato uretral"},
+        {"tuss_code": "30101670", "procedure_name": "Plástica em Z ou W", "subgroup": "Cirurgia Plástica", "applications": "Plástica, reconstrução, cicatriz, brida, retração"},
+    ],
+    "Kit FO - Laser Cirúrgico": [
+        {"tuss_code": "30501458", "procedure_name": "Turbinectomia/turbinoplastia", "subgroup": "Otorrinolaringologia", "applications": "Turbinectomia, turbinoplastia, cornetos, septoplastia, hipertrofia de cornetos, obstrução nasal", "is_primary": True},
+        {"tuss_code": "30501113", "procedure_name": "Cauterização nasal (qualquer técnica)", "subgroup": "Otorrinolaringologia", "applications": "Cauterização, hemostasia, coagulação nasal, sangramento"},
+        {"tuss_code": "30501199", "procedure_name": "Exérese de tumor nasal por via endoscópica", "subgroup": "Otorrinolaringologia", "applications": "Tumor nasal, endoscopia, Rendu-Osler-Weber, sinéquias nasais"},
+        {"tuss_code": "30502080", "procedure_name": "Etmoidectomia intranasal", "subgroup": "Otorrinolaringologia", "applications": "Etmoidectomia, seios paranasais, etmoide"},
+        {"tuss_code": "30206219", "procedure_name": "Microcirurgia com laser - lesões malignas", "subgroup": "Otorrinolaringologia", "applications": "Laser, lesões malignas, laringe, traqueia, estenose laríngea"},
+        {"tuss_code": "30206227", "procedure_name": "Microcirurgia com laser - lesões benignas", "subgroup": "Otorrinolaringologia", "applications": "Laser, lesões benignas, laringe, traqueia, papiloma, sinéquias"},
+        {"tuss_code": "40202763", "procedure_name": "Laringoscopia/traqueoscopia com laser", "subgroup": "Otorrinolaringologia", "applications": "Laringoscopia, traqueoscopia, laser, papiloma, tumor laríngeo"},
+        {"tuss_code": "30206065", "procedure_name": "Exérese de tumor por via endoscópica com laser", "subgroup": "Otorrinolaringologia", "applications": "Tumor, endoscopia, laser, laringe, traqueia"},
+        {"tuss_code": "30205034", "procedure_name": "Adeno-amigdalectomia", "subgroup": "Otorrinolaringologia", "applications": "Adenoidectomia, amigdalectomia, adenoide, amígdala, hipertrofia"},
+        {"tuss_code": "30205247", "procedure_name": "Uvulopalatofaringoplastia", "subgroup": "Otorrinolaringologia", "applications": "Uvuloplastia, uvulopalatoplastia, apneia obstrutiva do sono, ronco, SAHOS"},
+        {"tuss_code": "30501377", "procedure_name": "Ressecção de sinéquias", "subgroup": "Otorrinolaringologia", "applications": "Sinéquias nasais, paranasais, laríngeas, faríngeas, pós-cirúrgicas"},
+        {"tuss_code": "40202151", "procedure_name": "Desobstrução brônquica com laser", "subgroup": "Pneumologia", "applications": "Desobstrução brônquica, estenose brônquica, tumor brônquico, vias aéreas"},
+    ],
+}
+
+# ============================================================================
+# Templates de relatórios cirúrgicos reais (fonte: relatórios aprovados Hugo/Rastriall)
+# ============================================================================
+UROLOGY_TEMPLATES_SEED = [
+    {
+        "nome": "Template EC2 - Urologia - Doença de Peyronie",
+        "especialidade": "Urologia",
+        "produto_nome": "Kit EC2 - Enxerto Composto",
+        "tom_de_voz": (
+            "Tom científico, formal e assertivo. Justificar necessidade do enxerto composto "
+            "para reparação do corpo cavernoso. Referenciar técnica de colheita de SVF."
+        ),
+        "template_corpo": (
+            "O paciente {paciente_nome}, portador de {diagnostico} (CID {cid}), será submetido "
+            "a tratamento cirúrgico para Doença de Peyronie com plástica de corpo cavernoso e "
+            "aplicação de enxerto composto em toda extensão e base do corpo cavernoso, a fim de "
+            "proporcionar vasculogênese e angiogênese para melhor resposta à conduta clínica e "
+            "modulação do processo inflamatório e cicatricial.\n\n"
+            "A colheita de enxerto composto quando abordado o tecido celular subcutâneo deve ser "
+            "acompanhada dos cuidados de preservação entre o momento da colheita e a efetiva "
+            "reimplantação. É fundamental ter instrumental adequado (cânulas de acesso e colheita) "
+            "e meios de preservação do enxerto composto (gel carreador) para que não haja degradação "
+            "ou contaminação do tecido celular subcutâneo coletado.\n\n"
+            "Enxertos compostos são formados por grupos celulares subcutâneos onde encontramos "
+            "células do estroma vascular (SVF) que são fundamentais para a reparação tecidual. "
+            "{falha_terapeutica}\n\n"
+            "A não realização do procedimento implica em {risco_nao_realizacao}."
+        ),
+        "bases_legais": ["RN 395", "RN 424", "RN 465"],
+        "referencias_padrao": [
+            "Glauco Andre Almeida Guedes, CRM-DF 9934. Relatório Cirúrgico EC2 - Doença de Peyronie.",
+        ],
+        "exemplos_aprovados": [
+            "Paciente J.R., portador de Doença de Peyronie com disfunção erétil e calcificações em topografia de corpo cavernoso bilateral, com curvatura peniana (CID N45), será submetido a plástica de corpo cavernoso (31206204), Doença de Peyronie - tratamento cirúrgico (31206042), meatotomia uretral (31104142), plástica em Z ou W (30101670) e enxerto composto de tecido celular subcutâneo (30101310). Para esse caso necessito de tratamento cirúrgico para aplicação de enxerto composto em toda extensão e base do corpo cavernoso, a fim de proporcionar vasculogênese e angiogênese para melhor resposta à conduta clínica e modulação do processo inflamatório e cicatricial. A colheita de enxerto composto deve ser acompanhada dos cuidados de preservação entre colheita e reimplantação, sendo fundamental instrumental adequado e meios de preservação para que não haja degradação ou contaminação do tecido coletado.",
+        ],
+    },
+    {
+        "nome": "Template EC2 - Urologia - Disfunção Erétil",
+        "especialidade": "Urologia",
+        "produto_nome": "Kit EC2 - Enxerto Composto",
+        "tom_de_voz": (
+            "Tom científico, formal e assertivo. Justificar enxerto composto para "
+            "revascularização e reparação de corpo cavernoso em disfunção erétil."
+        ),
+        "template_corpo": (
+            "O paciente {paciente_nome}, portador de {diagnostico} (CID {cid}), será submetido "
+            "a plástica de corpo cavernoso com revascularização peniana e aplicação de enxerto "
+            "composto de tecido celular subcutâneo.\n\n"
+            "Para esse caso necessito de tratamento cirúrgico para aplicação de enxerto composto "
+            "em toda extensão e base do corpo cavernoso, a fim de proporcionar vasculogênese e "
+            "angiogênese para melhor resposta à conduta clínica e modulação do processo inflamatório "
+            "e cicatricial. {falha_terapeutica}\n\n"
+            "A não realização do procedimento implica em {risco_nao_realizacao}."
+        ),
+        "bases_legais": ["RN 395", "RN 424", "RN 465"],
+        "referencias_padrao": [
+            "Glauco Andre Almeida Guedes, CRM-DF 9934. Relatório Cirúrgico EC2 - Disfunção Erétil.",
+        ],
+        "exemplos_aprovados": [
+            "Paciente R.A., portador de disfunção erétil com calcificações significativas em topografia de corpo cavernoso bilateral, com curvatura peniana (CID N45), será submetido a plástica de corpo cavernoso (31206204), revascularização peniana (31206263), plástica em Z ou W (30101670) e enxerto composto de tecido celular subcutâneo (30101310). Enxertos compostos são formados por grupos celulares subcutâneos onde encontramos células do estroma vascular (SVF) fundamentais para a reparação tecidual. A colheita deve ser acompanhada dos cuidados de preservação entre colheita e reimplantação, com instrumental adequado e meios de preservação do gel carreador.",
+        ],
+    },
+    {
+        "nome": "Template EC2 - Urologia - Estenose Uretral",
+        "especialidade": "Urologia",
+        "produto_nome": "Kit EC2 - Enxerto Composto",
+        "tom_de_voz": (
+            "Tom científico, formal e assertivo. Justificar enxerto composto para "
+            "tratamento de estenose uretral com meatotomia e plástica."
+        ),
+        "template_corpo": (
+            "O paciente {paciente_nome}, portador de {diagnostico} (CID {cid}), será submetido "
+            "a meatotomia uretral para tratamento de estenose com plástica de corpo cavernoso "
+            "e aplicação de enxerto composto de tecido celular subcutâneo.\n\n"
+            "Para esse caso necessito de tratamento cirúrgico para aplicação de enxerto composto "
+            "a fim de proporcionar vasculogênese e angiogênese para melhor resposta à conduta "
+            "clínica e modulação do processo inflamatório e cicatricial. {falha_terapeutica}\n\n"
+            "A não realização do procedimento implica em {risco_nao_realizacao}."
+        ),
+        "bases_legais": ["RN 395", "RN 424", "RN 465"],
+        "referencias_padrao": [
+            "Glauco Andre Almeida Guedes, CRM-DF 9934. Relatório Cirúrgico EC2 - Estenose Uretral.",
+        ],
+        "exemplos_aprovados": [
+            "Paciente M.C., portador de estenose uretral com disfunção erétil e calcificações em topografia de corpo cavernoso bilateral (CID N45), será submetido a plástica de corpo cavernoso (31206204), meatotomia uretral (31104142), plástica em Z ou W (30101670) e enxerto composto de tecido celular subcutâneo (30101310). A colheita de enxerto composto quando abordado o tecido celular subcutâneo deve ser acompanhada dos cuidados de preservação. Enxertos compostos são formados por grupos celulares subcutâneos com células do estroma vascular (SVF) fundamentais para reparação tecidual.",
+        ],
+    },
+]
+
 TISS_RULES_SEED = [
     # Guia SP/SADT — materiais OPME vão no campo Mat/Med
     {
@@ -370,6 +571,24 @@ async def seed():
 
         for rdata in TISS_RULES_SEED:
             db.add(TissRule(**rdata))
+
+        # Seed product-TUSS mappings
+        for product_name, mappings in PRODUCT_TUSS_MAPPINGS_SEED.items():
+            pid = product_map.get(product_name)
+            if not pid:
+                continue
+            for mdata in mappings:
+                db.add(ProductTussMapping(product_id=pid, **mdata))
+
+        # Seed urology templates
+        for tdata in UROLOGY_TEMPLATES_SEED:
+            tdata = dict(tdata)
+            produto_nome = tdata.pop("produto_nome")
+            t = ReportTemplate(
+                produto_id=product_map.get(produto_nome),
+                **tdata,
+            )
+            db.add(t)
 
         await db.commit()
 

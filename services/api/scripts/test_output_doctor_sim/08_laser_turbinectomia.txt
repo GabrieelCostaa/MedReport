@@ -12,37 +12,35 @@ ESPECIALIDADE: Otorrinolaringologia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 298
-SCORE: 92.0/100 (alto)
-MODO: fora_do_rol
-TEMPO: 43.4s
-COMPONENTES: DUT=32.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
-GAPS: Critério STF não atendido: 5_registro_anvisa
+PALAVRAS: 315
+SCORE: 100.0/100 (alto)
+MODO: cobertura_direta
+TEMPO: 37.9s
+COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-A paciente Fernanda Costa Ribeiro apresenta diagnóstico de hipertrofia de cornetos inferiores bilateral (CID J34.3), resultando em obstrução nasal crônica refratária a tratamento clínico por 10 meses. A manutenção deste quadro sem intervenção adequada perpetua um ambiente inflamatório crônico, exacerbando a hipertrofia dos cornetos e comprometendo a função respiratória nasal. Tentativas de manejo conservador, incluindo o uso de corticosteroides tópicos e descongestionantes nasais, não resultaram em alívio significativo dos sintomas, confirmando a refratariedade do quadro (Calvo-Henriquez et al., 2020; Zhang et al., 2023).
-A utilização do Kit FO - Laser Cirúrgico é tecnicamente superior e clinicamente necessária para o tratamento da hipertrofia dos cornetos. Este laser de diodo, com emissão simultânea de 980 nm e 1470 nm, permite corte e coagulação simultâneos, minimizando o sangramento intraoperatório e reduzindo o tempo cirúrgico (Janda et al., 2001). Estudos demonstram que a turbinoplastia assistida por laser de diodo resulta em menor formação de crostas pós-operatórias e elimina a necessidade de tamponamento nasal, possibilitando a realização do procedimento em regime de Day Clinic (Passàli et al., 2003; Kankaanpää et al., 2021). Comparado a técnicas alternativas, como a radiofrequência e a microdebrider, o laser de diodo apresenta vantagens significativas em termos de precisão cirúrgica e recuperação pós-operatória (Harju et al., 2021; Mohamed et al., 2022).
-A não realização do procedimento com o material solicitado pode levar à progressão da obstrução nasal para um estágio mais grave, exigindo intervenções futuras de maior porte e custo, além de aumentar o risco de complicações respiratórias, como apneia do sono (El-Sisi et al., 2023; Harju et al., 2022).
+A paciente Fernanda Costa Ribeiro apresenta diagnóstico de hipertrofia de cornetos inferiores bilateral (CID J34.3), resultando em obstrução nasal crônica refratária a tratamento clínico por 10 meses. A manutenção deste quadro sem intervenção adequada perpetua um ambiente inflamatório crônico, exacerbando a hipertrofia dos cornetos e comprometendo a função respiratória nasal. A falha das abordagens conservadoras, incluindo o uso de corticosteroides tópicos e descongestionantes, evidencia a necessidade de intervenção cirúrgica para evitar a progressão para complicações mais severas, como apneia do sono e sinusite crônica.
+O uso do Kit FO - Laser Cirúrgico é tecnicamente superior e clinicamente necessário para o tratamento da hipertrofia dos cornetos inferiores. Este laser de diodo, com emissão simultânea de 980 nm e 1470 nm, permite corte e coagulação simultâneos, minimizando o sangramento intraoperatório e reduzindo o tempo cirúrgico. A precisão cirúrgica proporcionada por este laser diminui o dano térmico aos tecidos adjacentes, resultando em menor formação de crostas e eliminando a necessidade de tamponamento nasal pós-operatório, conforme demonstrado por Janda et al. (2001). Estudos comparativos, como os de Passàli et al. (2003) e Kankaanpää et al. (2021), corroboram a eficácia do laser de diodo em melhorar a qualidade de vida dos pacientes, superando técnicas convencionais como a turbinectomia e a eletrocauterização.
+A não realização do procedimento com o material solicitado pode levar a um agravamento do quadro clínico, com aumento do risco de complicações respiratórias e necessidade de intervenções futuras mais complexas e onerosas. A intervenção precoce com o Kit FO - Laser Cirúrgico é custo-efetiva, prevenindo a progressão para condições que demandariam hospitalizações prolongadas e tratamentos mais invasivos, conforme evidenciado por Mohamed et al. (2022) e Harju et al. (2021).
 A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 estabelece a obrigatoriedade de cobertura dos procedimentos citados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, sob pena de descumprimento conforme a RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica Cap. I, V.
+Conforme a RN 424, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 estabelece a cobertura obrigatória dos procedimentos, e a RN 395 exige justificativa de negativa por escrito. O Código de Ética Médica garante o uso do melhor progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
-  1. Calvo-Henriquez et al., 2020 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32485468/
-  2. Zhang et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/36315624/
-  3. Janda et al., 2001 [internal]
-  4. Passàli et al., 2003 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/12940665/
-  5. Kankaanpää et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32453643/
-  6. Harju et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
-  7. Mohamed et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33389308/
-  8. El-Sisi et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/37408328/
-  9. Harju et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
+  1. Janda et al. (2001) [internal]
+  2. Passàli et al. (2003) [pubmed] — https://pubmed.ncbi.nlm.nih.gov/12940665/
+  3. Kankaanpää et al. (2021) [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32453643/
+  4. Mohamed et al. (2022) [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33389308/
+  5. Harju et al. (2021) [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
 
 --- AUDIT LOG ---
-  [correcao] base_legal_ans: Correção para base legal correta
-  [remocao] custo: dado sem evidência
+  [correcao] CID: CID ausente no texto
+  [validacao] referencia: referência válida
+  [validacao] referencia: referência válida
+  [validacao] referencia: referência válida
+  [validacao] referencia: referência válida
+  [validacao] referencia: referência válida
 
 --- ANÁLISE CRÍTICA ---
-  ? DADO REMOVIDO PELO AUDITOR: custo: dado sem evidência
-  ? GAP: Critério STF não atendido: 5_registro_anvisa
+  ✓ Nenhum problema detectado

@@ -12,34 +12,36 @@ ESPECIALIDADE: Cirurgia Geral
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 5/6
-PALAVRAS: 315
+PALAVRAS: 302
 SCORE: 100.0/100 (alto)
-MODO: cobertura_direta
-TEMPO: 33.0s
+MODO: fora_do_rol
+TEMPO: 36.8s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-A paciente Claudia Regina Santos apresenta diagnóstico de risco de obstrução intestinal recorrente (CID K66.0), condição que frequentemente resulta em complicações graves, como dor abdominal intensa, náuseas, vômitos e, em casos mais severos, perfuração intestinal. A formação de aderências pós-operatórias é um fator crítico na patogênese dessas obstruções, ocorrendo em até 93% dos pacientes submetidos a cirurgias abdominais abertas (Becker JM et al., 1996). A manutenção deste quadro sem intervenção adequada pode levar a um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, acelerando a formação de aderências e comprometendo a função intestinal (Lin et al., 2025).
-O uso do Adhesion STP+ é tecnicamente superior e clinicamente necessário para prevenir a formação de aderências pós-cirúrgicas. Este material atua como uma barreira física temporária, composta por CMC sódica e ácido hialurônico, que é biorreabsorvível em aproximadamente 7 dias. Estudos demonstram que a barreira de CMC/ácido hialurônico reduz em 80% a formação de bridas peritoneais (Diamond MP et al., 1996), sendo a única intervenção com nível 1 de evidência para prevenção de aderências (Becker JM et al., 1996). Diferente de outras barreiras, o Adhesion STP+ não interfere no processo cicatricial, garantindo a integridade da cicatrização enquanto previne a formação de aderências (Wallwiener et al., 1998; Maheta et al., 2024).
-A não utilização deste material pode resultar em complicações clínicas significativas, incluindo a necessidade de reoperações, que são associadas a maior morbidade e custos elevados para a operadora de saúde. A reoperação devido a aderências não tratadas pode aumentar os custos do tratamento e prolongar o tempo de internação, impactando negativamente tanto a saúde da paciente quanto os recursos financeiros da operadora (Kumar et al., 2009; Ouaïssi et al., 2012).
+A paciente Claudia Regina Santos apresenta diagnóstico de risco de obstrução intestinal completa (CID K66.0), condição que frequentemente resulta em complicações graves, como dor abdominal intensa, vômitos e potencial necessidade de intervenção cirúrgica emergencial. A formação de aderências pós-operatórias é uma complicação comum em cirurgias abdominais, ocorrendo em até 93% dos casos (Becker JM et al., 1996). Essas aderências podem levar a obstruções intestinais, dor crônica e infertilidade, conforme demonstrado por Diamond MP et al. (1996).
+Para mitigar esses riscos, é imperativo o uso do material Adhesion STP+, uma barreira anti-aderência biorreabsorvível composta por carboximetilcelulose sódica (CMC) e ácido hialurônico, que atua através da formação de uma barreira física temporária entre superfícies teciduais traumatizadas, prevenindo a formação de aderências por até 7 dias. Este material é composto por CMC sódica e ácido hialurônico, cuja eficácia na redução de aderências peritoneais é amplamente documentada (Diamond MP et al., 1996; Wallwiener et al., 1998). Diferente de outras barreiras, o Adhesion STP+ não interfere no processo cicatricial natural e reduz a necessidade de reoperações por aderências em até 50% (Maheta et al., 2024; Ten Broek et al., 2014).
+A não utilização deste material pode resultar em uma cascata de eventos adversos, incluindo a progressão para obstrução intestinal completa, que exigiria procedimentos cirúrgicos de maior porte e complexidade, aumentando significativamente o custo e a morbidade para a operadora de saúde (Lin et al., 2025; Kumar et al., 2009). Além disso, a reincidência de aderências após cirurgias abdominais é alta, com taxas de até 80% (Lin et al., 2025), o que reforça a necessidade de medidas preventivas eficazes.
 A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 obriga a cobertura mínima dos procedimentos citados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica.
+Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória para procedimentos com OPME. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível. O Código de Ética Médica, Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
   1. Becker JM et al., 1996 [internal]
   2. Diamond MP et al., 1996 [internal]
   3. Wallwiener et al., 1998 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/9457948/
   4. Maheta et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38795014/
-  5. Kumar et al., 2009 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/19160246/
-  6. Ouaïssi et al., 2012 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/22261580/
+  5. Ten Broek et al., 2014 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/24075279/
+  6. Lin et al., 2025 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/40754073/
+  7. Kumar et al., 2009 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/19160246/
 
 --- AUDIT LOG ---
-  [remocao] percentual de redução de bridas: dado sem evidência
+  [correcao] justificativa_tecnica: Ajuste para conformidade com a descrição técnica oficial
   [correcao] CID: CID ausente no texto
+  [remocao] falha_terapeutica: Falha terapêutica prévia não mencionada
 
 --- ANÁLISE CRÍTICA ---
   ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica
   ? VERIFICAR: Percentual 80% no texto — confirmar se tem evidência
-  ? DADO REMOVIDO PELO AUDITOR: percentual de redução de bridas: dado sem evidência
+  ? DADO REMOVIDO PELO AUDITOR: falha_terapeutica: Falha terapêutica prévia não mencionada

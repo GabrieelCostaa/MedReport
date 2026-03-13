@@ -6,13 +6,15 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 284,
+    "word_count": 271,
     "score": 100.0,
     "nivel": "alto",
-    "mode": "fora_do_rol",
-    "issues_count": 0,
-    "issues": [],
-    "elapsed": 38.2
+    "mode": "cobertura_direta",
+    "issues_count": 1,
+    "issues": [
+      "DADO REMOVIDO PELO AUDITOR: reticulação polimérica tridimensional: dado sem evidência"
+    ],
+    "elapsed": 27.5
   },
   {
     "id": "02_parafuso_lca",
@@ -21,13 +23,13 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 271,
+    "word_count": 326,
     "score": 100.0,
     "nivel": "alto",
     "mode": "cobertura_direta",
     "issues_count": 0,
     "issues": [],
-    "elapsed": 33.8
+    "elapsed": 52.2
   },
   {
     "id": "03_biossilex_osteomielite",
@@ -36,15 +38,13 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 304,
+    "word_count": 312,
     "score": 100.0,
     "nivel": "alto",
     "mode": "cobertura_direta",
-    "issues_count": 1,
-    "issues": [
-      "ALERTA: Nome do paciente 'Antonio Carlos da Silva' não aparece no texto"
-    ],
-    "elapsed": 30.5
+    "issues_count": 0,
+    "issues": [],
+    "elapsed": 43.1
   },
   {
     "id": "04_vitagraft_pseudoartrose",
@@ -53,15 +53,16 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 251,
+    "word_count": 261,
     "score": 100.0,
     "nivel": "alto",
-    "mode": "cobertura_direta",
-    "issues_count": 1,
+    "mode": "fora_do_rol",
+    "issues_count": 2,
     "issues": [
-      "DADO REMOVIDO PELO AUDITOR: eliminando a necessidade de enxerto autólogo de ilíaco em 85% dos casos: dado sem evidência"
+      "ALERTA: Apenas referências internas — sem PubMed",
+      "VERIFICAR: Percentual 85% no texto — confirmar se tem evidência"
     ],
-    "elapsed": 30.6
+    "elapsed": 31.7
   },
   {
     "id": "05_tela_hernia_incisional",
@@ -70,7 +71,7 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 281,
+    "word_count": 280,
     "score": 85.0,
     "nivel": "alto",
     "mode": "fora_do_rol",
@@ -78,7 +79,7 @@
     "issues": [
       "GAP: Código TUSS 30604020: Código TUSS 30604020 não encontrado na base oficial (Tabelas 19 e 22)"
     ],
-    "elapsed": 31.2
+    "elapsed": 36.8
   },
   {
     "id": "06_adhesion_lise_aderencias",
@@ -87,17 +88,17 @@
     "aprovado": true,
     "checklist_ok": 5,
     "checklist_total": 6,
-    "word_count": 315,
+    "word_count": 302,
     "score": 100.0,
     "nivel": "alto",
-    "mode": "cobertura_direta",
+    "mode": "fora_do_rol",
     "issues_count": 3,
     "issues": [
       "CRÍTICO: Checklist incompleto — faltam: falha_terapeutica",
       "VERIFICAR: Percentual 80% no texto — confirmar se tem evidência",
-      "DADO REMOVIDO PELO AUDITOR: percentual de redução de bridas: dado sem evidência"
+      "DADO REMOVIDO PELO AUDITOR: falha_terapeutica: Falha terapêutica prévia não mencionada"
     ],
-    "elapsed": 33.0
+    "elapsed": 36.8
   },
   {
     "id": "07_enxerto_peyronie",
@@ -106,15 +107,15 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 314,
+    "word_count": 304,
     "score": 93.0,
     "nivel": "alto",
-    "mode": "fora_do_rol",
+    "mode": "cobertura_direta",
     "issues_count": 1,
     "issues": [
-      "VERIFICAR: Percentual 78% no texto — confirmar se tem evidência"
+      "DADO REMOVIDO PELO AUDITOR: taxa de sucesso: dado sem evidência"
     ],
-    "elapsed": 25.6
+    "elapsed": 37.7
   },
   {
     "id": "08_laser_turbinectomia",
@@ -123,15 +124,12 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 298,
-    "score": 92.0,
+    "word_count": 315,
+    "score": 100.0,
     "nivel": "alto",
-    "mode": "fora_do_rol",
-    "issues_count": 2,
-    "issues": [
-      "DADO REMOVIDO PELO AUDITOR: custo: dado sem evidência",
-      "GAP: Critério STF não atendido: 5_registro_anvisa"
-    ],
-    "elapsed": 43.4
+    "mode": "cobertura_direta",
+    "issues_count": 0,
+    "issues": [],
+    "elapsed": 37.9
   }
 ]

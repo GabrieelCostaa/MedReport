@@ -116,6 +116,7 @@ class PipelineSession:
     pubmed_evidences: list = field(default_factory=list)
     usage: PipelineUsage = field(default_factory=PipelineUsage)
     compliance_context: object = None  # ComplianceContext when available
+    tuss_selection: object = None  # TussSelection when available
 
 
 class ReportPipeline:
@@ -190,13 +191,31 @@ class ReportPipeline:
         if n_pubmed > 0:
             await _emit("researching", f"{n_pubmed} artigo(s) científico(s) relevante(s) identificado(s)")
 
+        # TUSS Selection: pick best code for this diagnosis
+        selected_tuss_code = getattr(product, "codigo_tuss_sugerido", "") or ""
+        try:
+            from app.services.tuss_selector import select_best_tuss
+            tuss_sel = await select_best_tuss(
+                db=db,
+                product_id=product.id,
+                cid=cid,
+                diagnosis=diagnostico,
+                product_fallback_tuss=selected_tuss_code,
+            )
+            session.tuss_selection = tuss_sel
+            selected_tuss_code = tuss_sel.tuss_code
+            if tuss_sel.confidence != "fallback":
+                await _emit("researching", f"TUSS {tuss_sel.tuss_code} selecionado: {tuss_sel.procedure_name}")
+        except Exception as e:
+            logger.warning("TUSS selector failed (using fallback): %s", e)
+
         # Compliance layer: DUT, TUSS, Anvisa
         try:
             from app.services.compliance_layer import build_compliance_context
             await _emit("researching", "Verificando conformidade regulatória ANS...")
             compliance_ctx = await build_compliance_context(
                 db=db,
-                procedure_code=getattr(product, "codigo_tuss_sugerido", "") or "",
+                procedure_code=selected_tuss_code,
                 patient_data=medico_inputs,
                 produto_registro_anvisa=getattr(product, "registro_anvisa", "") or "",
                 # Doctor is authenticated on Hugo platform = prescription is implicit

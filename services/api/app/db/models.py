@@ -96,6 +96,24 @@ class Product(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
 
+class ProductTussMapping(Base):
+    """Mapeamento N:N entre Produto OPME e códigos TUSS de procedimentos aplicáveis."""
+    __tablename__ = "product_tuss_mappings"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    product_id = Column(UUID(), ForeignKey("products.id"), nullable=False, index=True)
+    tuss_code = Column(String(20), nullable=False, index=True)
+    procedure_name = Column(Text, nullable=False)
+    subgroup = Column(String(255), nullable=True)
+    applications = Column(Text, nullable=True)
+    is_primary = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+    __table_args__ = (
+        Index("ix_product_tuss_unique", "product_id", "tuss_code", unique=True),
+    )
+
+
 class ReportTemplate(Base):
     """Template DNA de relatórios aprovados. Mimetiza tom, citações e bases legais de sucesso."""
     __tablename__ = "report_templates"

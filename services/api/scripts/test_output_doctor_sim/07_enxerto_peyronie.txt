@@ -12,26 +12,30 @@ ESPECIALIDADE: Urologia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 314
+PALAVRAS: 304
 SCORE: 93.0/100 (alto)
-MODO: fora_do_rol
-TEMPO: 25.6s
+MODO: cobertura_direta
+TEMPO: 37.7s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=3/10
 
 --- RELATÓRIO GERADO ---
-O paciente Roberto Augusto Lima apresenta diagnóstico de Doença de Peyronie (CID N48.6), caracterizada por curvatura peniana superior a 60 graus, presença de placa estável e disfunção erétil. A manutenção deste quadro sem intervenção adequada resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que perpetuam a inflamação crônica e a fibrose, agravando a curvatura e comprometendo a função erétil (Levy et al., 2015). O tratamento conservador, incluindo uso de medicamentos orais e fisioterapia, foi exaurido por mais de seis meses sem melhora significativa, evidenciando a refratariedade do quadro e a necessidade de intervenção cirúrgica com o uso de OPME específico.
-O Kit EC2 - Enxerto Composto é tecnicamente superior e clinicamente necessário para este procedimento. Este material contém células do estroma vascular (SVF), que são fundamentais para a reparação tecidual e vasculogênese, promovendo a restauração da curvatura peniana e melhorando a função erétil (Levy et al., 2015). Diferente de alternativas genéricas, o Kit EC2 oferece um procedimento percutâneo minimamente invasivo, preservando o enxerto entre colheita e reimplantação, o que reduz riscos de contaminação e degradação do tecido. Estudos demonstram que o uso de SVF em correção de Doença de Peyronie apresenta uma taxa de sucesso de 78% na restauração da curvatura peniana (Levy JA et al., 2015; Akakpo et al., 2020).
-A não realização deste procedimento com o material solicitado pode levar à progressão da doença para estágios mais graves, exigindo intervenções futuras de maior porte e custo, além de aumentar a morbidade associada a complicações como disfunção erétil irreversível. A intervenção precoce com o Kit EC2 é custo-efetiva, prevenindo a necessidade de procedimentos mais complexos e onerosos para a operadora de saúde.
+O paciente Roberto Augusto Lima apresenta diagnóstico de Doença de Peyronie (CID N48.6), caracterizada por uma curvatura peniana superior a 60 graus, presença de placa estável e disfunção erétil associada. Esta condição resulta em um estado inflamatório crônico que compromete significativamente a qualidade de vida e a função sexual do paciente. A manutenção do quadro sem intervenção adequada perpetua um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que intensificam a fibrose e a deformidade peniana.
+Os tratamentos conservadores, incluindo o uso de inibidores da fosfodiesterase tipo 5 (PDE5i), terapia de ondas de choque e injeções intralesionais, foram exauridos sem sucesso, comprovando a refratariedade do quadro. A progressão para intervenção com o Kit EC2 - Enxerto Composto é mandatória para prevenir a deterioração funcional progressiva e restaurar a função erétil.
+O Kit EC2 é tecnicamente superior devido à sua capacidade de preservar o enxerto entre colheita e reimplantação, reduzindo riscos de contaminação e degradação do tecido. Contém células do estroma vascular (SVF), fundamentais para a reparação tecidual e vasculogênese, conforme demonstrado por Levy et al. (2015). Diferente de alternativas genéricas, o Kit EC2 promove a regeneração tecidual através de um mecanismo de ação que inclui a preservação celular e a indução de vasculogênese, comprovada por histologia (Levy et al., 2015; Akakpo et al., 2020).
+A não realização do procedimento com o Kit EC2 pode resultar em progressão da doença para estágios mais graves, exigindo intervenções futuras de maior porte e custo, além de maior morbidade associada. A negativa do material implicaria em custos adicionais para a operadora devido a possíveis complicações clínicas e necessidade de reoperações.
 A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme as Resoluções Normativas da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A negativa de cobertura deve ser fundamentada em evidências científicas de mesmo nível, sob pena de descumprimento. O Código de Ética Médica assegura ao médico o uso do melhor do progresso científico em benefício do paciente.
+Conforme a RN 424, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 obriga a cobertura mínima dos procedimentos citados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. O Código de Ética Médica estabelece que compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
-  1. Levy et al., 2015 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26414724/
+  1. Levy et al. (2015) [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26414724/
+  2. Akakpo et al. (2020) [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32826194/
 
 --- AUDIT LOG ---
-  [validacao] taxa de sucesso: Restaurado: conteúdo pertence à ficha técnica do produto (2 termos match).
+  [remocao] taxa de sucesso: dado sem evidência
+  [validacao] referencia: referência válida
+  [validacao] referencia: referência válida
 
 --- ANÁLISE CRÍTICA ---
-  ? VERIFICAR: Percentual 78% no texto — confirmar se tem evidência
+  ? DADO REMOVIDO PELO AUDITOR: taxa de sucesso: dado sem evidência
