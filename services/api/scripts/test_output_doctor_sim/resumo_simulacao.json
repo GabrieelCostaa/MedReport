@@ -7,15 +7,12 @@
     "checklist_ok": 6,
     "checklist_total": 6,
     "word_count": 284,
-    "score": 77.0,
-    "nivel": "medio",
+    "score": 100.0,
+    "nivel": "alto",
     "mode": "fora_do_rol",
-    "issues_count": 2,
-    "issues": [
-      "ALERTA: Referência com formato duvidoso: Tezel; Fredrickson, 2008",
-      "DADO REMOVIDO PELO AUDITOR: custo significativamente maior: dado sem evidência"
-    ],
-    "elapsed": 33.7
+    "issues_count": 0,
+    "issues": [],
+    "elapsed": 38.2
   },
   {
     "id": "02_parafuso_lca",
@@ -24,15 +21,13 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 272,
-    "score": 77.0,
-    "nivel": "medio",
+    "word_count": 271,
+    "score": 100.0,
+    "nivel": "alto",
     "mode": "cobertura_direta",
-    "issues_count": 1,
-    "issues": [
-      "DADO REMOVIDO PELO AUDITOR: custos significativamente maiores: dado sem evidência"
-    ],
-    "elapsed": 36.1
+    "issues_count": 0,
+    "issues": [],
+    "elapsed": 33.8
   },
   {
     "id": "03_biossilex_osteomielite",
@@ -41,15 +36,15 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 278,
-    "score": 74.0,
-    "nivel": "medio",
+    "word_count": 304,
+    "score": 100.0,
+    "nivel": "alto",
     "mode": "cobertura_direta",
     "issues_count": 1,
     "issues": [
-      "ALERTA: Score de compliance médio (74.0/100)"
+      "ALERTA: Nome do paciente 'Antonio Carlos da Silva' não aparece no texto"
     ],
-    "elapsed": 39.1
+    "elapsed": 30.5
   },
   {
     "id": "04_vitagraft_pseudoartrose",
@@ -58,13 +53,15 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 259,
-    "score": 77.0,
-    "nivel": "medio",
+    "word_count": 251,
+    "score": 100.0,
+    "nivel": "alto",
     "mode": "cobertura_direta",
-    "issues_count": 0,
-    "issues": [],
-    "elapsed": 32.8
+    "issues_count": 1,
+    "issues": [
+      "DADO REMOVIDO PELO AUDITOR: eliminando a necessidade de enxerto autólogo de ilíaco em 85% dos casos: dado sem evidência"
+    ],
+    "elapsed": 30.6
   },
   {
     "id": "05_tela_hernia_incisional",
@@ -73,33 +70,34 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 311,
-    "score": 62.0,
-    "nivel": "medio",
+    "word_count": 281,
+    "score": 85.0,
+    "nivel": "alto",
     "mode": "fora_do_rol",
-    "issues_count": 2,
+    "issues_count": 1,
     "issues": [
-      "ALERTA: Score de compliance médio (62.0/100)",
       "GAP: Código TUSS 30604020: Código TUSS 30604020 não encontrado na base oficial (Tabelas 19 e 22)"
     ],
-    "elapsed": 43.1
+    "elapsed": 31.2
   },
   {
     "id": "06_adhesion_lise_aderencias",
     "descricao": "Adhesion STP+ — Lise de aderências abdominais",
     "product": "Adhesion STP+",
     "aprovado": true,
-    "checklist_ok": 6,
+    "checklist_ok": 5,
     "checklist_total": 6,
-    "word_count": 271,
-    "score": 77.0,
-    "nivel": "medio",
+    "word_count": 315,
+    "score": 100.0,
+    "nivel": "alto",
     "mode": "cobertura_direta",
-    "issues_count": 1,
+    "issues_count": 3,
     "issues": [
-      "VERIFICAR: Percentual 80% no texto — confirmar se tem evidência"
+      "CRÍTICO: Checklist incompleto — faltam: falha_terapeutica",
+      "VERIFICAR: Percentual 80% no texto — confirmar se tem evidência",
+      "DADO REMOVIDO PELO AUDITOR: percentual de redução de bridas: dado sem evidência"
     ],
-    "elapsed": 29.6
+    "elapsed": 33.0
   },
   {
     "id": "07_enxerto_peyronie",
@@ -108,15 +106,15 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 278,
-    "score": 76.0,
-    "nivel": "medio",
+    "word_count": 314,
+    "score": 93.0,
+    "nivel": "alto",
     "mode": "fora_do_rol",
     "issues_count": 1,
     "issues": [
-      "DADO REMOVIDO PELO AUDITOR: taxa de sucesso: dado sem evidência"
+      "VERIFICAR: Percentual 78% no texto — confirmar se tem evidência"
     ],
-    "elapsed": 33.9
+    "elapsed": 25.6
   },
   {
     "id": "08_laser_turbinectomia",
@@ -125,12 +123,15 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 314,
-    "score": 77.0,
-    "nivel": "medio",
+    "word_count": 298,
+    "score": 92.0,
+    "nivel": "alto",
     "mode": "fora_do_rol",
-    "issues_count": 0,
-    "issues": [],
-    "elapsed": 22.9
+    "issues_count": 2,
+    "issues": [
+      "DADO REMOVIDO PELO AUDITOR: custo: dado sem evidência",
+      "GAP: Critério STF não atendido: 5_registro_anvisa"
+    ],
+    "elapsed": 43.4
   }
 ]

@@ -340,6 +340,17 @@ def format_report_output(scenario: dict, result: dict, issues: list, elapsed: fl
     lines.append(f"SCORE: {score}/100 ({nivel})")
     lines.append(f"MODO: {mode}")
     lines.append(f"TEMPO: {elapsed:.1f}s")
+
+    # Score components breakdown
+    componentes = result.get("approval_componentes", {})
+    if componentes:
+        lines.append(f"COMPONENTES: DUT={componentes.get('aderencia_dut', '?')}/40 | "
+                      f"TUSS/TISS={componentes.get('completude_tiss_tuss', '?')}/30 | "
+                      f"Justificativa={componentes.get('qualidade_justificativa', '?')}/20 | "
+                      f"Evidência={componentes.get('robustez_evidencia', '?')}/10")
+    gaps = result.get("approval_gaps", [])
+    if gaps:
+        lines.append(f"GAPS: {'; '.join(gaps)}")
     lines.append("")
 
     # Relatório gerado

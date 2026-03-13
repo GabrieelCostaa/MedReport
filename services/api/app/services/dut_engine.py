@@ -257,14 +257,23 @@ class DutEngine:
         return [d for d in required if d not in provided_docs]
 
     async def find_rol_alternatives(self, procedure_code: str) -> list:
-        """Busca procedimentos similares no Rol para comparação (modo Fora do Rol)."""
+        """Busca procedimentos genuinamente similares no Rol (modo Fora do Rol).
+
+        Retorna lista vazia se não encontrar alternativas reais — isso indica
+        que o critério STF 'sem alternativa no Rol' está atendido.
+        """
         from app.db.models import RolProcedure
-        result = await self.db.execute(
-            select(RolProcedure).where(
-                RolProcedure.codigo_procedimento != procedure_code
-            ).limit(20)
-        )
-        return result.scalars().all()
+
+        # Resolve procedure name to search for related procedures
+        proc_name = await self._resolve_procedure_name(procedure_code)
+        if not proc_name:
+            return []
+
+        # Search for Rol procedures matching keywords from the procedure name
+        candidates = await self._find_in_rol_by_name(proc_name)
+        if candidates:
+            return [candidates]
+        return []
 
     async def _find_in_rol_by_name(self, proc_name: str):
         """Busca procedimento no Rol por nome, com fallback para palavras-chave.

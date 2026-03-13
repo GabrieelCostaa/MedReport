@@ -189,6 +189,8 @@ async def build_compliance_context(
         evidence_levels=evidence_levels,
         has_justification=False,
         cid_procedure_consistent=True,
+        compliance_mode=ctx.mode,
+        stf_checklist=ctx.stf_checklist,
     )
     await _emit(
         f"Score de completude: {ctx.approval_score.score}/100 ({ctx.approval_score.nivel})"

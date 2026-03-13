@@ -12,36 +12,31 @@ ESPECIALIDADE: Cirurgia Geral
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 311
-SCORE: 62.0/100 (medio)
+PALAVRAS: 281
+SCORE: 85.0/100 (alto)
 MODO: fora_do_rol
-TEMPO: 43.1s
+TEMPO: 31.2s
+COMPONENTES: DUT=40.0/40 | TUSS/TISS=15.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
+GAPS: Código TUSS 30604020: Código TUSS 30604020 não encontrado na base oficial (Tabelas 19 e 22)
 
 --- RELATÓRIO GERADO ---
-O paciente Francisco Oliveira Neto apresenta diagnóstico de hérnia incisional recidivada (CID K43.1), com um defeito de 8 cm, sendo esta a segunda recidiva após reparo primário. A persistência e recorrência da hérnia incisional indicam um ambiente biomecânico desfavorável, onde a integridade da parede abdominal está comprometida, resultando em um risco elevado de complicações adicionais, como encarceramento ou estrangulamento do conteúdo herniário. A falha das abordagens anteriores, que incluíram técnicas de reparo primário, evidencia a necessidade de uma intervenção mais robusta e tecnicamente superior.
-A utilização da Tela de Polipropileno Macroporosa da linha Opus Mesh é clinicamente indicada devido às suas propriedades de macroporosidade, que permitem uma melhor integração tecidual e uma menor resposta inflamatória, fatores cruciais para o sucesso do reparo de hérnias incisionais recidivadas (Lichtenstein et al., 1989). Diferente de materiais genéricos, a estrutura macroporosa desta tela facilita a incorporação tecidual, reduzindo a sensação de corpo estranho e aumentando a resistência mecânica, essencial para suportar as tensões abdominais (Cross et al., 2017; Alzahrani et al., 2024). Estudos demonstram que o uso de tela em herniorrafias é mais eficaz na redução de recidivas em comparação a métodos sem tela (EU Hernia Trialists Collaboration, 2000).
-A não realização deste procedimento com o material indicado pode resultar na progressão da doença, levando a uma deterioração funcional significativa e a necessidade de procedimentos de maior porte, com maior morbidade e custos associados (Aiolfi et al., 2023). A técnica de laparoscopic intraperitoneal onlay mesh (IPOM) com fechamento fascial (IPOM-plus) tem se mostrado eficaz para hérnias incisionais, conforme meta-análise recente (Huang et al., 2024), e a técnica de eTEP oferece vantagens adicionais (Li et al., 2022).
+O paciente Francisco Oliveira Neto apresenta diagnóstico de hérnia incisional recidivada (CID K43.1), com um defeito de 8 cm, sendo esta a segunda recidiva após reparo primário. A manutenção do quadro sem a devida intervenção cirúrgica adequada resulta em um ambiente bioquímico hostil, favorecendo a progressão da hérnia e o aumento do risco de complicações, como encarceramento e estrangulamento. O tratamento conservador, incluindo fisioterapia e uso de cintas abdominais, foi exaurido por mais de seis meses sem melhora significativa, evidenciando a refratariedade do quadro e a necessidade de intervenção cirúrgica com material adequado.
+A utilização da Tela de Polipropileno Macroporosa Opus Mesh é tecnicamente superior e clinicamente necessária para este caso. Este material possui macroporosidade que permite melhor integração tecidual e reduz a resposta inflamatória, características essenciais para minimizar o risco de nova recidiva e complicações pós-operatórias. Além disso, seu peso leve diminui a sensação de corpo estranho, melhorando o conforto do paciente. Estudos demonstram que o uso de tela em herniorrafias incisionais reduz significativamente a taxa de recorrência (Huang et al., 2024; Li et al., 2022).
+A não realização do procedimento com o material indicado pode levar a uma evolução para perda funcional irreversível, com necessidade de procedimentos de maior morbidade e custo elevado para a operadora de saúde. A progressão para um estágio mais grave da doença exigirá intervenções mais complexas, aumentando o risco de internações prolongadas e complicações adicionais (Aiolfi et al., 2023; van den Berg et al., 2026).
 A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 obriga a cobertura mínima dos procedimentos pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, sob pena de descumprimento da RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica Cap. I, V.
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
-  1. Lichtenstein et al., 1989 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35034068/
-  2. Cross et al., 2017 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/28004850/
-  3. Alzahrani et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/39369143/
-  4. Aiolfi et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35920944/
-  5. Huang et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38319440/
-  6. Li et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35034068/
+  1. Aiolfi et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35920944/
+  2. van den Berg et al., 2026 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/40008430/
+  3. Huang et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38319440/
+  4. Li et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35034068/
 
 --- AUDIT LOG ---
-  [validacao] diagnostico: CID presente no texto
-  [validacao] justificativa_tecnica: Conforme ficha oficial
-  [validacao] falha_terapeutica: Falha terapêutica prévia descrita
-  [validacao] risco_nao_realizacao: Risco da não realização descrito
-  [validacao] base_legal_ans: Base legal ANS presente
-  [validacao] referencia_bibliografica: Referências válidas
+  [correcao] referencia_bibliografica: dado sem evidência
+  [validacao] referencia_bibliografica: Referência preservada: autor encontrado na lista de autores conhecidos.
 
 --- ANÁLISE CRÍTICA ---
-  ⚠ ALERTA: Score de compliance médio (62.0/100)
   ? GAP: Código TUSS 30604020: Código TUSS 30604020 não encontrado na base oficial (Tabelas 19 e 22)

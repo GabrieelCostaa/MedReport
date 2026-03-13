@@ -13,30 +13,30 @@ ESPECIALIDADE: Ortopedia
 APROVADO: True
 CHECKLIST: 6/6
 PALAVRAS: 284
-SCORE: 77.0/100 (medio)
+SCORE: 100.0/100 (alto)
 MODO: fora_do_rol
-TEMPO: 33.7s
+TEMPO: 38.2s
+COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-O paciente José Ricardo Mendes apresenta diagnóstico de gonartrose primária unilateral do joelho direito, classificada como grau III pela escala de Kellgren-Lawrence (CID M17.1), com dor crônica persistente há 2 anos. Este quadro clínico reflete um processo degenerativo avançado, onde a manutenção do ambiente inflamatório crônico, sem a devida intervenção, resulta em um ambiente bioquímico hostil dominado por citocinas pró-inflamatórias (IL-1β, TNF-α), acelerando a apoptose dos condrócitos e a degradação irreversível da matriz extracelular (Bellamy N et al., 2006). O insucesso das tentativas conservadoras, incluindo anti-inflamatórios não esteroides (AINEs), fisioterapia cinesioterapêutica e infiltrações, comprova a refratariedade do quadro, sendo a progressão para intervenção com OPME não apenas indicada, mas mandatória para prevenir deterioração funcional progressiva (Anil U et al., 2021).
-A viscossuplementação com o Kit EC2 - Linha Opus, que contém ácido hialurônico de alto peso molecular (6.000 kDa), é tecnicamente superior e clinicamente necessária para este paciente. Este produto restaura a viscoelasticidade do líquido sinovial, proporcionando alívio prolongado da dor e melhora funcional significativa, conforme demonstrado em meta-análises (Bellamy N et al., 2006; Anil U et al., 2021). A reticulação polimérica tridimensional do ácido hialurônico no Kit EC2 cria uma barreira física e química que impede a degradação enzimática, garantindo permanência intra-articular prolongada, enquanto formulações lineares são degradadas rapidamente (Tezel; Fredrickson, 2008).
-A não realização do procedimento implica em risco de evolução para perda funcional irreversível, com necessidade de procedimento cirúrgico de maior porte, como artroplastia, que apresenta custo significativamente maior e maior morbidade. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+O paciente José Ricardo Mendes apresenta diagnóstico de gonartrose primária unilateral do joelho direito, classificada como grau III pela escala de Kellgren-Lawrence (CID M17.1), com dor crônica persistente há 2 anos. A manutenção do quadro inflamatório crônico, sem a devida intervenção, resulta em um ambiente bioquímico hostil dominado por citocinas pró-inflamatórias (IL-1β, TNF-α), acelerando a apoptose dos condrócitos e a degradação irreversível da matriz extracelular. O insucesso das tentativas conservadoras, incluindo o uso de anti-inflamatórios não esteroidais (AINEs), fisioterapia cinesioterapêutica e infiltrações, comprova a refratariedade do quadro, sendo a progressão para intervenção com OPME não apenas indicada, mas mandatória para prevenir deterioração funcional progressiva.
+A indicação do Kit EC2 - Linha Opus, que contém ácido hialurônico de alto peso molecular (6.000 kDa), é tecnicamente superior e clinicamente necessária. Este material restaura as propriedades viscoelásticas do líquido sinovial, promovendo o reestabelecimento da homeostase articular e viscoindução. A rede tridimensional do produto cria uma grade de proteção que impede o acesso das hialuronidases, garantindo permanência intra-articular prolongada, enquanto formulações lineares são degradadas em 48 horas. Estudos demonstram que a viscossuplementação com ácido hialurônico de alto peso molecular promoveu melhora funcional significativa (WOMAC) por até 12 meses com aplicação única (Bellamy et al., 2006; Anil et al., 2021).
+A não realização do procedimento implica em progressão da doença com piora funcional e necessidade de procedimento de maior porte, como artroplastia, o que representa um custo significativamente maior e maior morbidade para o paciente e a operadora de saúde. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 obriga a cobertura mínima dos procedimentos citados pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme Código de Ética Médica Cap. I, V.
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura dos procedimentos citados como de cobertura mínima obrigatória pela ANS. Em caso de negativa, a RN 395 exige que a operadora apresente justificativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
-  1. Bellamy N et al., 2006 [internal]
-  2. Anil U et al., 2021 [internal]
-  3. Tezel; Fredrickson, 2008 [internal]
+  1. Bellamy et al., 2006 [internal]
+  2. Anil et al., 2021 [internal]
 
 --- AUDIT LOG ---
-  [correcao] CID: CID presente no texto
-  [remocao] custo significativamente maior: dado sem evidência
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
-  [validacao] referencia: referência válida
+  [validacao] diagnostico: CID presente no texto
+  [validacao] justificativa_tecnica: Dados técnicos conferem com a ficha oficial
+  [validacao] falha_terapeutica: Falha terapêutica prévia descrita
+  [validacao] risco_nao_realizacao: Risco da não realização descrito
+  [validacao] base_legal_ans: Base legal ANS presente
+  [validacao] referencia_bibliografica: Referências válidas e formatadas corretamente
 
 --- ANÁLISE CRÍTICA ---
-  ⚠ ALERTA: Referência com formato duvidoso: Tezel; Fredrickson, 2008
-  ? DADO REMOVIDO PELO AUDITOR: custo significativamente maior: dado sem evidência
+  ✓ Nenhum problema detectado

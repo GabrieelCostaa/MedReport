@@ -2,6 +2,7 @@
 Orquestrador do pipeline multi-agente: Pesquisador -> Redator -> Auditor.
 """
 import logging
+import re
 import uuid
 from dataclasses import dataclass, field
 from typing import Optional
@@ -16,6 +17,42 @@ from .validator import validate_technical_data, ValidationResult
 from .token_tracker import PipelineUsage
 
 logger = logging.getLogger(__name__)
+
+
+# Patterns to infer evidence level from PubMed snippets
+_LEVEL_PATTERNS = [
+    (r"meta.?analy|meta.?análise", "meta-analise"),
+    (r"systematic review|revisão sistemática", "revisao-sistematica"),
+    (r"randomized|randomised|randomizado|ensaio clínico randomizado|RCT", "rct"),
+    (r"cohort|coorte", "coorte"),
+    (r"case.?control|caso.?controle", "caso-controle"),
+    (r"case series|série de casos", "serie_casos"),
+]
+
+
+def _infer_evidence_levels(
+    pubmed_evidences: list[dict],
+    clinical_evidences: list[dict],
+) -> list[str]:
+    """Infer evidence levels from PubMed snippets and clinical evidences."""
+    levels = []
+    for ev in (pubmed_evidences or []):
+        snippet = (ev.get("snippet", "") or "").lower()
+        titulo = (ev.get("titulo", "") or "").lower()
+        text = f"{titulo} {snippet}"
+        matched = False
+        for pattern, level in _LEVEL_PATTERNS:
+            if re.search(pattern, text, re.IGNORECASE):
+                levels.append(level)
+                matched = True
+                break
+        if not matched and text.strip():
+            levels.append("serie_casos")  # conservative default
+    for ev in (clinical_evidences or []):
+        nivel = (ev.get("nivel_evidencia", "") or "").lower().replace(" ", "_")
+        if nivel:
+            levels.append(nivel)
+    return levels
 
 
 def _enrich_references(
@@ -162,6 +199,10 @@ class ReportPipeline:
                 procedure_code=getattr(product, "codigo_tuss_sugerido", "") or "",
                 patient_data=medico_inputs,
                 produto_registro_anvisa=getattr(product, "registro_anvisa", "") or "",
+                # Doctor is authenticated on Hugo platform = prescription is implicit
+                medico_crm="HUGO_AUTH",
+                # Declaratory field: assumed true (doctor would contest if false)
+                declaracao_ans=True,
                 evidence_count=n_internal + n_pubmed,
                 on_progress=on_progress,
             )
@@ -342,14 +383,20 @@ class ReportPipeline:
         if session.compliance_context:
             try:
                 from app.services.approval_score import compute_approval_score
+                evidence_lvls = _infer_evidence_levels(
+                    session.pubmed_evidences, session.clinical_evidences,
+                )
                 final_score = compute_approval_score(
                     dut_evaluation=getattr(session.compliance_context, "dut_evaluation", None),
                     tuss_validation=getattr(session.compliance_context, "tuss_validation", None),
                     tiss_validation=getattr(session.compliance_context, "tiss_validation", None),
                     anvisa_status=getattr(session.compliance_context, "anvisa_status", None),
                     evidence_count=len(session.clinical_evidences) + len(session.pubmed_evidences),
+                    evidence_levels=evidence_lvls or None,
                     has_justification=bool(audit_result.texto_corrigido),
                     cid_procedure_consistent=True,
+                    compliance_mode=session.compliance_context.mode,
+                    stf_checklist=getattr(session.compliance_context, "stf_checklist", None),
                 )
                 compliance_data = {
                     "approval_score": final_score.score,

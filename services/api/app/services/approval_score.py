@@ -44,6 +44,8 @@ def compute_approval_score(
     evidence_levels: list[str] | None = None,
     has_justification: bool = False,
     cid_procedure_consistent: bool = True,
+    compliance_mode: str = "",
+    stf_checklist: dict | None = None,
 ) -> ApprovalScore:
     """Calcula score de completude documental estimada."""
 
@@ -88,6 +90,23 @@ def compute_approval_score(
         else:
             dut_score = 40.0
             explanations.append("Procedimento sem DUT condicionante — cobertura direta (40/40)")
+    elif compliance_mode == "cobertura_direta":
+        # Procedimento no Rol sem DUT — cobertura obrigatória
+        dut_score = 40.0
+        explanations.append("Procedimento no Rol sem DUT condicionante — cobertura direta (40/40)")
+    elif compliance_mode == "fora_do_rol" and stf_checklist:
+        # Fora do Rol: usar checklist STF (5 critérios cumulativos) como proxy
+        checklist_items = stf_checklist.get("checklist", {})
+        met = sum(1 for v in checklist_items.values() if isinstance(v, dict) and v.get("atendido"))
+        total_stf = max(len(checklist_items), 1)
+        dut_score = (met / total_stf) * 40.0
+        explanations.append(
+            f"Fora do Rol — checklist STF: {met}/{total_stf} critérios atendidos ({dut_score:.0f}/40)"
+        )
+        if met < total_stf:
+            for key, val in checklist_items.items():
+                if isinstance(val, dict) and not val.get("atendido"):
+                    gaps.append(f"Critério STF não atendido: {key}")
     else:
         dut_score = 20.0
         explanations.append("DUT não avaliada — score parcial (20/40)")
