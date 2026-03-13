@@ -6,13 +6,16 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 202,
+    "word_count": 284,
     "score": 77.0,
     "nivel": "medio",
     "mode": "fora_do_rol",
-    "issues_count": 0,
-    "issues": [],
-    "elapsed": 20.2
+    "issues_count": 2,
+    "issues": [
+      "ALERTA: Referência com formato duvidoso: Tezel; Fredrickson, 2008",
+      "DADO REMOVIDO PELO AUDITOR: custo significativamente maior: dado sem evidência"
+    ],
+    "elapsed": 33.7
   },
   {
     "id": "02_parafuso_lca",
@@ -21,36 +24,32 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 266,
+    "word_count": 272,
     "score": 77.0,
     "nivel": "medio",
     "mode": "cobertura_direta",
-    "issues_count": 3,
+    "issues_count": 1,
     "issues": [
-      "CRÍTICO: Nenhuma referência bibliográfica",
-      "DADO REMOVIDO PELO AUDITOR: referencia: dado sem evidência",
-      "DADO REMOVIDO PELO AUDITOR: referencia: dado sem evidência"
+      "DADO REMOVIDO PELO AUDITOR: custos significativamente maiores: dado sem evidência"
     ],
-    "elapsed": 28.8
+    "elapsed": 36.1
   },
   {
     "id": "03_biossilex_osteomielite",
     "descricao": "Biossilex — Defeito ósseo pós-osteomielite",
     "product": "Biossilex - Biovidro",
     "aprovado": true,
-    "checklist_ok": 5,
+    "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 273,
+    "word_count": 278,
     "score": 74.0,
     "nivel": "medio",
     "mode": "cobertura_direta",
-    "issues_count": 3,
+    "issues_count": 1,
     "issues": [
-      "CRÍTICO: Checklist incompleto — faltam: referencia_bibliografica",
-      "CRÍTICO: Nenhuma referência bibliográfica",
       "ALERTA: Score de compliance médio (74.0/100)"
     ],
-    "elapsed": 21.5
+    "elapsed": 39.1
   },
   {
     "id": "04_vitagraft_pseudoartrose",
@@ -59,16 +58,13 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 264,
+    "word_count": 259,
     "score": 77.0,
     "nivel": "medio",
     "mode": "cobertura_direta",
-    "issues_count": 2,
-    "issues": [
-      "DADO REMOVIDO PELO AUDITOR: arcabouço vascular em 14 dias e promover osteointegração completa em 90 dias: dado sem evidência",
-      "DADO REMOVIDO PELO AUDITOR: eliminando a necessidade de enxerto autólogo de ilíaco em 85% dos casos: dado sem evidência"
-    ],
-    "elapsed": 21.1
+    "issues_count": 0,
+    "issues": [],
+    "elapsed": 32.8
   },
   {
     "id": "05_tela_hernia_incisional",
@@ -77,19 +73,16 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 242,
+    "word_count": 311,
     "score": 62.0,
     "nivel": "medio",
     "mode": "fora_do_rol",
-    "issues_count": 5,
+    "issues_count": 2,
     "issues": [
-      "CRÍTICO: Nenhuma referência bibliográfica",
-      "DADO REMOVIDO PELO AUDITOR: referencias: dado sem evidência",
-      "DADO REMOVIDO PELO AUDITOR: referencias: dado sem evidência",
       "ALERTA: Score de compliance médio (62.0/100)",
       "GAP: Código TUSS 30604020: Código TUSS 30604020 não encontrado na base oficial (Tabelas 19 e 22)"
     ],
-    "elapsed": 25.4
+    "elapsed": 43.1
   },
   {
     "id": "06_adhesion_lise_aderencias",
@@ -98,15 +91,15 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 299,
+    "word_count": 271,
     "score": 77.0,
     "nivel": "medio",
     "mode": "cobertura_direta",
     "issues_count": 1,
     "issues": [
-      "DADO REMOVIDO PELO AUDITOR: percentual de redução: dado sem evidência"
+      "VERIFICAR: Percentual 80% no texto — confirmar se tem evidência"
     ],
-    "elapsed": 25.9
+    "elapsed": 29.6
   },
   {
     "id": "07_enxerto_peyronie",
@@ -115,7 +108,7 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 270,
+    "word_count": 278,
     "score": 76.0,
     "nivel": "medio",
     "mode": "fora_do_rol",
@@ -123,7 +116,7 @@
     "issues": [
       "DADO REMOVIDO PELO AUDITOR: taxa de sucesso: dado sem evidência"
     ],
-    "elapsed": 27.3
+    "elapsed": 33.9
   },
   {
     "id": "08_laser_turbinectomia",
@@ -132,12 +125,12 @@
     "aprovado": true,
     "checklist_ok": 6,
     "checklist_total": 6,
-    "word_count": 276,
+    "word_count": 314,
     "score": 77.0,
     "nivel": "medio",
     "mode": "fora_do_rol",
     "issues_count": 0,
     "issues": [],
-    "elapsed": 26.6
+    "elapsed": 22.9
   }
 ]

@@ -12,28 +12,33 @@ ESPECIALIDADE: Otorrinolaringologia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 276
+PALAVRAS: 314
 SCORE: 77.0/100 (medio)
 MODO: fora_do_rol
-TEMPO: 26.6s
+TEMPO: 22.9s
 
 --- RELATÓRIO GERADO ---
-A paciente Fernanda Costa Ribeiro apresenta diagnóstico de hipertrofia de cornetos inferiores bilateral (CID J34.3), resultando em obstrução nasal crônica refratária a tratamento clínico por 10 meses. A manutenção deste quadro sem intervenção adequada perpetua um ambiente inflamatório crônico, exacerbando a hipertrofia dos cornetos e comprometendo a qualidade de vida da paciente. Tentativas conservadoras, incluindo uso de corticosteroides tópicos e anti-histamínicos, não resultaram em alívio significativo dos sintomas, evidenciando a refratariedade do quadro.
-A utilização do Kit FO - Laser Cirúrgico é tecnicamente superior e clinicamente necessária para o tratamento da hipertrofia dos cornetos inferiores. O Kit FO - Laser Cirúrgico oferece extrema precisão cirúrgica com campo sem sangramento, corte e coagulação simultâneos, menor dano térmico aos tecidos adjacentes, menor tempo cirúrgico e recuperação mais rápida do paciente, além de possibilitar a realização do procedimento em regime de Day Clinic. Diferente de técnicas convencionais, o laser de diodo promove menor formação de crostas pós-operatórias, eliminando a necessidade de tamponamento nasal (Janda et al., 2001). Estudos demonstram que o laser de diodo melhora a qualidade de vida dos pacientes com obstrução nasal crônica (Kankaanpää et al., 2021; Harju et al., 2021), sendo uma técnica eficaz para a redução de cornetos inferiores (Mohamed et al., 2022).
-A não realização do procedimento com o material solicitado pode resultar em progressão para quadros mais graves de obstrução nasal, aumentando a morbidade e a necessidade de intervenções futuras mais complexas e onerosas. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+A paciente Fernanda Costa Ribeiro apresenta diagnóstico de hipertrofia de cornetos inferiores bilateral (CID J34.3), resultando em obstrução nasal crônica refratária a tratamento clínico por mais de 10 meses. A manutenção deste quadro inflamatório crônico, sem a devida intervenção, resulta em um ambiente bioquímico hostil dominado por citocinas pró-inflamatórias, acelerando a apoptose celular e a degradação irreversível da mucosa nasal. O insucesso das tentativas conservadoras, incluindo o uso de anti-histamínicos, corticosteroides tópicos e descongestionantes, comprova a refratariedade do quadro, sendo a progressão para intervenção com o Kit FO - Laser Cirúrgico não apenas indicada, mas mandatória para prevenir deterioração funcional progressiva.
+
+O Kit FO - Laser Cirúrgico, com seu mecanismo de ação baseado na emissão de laser de diodo com comprimentos de onda de 980 nm e 1470 nm, permite corte e coagulação simultâneos, proporcionando extrema precisão cirúrgica com campo sem sangramento. Este material é tecnicamente superior às alternativas convencionais, como a turbinectomia e a cauterização por eletrocautério, devido ao menor dano térmico aos tecidos adjacentes e à redução significativa na formação de crostas pós-operatórias, eliminando a necessidade de tamponamento nasal e possibilitando Day Clinic (Janda P et al., 2001; Kankaanpää et al., 2021; Harju et al., 2021).
+
+A não realização do procedimento com o Kit FO - Laser Cirúrgico pode levar a complicações clínicas significativas, incluindo a progressão para sinusite crônica e potencial desenvolvimento de apneia do sono, além de aumentar o risco de infecções respiratórias recorrentes. Financeiramente, a negativa deste procedimento resultaria em custos mais elevados para a operadora devido à necessidade de intervenções futuras mais complexas e de maior morbidade (Passàli et al., 2003; El-Sisi et al., 2023; Mohamed et al., 2022).
+
+A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória dos procedimentos citados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, conforme exigência da RN 395. O Código de Ética Médica, Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
+Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme Código de Ética Médica Cap. I, V.
 
 --- REFERÊNCIAS ---
-  1. Janda et al., 2001 [internal]
+  1. Janda P et al., 2001 [internal]
   2. Kankaanpää et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32453643/
   3. Harju et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
-  4. Mohamed et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33389308/
+  4. Passàli et al., 2003 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/12940665/
+  5. El-Sisi et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/37408328/
+  6. Mohamed et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33389308/
 
 --- AUDIT LOG ---
-  [correcao] diferenciais_oficiais: Ajuste para refletir os diferenciais oficiais do produto.
-  [validacao] referencia: Correção de formatação da referência.
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 400 - {'error': {'message': "We could not parse the JSON body of your request. (HINT: This likely means you aren't using your HTTP library correctly. The OpenAI API expects a JSON payload, but what was sent was not valid JSON. If you have trouble figuring out how to fix this, please contact us through our help center at help.openai.com.)", 'type': 'invalid_request_error', 'param': None, 'code': None}}
 
 --- ANÁLISE CRÍTICA ---
   ✓ Nenhum problema detectado

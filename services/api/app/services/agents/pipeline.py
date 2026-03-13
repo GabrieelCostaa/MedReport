@@ -129,6 +129,15 @@ class ReportPipeline:
                 await on_progress(step, label)
 
         logger.info("Pipeline iniciado: session=%s, product=%s", session_id, product.nome)
+
+        # Auto-enriquecimento: gera ficha técnica se produto está incompleto
+        try:
+            from app.services.product_enrichment import enrich_product, needs_enrichment
+            if db and needs_enrichment(product):
+                await enrich_product(db, product, cid=cid, on_progress=on_progress)
+        except Exception as e:
+            logger.warning("Auto-enriquecimento falhou (continuando): %s", e)
+
         await _emit("researching", f"Consultando base de evidências para CID {cid}...")
 
         session.clinical_evidences = await _fetch_clinical_evidences(db, cid, product.id)

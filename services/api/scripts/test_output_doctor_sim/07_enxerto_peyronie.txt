@@ -12,23 +12,22 @@ ESPECIALIDADE: Urologia
 --- RESULTADOS ---
 APROVADO: True
 CHECKLIST: 6/6
-PALAVRAS: 270
+PALAVRAS: 278
 SCORE: 76.0/100 (medio)
 MODO: fora_do_rol
-TEMPO: 27.3s
+TEMPO: 33.9s
 
 --- RELATÓRIO GERADO ---
-O paciente Roberto Augusto Lima apresenta diagnóstico de Doença de Peyronie (CID N48.6), caracterizada por uma curvatura peniana superior a 60 graus, presença de placa estável e disfunção erétil. A manutenção deste quadro sem a intervenção adequada resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que perpetuam a fibrose e a disfunção erétil. O tratamento conservador, incluindo o uso de inibidores da fosfodiesterase tipo 5 e fisioterapia peniana, mostrou-se ineficaz, evidenciando a refratariedade do quadro e a necessidade de intervenção com OPME.
-O Kit EC2 - Enxerto Composto é tecnicamente superior devido à sua capacidade de preservar o enxerto entre a colheita e o reimplante, reduzindo riscos de contaminação e degradação do tecido. Este material contém células do estroma vascular (SVF), fundamentais para a reparação tecidual e vasculogênese, como demonstrado por Levy JA et al. (2015). Diferente de materiais genéricos, o Kit EC2 promove a regeneração tecidual através de um mecanismo de ação que inclui a preservação da viabilidade celular e a indução de vasculogênese, comprovada por histologia (Levy et al., 2015; Akakpo et al., 2020).
-A não realização deste procedimento pode resultar na progressão para um quadro de disfunção erétil irreversível, aumentando a necessidade de intervenções futuras mais complexas e de maior morbidade, como a colocação de próteses penianas. Isso representa um custo significativamente maior para a operadora, além de impactar negativamente a qualidade de vida do paciente.
+O paciente Roberto Augusto Lima apresenta diagnóstico de Doença de Peyronie (CID N48.6), caracterizada por uma curvatura peniana superior a 60 graus, placa estável e disfunção erétil associada. Esta condição resulta em um estado inflamatório crônico, com formação de placas fibróticas na túnica albugínea, levando a deformidades penianas e comprometimento significativo da função erétil (Levy et al., 2015). A manutenção deste quadro sem intervenção adequada perpetua um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que agravam a fibrose e a disfunção erétil.
+O tratamento conservador, incluindo o uso de medicamentos orais e terapia física, mostrou-se ineficaz na reversão da curvatura e na restauração da função erétil, evidenciando a refratariedade do quadro clínico. A progressão para intervenção com o Kit EC2 - Enxerto Composto é, portanto, mandatória. Este material é tecnicamente superior devido à sua composição com células do estroma vascular (SVF), que promovem vasculogênese e reparação tecidual. Diferente de abordagens convencionais, o Kit EC2 oferece um procedimento percutâneo minimamente invasivo, reduzindo riscos de contaminação e degradação do tecido, além de preservar a integridade do enxerto entre colheita e reimplantação.
+A não realização deste procedimento pode resultar em progressão da doença para estágios mais graves, com aumento da curvatura e piora da disfunção erétil, potencialmente exigindo intervenções cirúrgicas de maior porte e complexidade. Além disso, a morbidade associada a procedimentos mais invasivos resultaria em maior tempo de internação e recuperação, impactando negativamente tanto o paciente quanto o sistema de saúde.
 A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 obriga a cobertura mínima dos procedimentos citados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, conforme RN 395. O Código de Ética Médica estabelece que compete ao médico usar o melhor do progresso científico em benefício do paciente.
+Conforme a RN 424, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 obriga a cobertura mínima dos procedimentos listados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, conforme RN 395. O Código de Ética Médica assegura que o médico deve usar o melhor do progresso científico em benefício do paciente.
 
 --- REFERÊNCIAS ---
   1. Levy et al., 2015 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26414724/
-  2. Akakpo et al., 2020 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32826194/
 
 --- AUDIT LOG ---
   [remocao] taxa de sucesso: dado sem evidência
