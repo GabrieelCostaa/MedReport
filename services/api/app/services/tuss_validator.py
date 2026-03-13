@@ -50,36 +50,59 @@ class TussValidator:
         self.db = db
 
     async def validate_opme_code(self, codigo_tuss: str) -> TussValidation:
-        """Valida se código TUSS 19 existe na base oficial."""
-        from app.db.models import TussMaterial
+        """Valida código TUSS contra Tabela 19 (materiais) E Tabela 22 (procedimentos)."""
+        from app.db.models import TussMaterial, TussProcedure
 
+        # Check Table 19 (Materials/OPME) first
         result = await self.db.execute(
             select(TussMaterial).where(TussMaterial.codigo_tuss == codigo_tuss)
         )
         material = result.scalar_one_or_none()
 
-        if not material:
+        if material:
+            if not material.ativo:
+                return TussValidation(
+                    codigo=codigo_tuss,
+                    valido=False,
+                    nome=material.nome,
+                    grupo=material.grupo,
+                    mensagem=f"Código TUSS {codigo_tuss} existe mas está inativo",
+                )
             return TussValidation(
                 codigo=codigo_tuss,
-                valido=False,
-                mensagem=f"Código TUSS {codigo_tuss} não encontrado na base oficial (Tabela 19)",
-            )
-
-        if not material.ativo:
-            return TussValidation(
-                codigo=codigo_tuss,
-                valido=False,
+                valido=True,
                 nome=material.nome,
                 grupo=material.grupo,
-                mensagem=f"Código TUSS {codigo_tuss} existe mas está inativo",
+                mensagem="Código TUSS válido e ativo (Tabela 19 — Material/OPME)",
+            )
+
+        # Check Table 22 (Procedures)
+        result = await self.db.execute(
+            select(TussProcedure).where(TussProcedure.codigo_tuss == codigo_tuss)
+        )
+        procedure = result.scalar_one_or_none()
+
+        if procedure:
+            if not procedure.ativo:
+                return TussValidation(
+                    codigo=codigo_tuss,
+                    valido=False,
+                    nome=procedure.nome,
+                    grupo=procedure.grupo,
+                    mensagem=f"Código TUSS {codigo_tuss} existe mas está inativo",
+                )
+            return TussValidation(
+                codigo=codigo_tuss,
+                valido=True,
+                nome=procedure.nome,
+                grupo=procedure.grupo,
+                mensagem="Código TUSS válido e ativo (Tabela 22 — Procedimento)",
             )
 
         return TussValidation(
             codigo=codigo_tuss,
-            valido=True,
-            nome=material.nome,
-            grupo=material.grupo,
-            mensagem="Código TUSS válido e ativo",
+            valido=False,
+            mensagem=f"Código TUSS {codigo_tuss} não encontrado na base oficial (Tabelas 19 e 22)",
         )
 
     async def validate_tiss_field(self, tipo_guia: str, campo: str, codigo: str) -> TissValidation:

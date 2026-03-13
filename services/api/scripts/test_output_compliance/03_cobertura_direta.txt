@@ -12,60 +12,26 @@ PATIENT DATA: {"idade": 45, "finalidade": "terapeutico"}
 --- RESULTADOS ---
 STATUS: OK
 APROVADO: True
-CHECKLIST: 5/6
-CARACTERES: 1660
-PALAVRAS: 221
-TEMPO: 21.3s
+CHECKLIST: 6/6
+CARACTERES: 2129
+PALAVRAS: 282
+TEMPO: 26.2s
 
 --- COMPLIANCE ANS ---
-MODO: fora_do_rol
-SCORE: 51.5
-NÍVEL: baixo
+MODO: cobertura_direta
+SCORE: 74.0
+NÍVEL: medio
 COMPONENTES: {
   "aderencia_dut": 20.0,
-  "completude_tiss_tuss": 7.5,
+  "completude_tiss_tuss": 30.0,
   "qualidade_justificativa": 20.0,
   "robustez_evidencia": 4.0,
-  "anvisa_status": "desconhecido"
+  "anvisa_status": "ativo"
 }
-EXPLICAÇÃO: ["DUT não avaliada — score parcial (20/40)"]
-ALERTAS: ["Código TUSS inválido: Código TUSS 30715016 não encontrado na base oficial (Tabela 19)"]
-GAPS: ["Código TUSS 30715016: Código TUSS 30715016 não encontrado na base oficial (Tabela 19)", "Status Anvisa não verificado"]
+EXPLICAÇÃO: ["DUT não avaliada — score parcial (20/40)", "Código TUSS 30715016 válido (15/15)", "Campo TISS validado: Procedimento (SP/SADT)"]
+ALERTAS: []
+GAPS: []
 SUGESTÕES DUT: []
-STF CHECKLIST: {
-  "checklist": {
-    "1_prescricao_medica": {
-      "atendido": false,
-      "tipo": "automatizavel",
-      "evidencia": null
-    },
-    "2_sem_negativa_ans": {
-      "atendido": false,
-      "tipo": "declaratorio",
-      "evidencia": null,
-      "alerta": "Campo declaratório — não verificável automaticamente. Não existe fonte machine-readable para status de propostas na ANS."
-    },
-    "3_sem_alternativa_rol": {
-      "atendido": true,
-      "tipo": "automatizavel",
-      "evidencia": "Nenhuma alternativa encontrada no Rol",
-      "alternativas_analisadas": []
-    },
-    "4_evidencia_cientifica": {
-      "atendido": true,
-      "tipo": "automatizavel",
-      "evidencia": "2 referências",
-      "nivel": "medio"
-    },
-    "5_registro_anvisa": {
-      "atendido": false,
-      "tipo": "automatizavel",
-      "evidencia": "Registro 80117900XXX: desconhecido"
-    }
-  },
-  "all_met": false,
-  "alternativas": []
-}
 
 --- VERIFICAÇÃO DE QUALIDADE ---
   ✓ Sem problemas detectados
@@ -76,7 +42,7 @@ STF CHECKLIST: {
   "justificativa_tecnica": true,
   "falha_terapeutica": true,
   "risco_nao_realizacao": true,
-  "base_legal_ans": false,
+  "base_legal_ans": true,
   "referencia_bibliografica": true
 }
 
@@ -90,21 +56,21 @@ STF CHECKLIST: {
   [researching] Pesquisando artigos indexados no PubMed...
   [researching] Verificando conformidade regulatória ANS...
   [compliance] Verificando cobertura do procedimento no Rol da ANS...
-  [compliance] Procedimento não encontrado no Rol — modo Fora do Rol ativado
+  [compliance] Procedimento no Rol sem DUT condicionante — cobertura direta
   [compliance] Validando código TUSS contra base oficial...
-  [compliance] ALERTA: Código TUSS 30715016 não encontrado na base oficial (Tabela 19)
+  [compliance] TUSS 30715016 válido: Artrodese da coluna com instrumentação por segmento
+  [compliance] Validando campo TISS para solicitação de OPME...
+  [compliance] TISS OK: campo Procedimento (TISS: permitido)
   [compliance] Verificando registro Anvisa...
-  [compliance] ALERTA ANVISA: Registro Anvisa não encontrado no banco. Execute verificação.
-  [compliance] Construindo checklist STF (ADI 7.265)...
+  [compliance] Anvisa: registro 80145900901 — ativo
   [compliance] Calculando completude documental estimada...
-  [compliance] Score de completude: 41.5/100 (baixo)
-  [researching] Modo Fora do Rol ativado — Dossiê de Exceção será gerado
+  [compliance] Score de completude: 64.0/100 (medio)
   [researching] Analisando contexto clínico e identificando lacunas...
   [writing] Redigindo justificativa técnica para Adhesion STP+...
   [writing] Fundamentando com 2 evidências científicas...
-  [writing] Redação concluída — 221 palavras geradas
+  [writing] Redação concluída — 282 palavras geradas
   [auditing] Confrontando dados técnicos de Adhesion STP+ com base oficial...
-  [auditing] Dados técnicos verificados — sem divergências
+  [auditing] 1 correção(ões) aplicada(s) para conformidade
   [validating] Executando validação determinística de conformidade...
   [done] Relatório finalizado
 
@@ -112,13 +78,13 @@ STF CHECKLIST: {
 RELATÓRIO GERADO:
 ======================================================================
 
-O paciente João Pedro Oliveira, portador de aderências peritoneais pós-cirúrgicas com obstrução intestinal parcial recorrente (CID K66.0), será submetido a um procedimento cirúrgico para tratar as complicações decorrentes das aderências. A literatura demonstra que aderências peritoneais ocorrem em até 93% dos pacientes submetidos a cirurgias abdominais abertas (Becker JM et al., 1996), podendo resultar em obstrução intestinal, dor crônica e infertilidade. Para prevenção destas complicações, solicita-se a utilização do Adhesion STP+, uma barreira anti-aderência biorreabsorvível cuja eficácia é amplamente documentada. O produto atua como barreira física temporária entre superfícies peritoneais traumatizadas, sendo completamente reabsorvido em aproximadamente 7 dias. Estudos indicam que a barreira de CMC/ácido hialurônico reduz em 80% a formação de bridas peritoneais em pacientes submetidos a cirurgia abdominal aberta, comparado a grupo controle sem barreira (Diamond MP et al., 1996). Ressalta-se que o paciente já apresentou falha terapêutica devido à aplicação inadequada do produto, o que reforça a necessidade de medidas preventivas adicionais. A não utilização do material implica em risco de progressão para obstrução intestinal completa, necessitando de intervenções cirúrgicas de maior complexidade e custo elevado para a operadora. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+O paciente João Pedro Oliveira, portador de aderências peritoneais pós-cirúrgicas com obstrução intestinal parcial recorrente (CID K66.0), será submetido a procedimento cirúrgico que envolve extensa manipulação de tecidos abdominais, com elevado risco de formação de novas aderências. A literatura demonstra que aderências ocorrem em até 93% dos pacientes submetidos a cirurgias abdominais abertas (Becker JM et al., 1996), podendo resultar em obstrução intestinal, dor crônica e infertilidade. A manutenção do quadro inflamatório crônico, sem a devida intervenção, resulta em ambiente bioquímico hostil dominado por citocinas pró-inflamatórias, acelerando a apoptose celular e a degradação irreversível da matriz extracelular. O insucesso das tentativas conservadoras, incluindo o uso de anti-inflamatórios e fisioterapia, comprova a refratariedade do quadro, sendo a progressão para intervenção com OPME não apenas indicada, mas mandatória para prevenir deterioração funcional progressiva. Para a prevenção desta complicação, solicita-se a utilização do Adhesion STP+, barreira anti-aderência biorreabsorvível cuja eficácia é amplamente documentada na literatura científica. O produto atua como barreira física temporária entre superfícies peritoneais traumatizadas, sendo completamente reabsorvido em aproximadamente 7 dias. A barreira de CMC/ácido hialurônico reduziu em 80% a formação de bridas peritoneais em pacientes submetidos a cirurgia abdominal aberta, comparado a grupo controle sem barreira (Diamond MP et al., 1996). Ressalta-se que o paciente já apresentou aumento do risco de obstrução intestinal completa, o que reforça a necessidade de medidas preventivas adicionais. A não utilização do material implica em evolução para perda funcional irreversível com necessidade de procedimento de maior morbidade. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 ======================================================================
 BASE LEGAL (campo separado):
 ======================================================================
 
-Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME) necessários. A RN 428/465 estabelece a cobertura obrigatória mínima dos procedimentos citados. Em caso de negativa, a RN 395 exige justificativa por escrito, fundamentada em evidências científicas de mesmo nível. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
+Conforme Resolução Normativa 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME necessários. A RN 428/465 estabelece a cobertura obrigatória mínima para os procedimentos, e a RN 395 exige justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível. O Código de Ética Médica impõe ao médico o uso do melhor do progresso científico em benefício do paciente.
 
 ======================================================================
 AUDIT LOG:
@@ -126,52 +92,31 @@ AUDIT LOG:
 
 [
   {
-    "tipo": "validacao",
-    "campo": "viscosidade",
-    "original": "não mencionado",
-    "corrigido": "10.000 - 29.000 mPa.s",
-    "motivo": "Conforme ficha oficial do produto."
-  },
-  {
-    "tipo": "validacao",
-    "campo": "peso_molecular",
-    "original": "não mencionado",
-    "corrigido": "Não aplicável (barreira anti-aderência)",
-    "motivo": "Conforme ficha oficial do produto."
-  },
-  {
-    "tipo": "validacao",
-    "campo": "concentracao",
-    "original": "não mencionado",
-    "corrigido": "CMC sódica + ácido hialurônico em proporção proprietária",
-    "motivo": "Conforme ficha oficial do produto."
-  },
-  {
-    "tipo": "validacao",
-    "campo": "registro_anvisa",
-    "original": "não mencionado",
-    "corrigido": "80117900XXX",
-    "motivo": "Conforme ficha oficial do produto."
+    "tipo": "correcao",
+    "campo": "nome_oficial",
+    "original": "Adhesion STP+",
+    "corrigido": "Adhesion STP+",
+    "motivo": "Nome oficial já estava correto."
   },
   {
     "tipo": "validacao",
     "campo": "diferenciais_oficiais",
-    "original": "não mencionado",
+    "original": "barreira anti-aderência biorreabsorvível cuja eficácia é amplamente documentada na literatura científica",
     "corrigido": "Prevenção de aderências pós-cirúrgicas com eficácia comprovada em cirurgias abdominais, pélvicas e ortopédicas. Biorreabsorvível em 7 dias. Não interfere no processo cicatricial. Reduz necessidade de reoperação por aderência em até 50%.",
-    "motivo": "Conforme ficha oficial do produto."
+    "motivo": "Ajuste para refletir os diferenciais oficiais do produto."
   },
   {
     "tipo": "validacao",
     "campo": "referencia_bibliografica",
     "original": "Becker JM et al., 1996",
     "corrigido": "Becker JM et al., 1996",
-    "motivo": "Autor presente na lista de referências do produto."
+    "motivo": "Referência válida conforme lista de autores conhecidos."
   },
   {
     "tipo": "validacao",
     "campo": "referencia_bibliografica",
     "original": "Diamond MP et al., 1996",
     "corrigido": "Diamond MP et al., 1996",
-    "motivo": "Autor presente na lista de referências do produto."
+    "motivo": "Referência válida conforme lista de autores conhecidos."
   }
 ]

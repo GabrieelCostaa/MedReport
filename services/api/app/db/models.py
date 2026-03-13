@@ -228,6 +228,20 @@ class AnvisaStatus(str, enum.Enum):
     cancelado = "cancelado"
 
 
+class TussProcedure(Base):
+    """TUSS Tabela 22 - Procedimentos e Eventos em Saúde. Fonte: FTP ANS."""
+    __tablename__ = "tuss_procedures"
+
+    codigo_tuss = Column(String(20), primary_key=True)
+    nome = Column(Text, nullable=False)
+    display_normalized = Column(Text, nullable=True, index=True)
+    grupo = Column(String(255), nullable=True)
+    ativo = Column(Boolean, default=True)
+    versao_tuss = Column(String(100), nullable=True)
+    raw_data = Column(JSON, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+
 class TussMaterial(Base):
     """TUSS Tabela 19 - Materiais e OPME. Fonte: FTP ANS."""
     __tablename__ = "tuss_materials"
@@ -243,7 +257,7 @@ class TussMaterial(Base):
     descricao = Column(Text, nullable=True)
     ativo = Column(Boolean, default=True)
     data_atualizacao = Column(DateTime(timezone=True), nullable=True)
-    versao_tuss = Column(String(20), nullable=True)
+    versao_tuss = Column(String(100), nullable=True)
     raw_data = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
@@ -283,7 +297,7 @@ class RolProcedure(Base):
     __tablename__ = "rol_procedures"
 
     id = Column(UUID(), primary_key=True, default=uuid.uuid4)
-    codigo_procedimento = Column(String(20), nullable=False, index=True)
+    codigo_procedimento = Column(String(50), nullable=False, index=True)
     nome = Column(Text, nullable=False)
     segmentacao_ambulatorial = Column(Boolean, default=False)
     segmentacao_hospitalar = Column(Boolean, default=False)

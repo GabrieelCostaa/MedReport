@@ -27,6 +27,13 @@ DUT_ANCHOR_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Real format in Anexo II: "N. TÍTULO DO PROCEDIMENTO" (e.g. "1. ABLAÇÃO POR...")
+# Must be at start of line, number followed by dot, then uppercase text
+DUT_NUMBERED_RE = re.compile(
+    r"^(\d{1,3})\.\s+([A-ZÁÉÍÓÚÀÂÊÔÃÕÇ][A-ZÁÉÍÓÚÀÂÊÔÃÕÇ\s,;/\-\(\)]{10,})",
+    re.MULTILINE,
+)
+
 
 def compute_sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -44,33 +51,56 @@ def segment_dut_pdf(pdf_bytes: bytes) -> list[dict]:
     Etapa 1: Segmentação determinística.
     Extrai texto página a página com pdfplumber, identifica âncoras de DUT,
     gera chunks com texto + páginas + número da DUT.
+
+    O Anexo II usa formato "N. TÍTULO" (ex: "1. ABLAÇÃO POR RADIOFREQUÊNCIA...")
+    onde N é o número sequencial da DUT.
     """
     import pdfplumber
 
     chunks = []
     current_dut = None
+    current_title = ""
     current_text = []
     current_pages = []
     footnotes = []
+    in_content = False  # Skip TOC pages
 
     with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
         for page_num, page in enumerate(pdf.pages, start=1):
             page_text = page.extract_text() or ""
+
+            # Detect start of actual content (after TOC)
+            if not in_content:
+                if "ANEXO II - DIRETRIZES DE UTILIZAÇÃO" in page_text:
+                    in_content = True
+                else:
+                    continue
+
             lines = page_text.split("\n")
 
             for line in lines:
+                # Skip header repetitions
+                if "ANEXO II - DIRETRIZES DE UTILIZAÇÃO" in line:
+                    continue
+
+                # Try both anchor patterns
                 match = DUT_ANCHOR_RE.search(line)
+                if not match:
+                    match = DUT_NUMBERED_RE.match(line.strip())
+
                 if match:
+                    # Save previous DUT
                     if current_dut and current_text:
                         chunks.append({
                             "numero_dut": current_dut,
-                            "titulo": _extract_title(current_text),
+                            "titulo": current_title,
                             "texto": "\n".join(current_text),
                             "page_start": current_pages[0] if current_pages else page_num,
                             "page_end": current_pages[-1] if current_pages else page_num,
                             "footnotes": footnotes[:],
                         })
                     current_dut = match.group(1)
+                    current_title = match.group(2).strip() if match.lastindex >= 2 else _extract_title([line])
                     current_text = [line]
                     current_pages = [page_num]
                     footnotes = []
@@ -80,13 +110,14 @@ def segment_dut_pdf(pdf_bytes: bytes) -> list[dict]:
                         if page_num not in current_pages:
                             current_pages.append(page_num)
 
-                if re.match(r"^\s*\d+\s*[).]", line) or re.match(r"^\s*nota\s*:?", line, re.IGNORECASE):
+                # Capture footnotes
+                if re.match(r"^\s*nota\s*:?", line, re.IGNORECASE):
                     footnotes.append(line.strip())
 
     if current_dut and current_text:
         chunks.append({
             "numero_dut": current_dut,
-            "titulo": _extract_title(current_text),
+            "titulo": current_title,
             "texto": "\n".join(current_text),
             "page_start": current_pages[0] if current_pages else 0,
             "page_end": current_pages[-1] if current_pages else 0,

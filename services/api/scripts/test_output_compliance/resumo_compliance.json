@@ -19,12 +19,12 @@
     },
     "tuss_validator": {
       "valid_code": {
-        "valido": false,
-        "msg": "Código TUSS 30715016 não encontrado na base oficial (Tabela 19)"
+        "valido": true,
+        "msg": "Código TUSS válido e ativo (Tabela 22 — Procedimento)"
       },
       "invalid_code": {
         "valido": false,
-        "msg": "Código TUSS 99999999 não encontrado na base oficial (Tabela 19)"
+        "msg": "Código TUSS 99999999 não encontrado na base oficial (Tabelas 19 e 22)"
       }
     },
     "tiss_validator": {
@@ -46,25 +46,25 @@
     },
     "approval_score": {
       "full": {
-        "score": 64.5,
+        "score": 72.0,
         "nivel": "medio",
         "components": {
           "aderencia_dut": 30.0,
-          "completude_tiss_tuss": 7.5,
+          "completude_tiss_tuss": 15.0,
           "qualidade_justificativa": 20.0,
           "robustez_evidencia": 7.0,
           "anvisa_status": "desconhecido"
         }
       },
       "empty": {
-        "score": 45.0,
-        "nivel": "baixo"
+        "score": 30.0,
+        "nivel": "critico"
       }
     },
     "compliance_layer": {
-      "mode": "fora_do_rol",
+      "mode": "cobertura_direta",
       "has_score": true,
-      "score": 43.5
+      "score": 66.0
     }
   },
   "fase_3_4_pipeline": [
@@ -73,21 +73,21 @@
       "nome": "Rol/DUT — Paciente atende todos os critérios",
       "status": "OK",
       "aprovado": true,
-      "palavras": 314,
-      "caracteres": 2286,
-      "checklist": "5/6",
-      "compliance_mode": "fora_do_rol",
-      "approval_score": 54.5,
-      "approval_nivel": "baixo",
+      "palavras": 316,
+      "caracteres": 2255,
+      "checklist": "6/6",
+      "compliance_mode": "cobertura_direta",
+      "approval_score": 77.0,
+      "approval_nivel": "medio",
       "approval_componentes": {
         "aderencia_dut": 20.0,
-        "completude_tiss_tuss": 7.5,
+        "completude_tiss_tuss": 30.0,
         "qualidade_justificativa": 20.0,
         "robustez_evidencia": 7.0,
-        "anvisa_status": "desconhecido"
+        "anvisa_status": "ativo"
       },
       "issues": [],
-      "tempo": "30.1s",
+      "tempo": "26.9s",
       "refs_count": 2,
       "arquivo": "scripts/test_output_compliance/01_rol_dut_atende.txt"
     },
@@ -96,21 +96,21 @@
       "nome": "Rol/DUT — Paciente atende parcialmente (dados faltantes)",
       "status": "OK",
       "aprovado": true,
-      "palavras": 346,
-      "caracteres": 2608,
-      "checklist": "5/6",
-      "compliance_mode": "fora_do_rol",
-      "approval_score": 54.5,
-      "approval_nivel": "baixo",
+      "palavras": 345,
+      "caracteres": 2543,
+      "checklist": "6/6",
+      "compliance_mode": "cobertura_direta",
+      "approval_score": 77.0,
+      "approval_nivel": "medio",
       "approval_componentes": {
         "aderencia_dut": 20.0,
-        "completude_tiss_tuss": 7.5,
+        "completude_tiss_tuss": 30.0,
         "qualidade_justificativa": 20.0,
         "robustez_evidencia": 7.0,
-        "anvisa_status": "desconhecido"
+        "anvisa_status": "ativo"
       },
       "issues": [],
-      "tempo": "34.5s",
+      "tempo": "34.0s",
       "refs_count": 3,
       "arquivo": "scripts/test_output_compliance/02_rol_dut_parcial.txt"
     },
@@ -119,21 +119,21 @@
       "nome": "Cobertura Direta — Procedimento no Rol sem DUT",
       "status": "OK",
       "aprovado": true,
-      "palavras": 221,
-      "caracteres": 1660,
-      "checklist": "5/6",
-      "compliance_mode": "fora_do_rol",
-      "approval_score": 51.5,
-      "approval_nivel": "baixo",
+      "palavras": 282,
+      "caracteres": 2129,
+      "checklist": "6/6",
+      "compliance_mode": "cobertura_direta",
+      "approval_score": 74.0,
+      "approval_nivel": "medio",
       "approval_componentes": {
         "aderencia_dut": 20.0,
-        "completude_tiss_tuss": 7.5,
+        "completude_tiss_tuss": 30.0,
         "qualidade_justificativa": 20.0,
         "robustez_evidencia": 4.0,
-        "anvisa_status": "desconhecido"
+        "anvisa_status": "ativo"
       },
       "issues": [],
-      "tempo": "21.3s",
+      "tempo": "26.2s",
       "refs_count": 2,
       "arquivo": "scripts/test_output_compliance/03_cobertura_direta.txt"
     },
@@ -142,21 +142,21 @@
       "nome": "Fora do Rol — Dossiê de Exceção + STF Checklist",
       "status": "OK",
       "aprovado": true,
-      "palavras": 350,
-      "caracteres": 2434,
-      "checklist": "5/6",
-      "compliance_mode": "fora_do_rol",
-      "approval_score": 49.5,
-      "approval_nivel": "baixo",
+      "palavras": 298,
+      "caracteres": 2173,
+      "checklist": "6/6",
+      "compliance_mode": "cobertura_direta",
+      "approval_score": 72.0,
+      "approval_nivel": "medio",
       "approval_componentes": {
         "aderencia_dut": 20.0,
-        "completude_tiss_tuss": 7.5,
+        "completude_tiss_tuss": 30.0,
         "qualidade_justificativa": 20.0,
         "robustez_evidencia": 2.0,
-        "anvisa_status": "desconhecido"
+        "anvisa_status": "ativo"
       },
       "issues": [],
-      "tempo": "27.2s",
+      "tempo": "21.3s",
       "refs_count": 1,
       "arquivo": "scripts/test_output_compliance/04_fora_do_rol.txt"
     },
@@ -165,20 +165,20 @@
       "nome": "Laser — Especialidade diferente (ORL)",
       "status": "OK",
       "aprovado": true,
-      "palavras": 327,
-      "caracteres": 2320,
-      "checklist": "5/6",
-      "compliance_mode": "fora_do_rol",
-      "approval_score": 49.5,
-      "approval_nivel": "baixo",
+      "palavras": 267,
+      "caracteres": 1920,
+      "checklist": "6/6",
+      "compliance_mode": "cobertura_direta",
+      "approval_score": 72.0,
+      "approval_nivel": "medio",
       "approval_componentes": {
         "aderencia_dut": 20.0,
-        "completude_tiss_tuss": 7.5,
+        "completude_tiss_tuss": 30.0,
         "qualidade_justificativa": 20.0,
         "robustez_evidencia": 2.0
       },
       "issues": [],
-      "tempo": "25.5s",
+      "tempo": "16.6s",
       "refs_count": 1,
       "arquivo": "scripts/test_output_compliance/05_laser_otorrino.txt"
     },
@@ -187,20 +187,21 @@
       "nome": "Biossilex — Osteomielite crônica",
       "status": "OK",
       "aprovado": true,
-      "palavras": 295,
-      "caracteres": 2142,
-      "checklist": "5/6",
-      "compliance_mode": "fora_do_rol",
-      "approval_score": 49.5,
-      "approval_nivel": "baixo",
+      "palavras": 311,
+      "caracteres": 2266,
+      "checklist": "6/6",
+      "compliance_mode": "cobertura_direta",
+      "approval_score": 72.0,
+      "approval_nivel": "medio",
       "approval_componentes": {
         "aderencia_dut": 20.0,
-        "completude_tiss_tuss": 7.5,
+        "completude_tiss_tuss": 30.0,
         "qualidade_justificativa": 20.0,
-        "robustez_evidencia": 2.0
+        "robustez_evidencia": 2.0,
+        "anvisa_status": "ativo"
       },
       "issues": [],
-      "tempo": "28.4s",
+      "tempo": "18.9s",
       "refs_count": 1,
       "arquivo": "scripts/test_output_compliance/06_biossilex_ortopedia.txt"
     }

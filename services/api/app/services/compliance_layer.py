@@ -139,6 +139,23 @@ async def build_compliance_context(
         else:
             await _emit(f"ALERTA: {ctx.tuss_validation.mensagem}")
 
+    # 3b. Validar TISS — determinar campo correto baseado no tipo de código
+    if procedure_code and ctx.tuss_validation:
+        await _emit("Validando campo TISS para solicitação de OPME...")
+        # Detect if this is a material (Table 19) or procedure (Table 22) code
+        tiss_campo = "Mat/Med"
+        if "Tabela 22" in (ctx.tuss_validation.mensagem or ""):
+            tiss_campo = "Procedimento"
+        ctx.tiss_validation = await validator.validate_tiss_field(
+            tipo_guia="SP/SADT",
+            campo=tiss_campo,
+            codigo=procedure_code,
+        )
+        if ctx.tiss_validation.permitido:
+            await _emit(f"TISS OK: campo {tiss_campo} ({ctx.tiss_validation.mensagem})")
+        else:
+            await _emit(f"ALERTA TISS: {ctx.tiss_validation.mensagem}")
+
     # 4. Verificar Anvisa
     if produto_registro_anvisa:
         await _emit("Verificando registro Anvisa...")
@@ -166,6 +183,7 @@ async def build_compliance_context(
     ctx.approval_score = compute_approval_score(
         dut_evaluation=ctx.dut_evaluation,
         tuss_validation=ctx.tuss_validation,
+        tiss_validation=ctx.tiss_validation,
         anvisa_status=ctx.anvisa_status,
         evidence_count=evidence_count,
         evidence_levels=evidence_levels,

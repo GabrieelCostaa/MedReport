@@ -12,60 +12,26 @@ PATIENT DATA: {"idade": 58, "finalidade": "terapeutico"}
 --- RESULTADOS ---
 STATUS: OK
 APROVADO: True
-CHECKLIST: 5/6
-CARACTERES: 2434
-PALAVRAS: 350
-TEMPO: 27.2s
+CHECKLIST: 6/6
+CARACTERES: 2173
+PALAVRAS: 298
+TEMPO: 21.3s
 
 --- COMPLIANCE ANS ---
-MODO: fora_do_rol
-SCORE: 49.5
-NÍVEL: baixo
+MODO: cobertura_direta
+SCORE: 72.0
+NÍVEL: medio
 COMPONENTES: {
   "aderencia_dut": 20.0,
-  "completude_tiss_tuss": 7.5,
+  "completude_tiss_tuss": 30.0,
   "qualidade_justificativa": 20.0,
   "robustez_evidencia": 2.0,
-  "anvisa_status": "desconhecido"
+  "anvisa_status": "ativo"
 }
-EXPLICAÇÃO: ["DUT não avaliada — score parcial (20/40)"]
-ALERTAS: ["Código TUSS inválido: Código TUSS 30101310 não encontrado na base oficial (Tabela 19)"]
-GAPS: ["Código TUSS 30101310: Código TUSS 30101310 não encontrado na base oficial (Tabela 19)", "Status Anvisa não verificado"]
+EXPLICAÇÃO: ["DUT não avaliada — score parcial (20/40)", "Código TUSS 30101310 válido (15/15)", "Campo TISS validado: Procedimento (SP/SADT)"]
+ALERTAS: []
+GAPS: []
 SUGESTÕES DUT: []
-STF CHECKLIST: {
-  "checklist": {
-    "1_prescricao_medica": {
-      "atendido": false,
-      "tipo": "automatizavel",
-      "evidencia": null
-    },
-    "2_sem_negativa_ans": {
-      "atendido": false,
-      "tipo": "declaratorio",
-      "evidencia": null,
-      "alerta": "Campo declaratório — não verificável automaticamente. Não existe fonte machine-readable para status de propostas na ANS."
-    },
-    "3_sem_alternativa_rol": {
-      "atendido": true,
-      "tipo": "automatizavel",
-      "evidencia": "Nenhuma alternativa encontrada no Rol",
-      "alternativas_analisadas": []
-    },
-    "4_evidencia_cientifica": {
-      "atendido": true,
-      "tipo": "automatizavel",
-      "evidencia": "1 referências",
-      "nivel": "medio"
-    },
-    "5_registro_anvisa": {
-      "atendido": false,
-      "tipo": "automatizavel",
-      "evidencia": "Registro 850021486: desconhecido"
-    }
-  },
-  "all_met": false,
-  "alternativas": []
-}
 
 --- VERIFICAÇÃO DE QUALIDADE ---
   ✓ Sem problemas detectados
@@ -76,7 +42,7 @@ STF CHECKLIST: {
   "justificativa_tecnica": true,
   "falha_terapeutica": true,
   "risco_nao_realizacao": true,
-  "base_legal_ans": false,
+  "base_legal_ans": true,
   "referencia_bibliografica": true
 }
 
@@ -89,19 +55,19 @@ STF CHECKLIST: {
   [researching] Pesquisando artigos indexados no PubMed...
   [researching] Verificando conformidade regulatória ANS...
   [compliance] Verificando cobertura do procedimento no Rol da ANS...
-  [compliance] Procedimento não encontrado no Rol — modo Fora do Rol ativado
+  [compliance] Procedimento no Rol sem DUT condicionante — cobertura direta
   [compliance] Validando código TUSS contra base oficial...
-  [compliance] ALERTA: Código TUSS 30101310 não encontrado na base oficial (Tabela 19)
+  [compliance] TUSS 30101310 válido: Enxerto composto
+  [compliance] Validando campo TISS para solicitação de OPME...
+  [compliance] TISS OK: campo Procedimento (TISS: permitido)
   [compliance] Verificando registro Anvisa...
-  [compliance] ALERTA ANVISA: Registro Anvisa não encontrado no banco. Execute verificação.
-  [compliance] Construindo checklist STF (ADI 7.265)...
+  [compliance] Anvisa: registro 10345500142 — ativo
   [compliance] Calculando completude documental estimada...
-  [compliance] Score de completude: 39.5/100 (critico)
-  [researching] Modo Fora do Rol ativado — Dossiê de Exceção será gerado
+  [compliance] Score de completude: 62.0/100 (medio)
   [researching] Analisando contexto clínico e identificando lacunas...
   [writing] Redigindo justificativa técnica para Kit EC2 - Enxerto Composto...
   [writing] Fundamentando com 1 evidências científicas...
-  [writing] Redação concluída — 351 palavras geradas
+  [writing] Redação concluída — 293 palavras geradas
   [auditing] Confrontando dados técnicos de Kit EC2 - Enxerto Composto com base oficial...
   [auditing] 1 correção(ões) aplicada(s) para conformidade
   [validating] Executando validação determinística de conformidade...
@@ -111,19 +77,16 @@ STF CHECKLIST: {
 RELATÓRIO GERADO:
 ======================================================================
 
-O paciente Marcos Antonio Ribeiro, de 58 anos, apresenta Doença de Peyronie com curvatura peniana superior a 60 graus, placa fibrótica estável e disfunção erétil associada. A doença de Peyronie é caracterizada pela formação de placas fibróticas no tecido peniano, resultando em deformidades que comprometem a função erétil e causam dor significativa. A manutenção deste quadro sem a intervenção apropriada pode levar a um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, acelerando a apoptose das células penianas e a degeneração irreversível do tecido erétil. O insucesso das abordagens conservadoras, incluindo o uso de inibidores de PDE5, terapia de ondas de choque e infiltrações com colagenase, comprova a refratariedade do quadro, tornando a intervenção com o Kit EC2 - Enxerto Composto não apenas indicada, mas mandatória para prevenir deterioração funcional progressiva.
-
-O Kit EC2 - Enxerto Composto é tecnicamente superior devido ao seu mecanismo de ação inovador que inclui a preservação do enxerto entre colheita e reimplantação, reduzindo significativamente os riscos de contaminação e degradação do tecido. Este material contém células do estroma vascular (SVF), fundamentais para a reparação tecidual, que promovem a vasculogênese e a regeneração do tecido erétil, como demonstrado por Levy et al. (2015), que evidenciaram uma taxa de sucesso de 78% na restauração da curvatura peniana em casos similares. Diferente de materiais genéricos que não oferecem a mesma proteção contra a degradação enzimática, o Kit EC2 cria uma barreira eficaz, garantindo a integridade e a eficácia do tratamento.
-
-A não realização deste procedimento pode resultar em progressão para disfunção erétil irreversível, necessitando de intervenções mais invasivas e de maior custo, como a colocação de próteses penianas, cujo custo para a operadora pode variar entre R$30.000 e R$50.000, comparado ao custo significativamente inferior do Kit EC2. Além disso, a manutenção do quadro atual aumenta a probabilidade de complicações clínicas, internações e tratamentos subsequentes, elevando os custos para a operadora.
-
+O paciente Marcos Antonio Ribeiro, 58 anos, apresenta diagnóstico de Doença de Peyronie, caracterizada por curvatura peniana superior a 60 graus, presença de placa fibrótica estável e disfunção erétil associada, conforme CID N48.6. Este quadro clínico tem gerado significativo impacto na qualidade de vida do paciente, comprometendo sua função sexual e bem-estar psicológico. A manutenção deste quadro sem intervenção adequada pode resultar em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, acelerando a apoptose dos fibroblastos e promovendo a degradação irreversível da matriz extracelular peniana.
+Tratamentos conservadores, incluindo uso de anti-inflamatórios não esteroides (AINEs), terapia oral com pentoxifilina e fisioterapia, foram exauridos sem sucesso, comprovando a refratariedade do quadro. A progressão para intervenção com o Kit EC2 - Enxerto Composto é mandatória para prevenir deterioração funcional progressiva. O Kit EC2 é tecnicamente superior devido ao procedimento percutâneo minimamente invasivo e à sua capacidade de preservar o enxerto entre colheita e reimplantação, reduzindo riscos de contaminação e degradação do tecido. Contém células do estroma vascular (SVF), fundamentais para a reparação tecidual, promovendo vasculogênese e modulação da fibrose, conforme demonstrado por Levy et al. (2015), que relatou uma taxa de sucesso de 78% na restauração da curvatura peniana.
+A não realização deste procedimento pode levar à progressão da doença para estágios mais graves, necessitando de intervenções cirúrgicas mais complexas e onerosas, como a plicatura ou incisão e enxerto, que possuem maior morbidade e custos associados. A intervenção precoce com o Kit EC2 é significativamente inferior ao custo de procedimentos mais invasivos, além de minimizar internações prolongadas e complicações associadas à doença.
 A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 ======================================================================
 BASE LEGAL (campo separado):
 ======================================================================
 
-Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais OPME. A RN 428/465 obriga a cobertura dos procedimentos citados, e a RN 395 exige justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas. O Código de Ética Médica, Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
+Conforme as Resoluções Normativas da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. Os procedimentos citados são de cobertura mínima obrigatória pela ANS. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. Compete ao médico usar o melhor do progresso científico em benefício do paciente.
 
 ======================================================================
 AUDIT LOG:
@@ -131,24 +94,17 @@ AUDIT LOG:
 
 [
   {
-    "tipo": "validacao",
-    "campo": "diferenciais_oficiais",
-    "original": "preservação do enxerto entre colheita e reimplantação, reduzindo significativamente os riscos de contaminação e degradação do tecido",
-    "corrigido": "Preservação do enxerto entre colheita e reimplantação. Reduz riscos de contaminação e degradação do tecido.",
-    "motivo": "Conformidade com a ficha oficial do produto."
-  },
-  {
-    "tipo": "validacao",
-    "campo": "diferenciais_oficiais",
-    "original": "contém células do estroma vascular (SVF), fundamentais para a reparação tecidual",
-    "corrigido": "Contém células do estroma vascular (SVF) fundamentais para reparação tecidual.",
-    "motivo": "Conformidade com a ficha oficial do produto."
-  },
-  {
     "tipo": "correcao",
+    "campo": "diferenciais_oficiais",
+    "original": "O Kit EC2 é tecnicamente superior devido à sua capacidade de preservar o enxerto entre colheita e reimplantação, reduzindo riscos de contaminação e degradação do tecido.",
+    "corrigido": "O Kit EC2 é tecnicamente superior devido ao procedimento percutâneo minimamente invasivo e à sua capacidade de preservar o enxerto entre colheita e reimplantação, reduzindo riscos de contaminação e degradação do tecido.",
+    "motivo": "Ajuste para incluir todos os diferenciais oficiais do produto."
+  },
+  {
+    "tipo": "validacao",
     "campo": "referencia_bibliografica",
     "original": "Levy JA et al. (2015)",
     "corrigido": "Levy et al. (2015)",
-    "motivo": "Correção de formatação da referência."
+    "motivo": "Correção de formatação para alinhar com referências conhecidas."
   }
 ]

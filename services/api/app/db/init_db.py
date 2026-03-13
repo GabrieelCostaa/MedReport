@@ -242,6 +242,86 @@ TEMPLATES_SEED = [
 ]
 
 
+TISS_RULES_SEED = [
+    # Guia SP/SADT — materiais OPME vão no campo Mat/Med
+    {
+        "tipo_guia": "SP/SADT",
+        "campo": "Mat/Med",
+        "regra": "permitido",
+        "tabela_tuss_aplicavel": "19",
+        "descricao": "Materiais OPME (Tabela 19) devem ser solicitados no campo Materiais/Medicamentos da guia SP/SADT.",
+        "versao_tiss": "4.01.00",
+    },
+    {
+        "tipo_guia": "SP/SADT",
+        "campo": "Procedimento",
+        "regra": "permitido",
+        "tabela_tuss_aplicavel": "22",
+        "descricao": "Procedimentos (Tabela 22) devem ser informados no campo Procedimento da guia SP/SADT.",
+        "versao_tiss": "4.01.00",
+    },
+    {
+        "tipo_guia": "SP/SADT",
+        "campo": "Honorarios",
+        "regra": "proibido",
+        "tabela_tuss_aplicavel": "19",
+        "descricao": "GLOSA: Materiais OPME (Tabela 19) NÃO podem ser lançados como Honorários. Devem ir no Anexo OPME ou Mat/Med.",
+        "versao_tiss": "4.01.00",
+    },
+    # Guia de Internação — materiais OPME vão no anexo OPME
+    {
+        "tipo_guia": "Internação",
+        "campo": "OPME",
+        "regra": "permitido",
+        "tabela_tuss_aplicavel": "19",
+        "descricao": "Materiais OPME (Tabela 19) devem ser solicitados no Anexo de OPME da guia de Internação.",
+        "versao_tiss": "4.01.00",
+    },
+    {
+        "tipo_guia": "Internação",
+        "campo": "Procedimento",
+        "regra": "permitido",
+        "tabela_tuss_aplicavel": "22",
+        "descricao": "Procedimentos (Tabela 22) devem ser informados no campo Procedimento da guia de Internação.",
+        "versao_tiss": "4.01.00",
+    },
+    {
+        "tipo_guia": "Internação",
+        "campo": "Honorarios",
+        "regra": "proibido",
+        "tabela_tuss_aplicavel": "19",
+        "descricao": "GLOSA: Materiais OPME (Tabela 19) NÃO podem ser lançados como Honorários em guia de Internação.",
+        "versao_tiss": "4.01.00",
+    },
+    {
+        "tipo_guia": "Internação",
+        "campo": "Mat/Med",
+        "regra": "permitido",
+        "tabela_tuss_aplicavel": "19",
+        "descricao": "Materiais OPME (Tabela 19) podem ser lançados no campo Mat/Med da guia de Internação.",
+        "versao_tiss": "4.01.00",
+    },
+    # Guia de Honorário Individual — OPME proibido
+    {
+        "tipo_guia": "Honorário Individual",
+        "campo": "Honorarios",
+        "regra": "proibido",
+        "tabela_tuss_aplicavel": "19",
+        "descricao": "GLOSA: Guia de Honorário Individual NÃO pode conter materiais OPME (Tabela 19).",
+        "versao_tiss": "4.01.00",
+    },
+    # Solicitação de OPME — campo correto
+    {
+        "tipo_guia": "Solicitação OPME",
+        "campo": "OPME",
+        "regra": "obrigatorio",
+        "tabela_tuss_aplicavel": "19",
+        "descricao": "Materiais OPME (Tabela 19) são OBRIGATÓRIOS neste formulário de Solicitação de OPME.",
+        "versao_tiss": "4.01.00",
+    },
+]
+
+
 async def seed():
     async with AsyncSessionLocal() as db:
         from sqlalchemy import select
@@ -287,6 +367,9 @@ async def seed():
                 **tdata,
             )
             db.add(t)
+
+        for rdata in TISS_RULES_SEED:
+            db.add(TissRule(**rdata))
 
         await db.commit()
 

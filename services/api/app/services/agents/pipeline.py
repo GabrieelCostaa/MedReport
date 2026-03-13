@@ -332,6 +332,7 @@ class ReportPipeline:
                 final_score = compute_approval_score(
                     dut_evaluation=getattr(session.compliance_context, "dut_evaluation", None),
                     tuss_validation=getattr(session.compliance_context, "tuss_validation", None),
+                    tiss_validation=getattr(session.compliance_context, "tiss_validation", None),
                     anvisa_status=getattr(session.compliance_context, "anvisa_status", None),
                     evidence_count=len(session.clinical_evidences) + len(session.pubmed_evidences),
                     has_justification=bool(audit_result.texto_corrigido),

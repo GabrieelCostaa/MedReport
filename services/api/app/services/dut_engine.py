@@ -198,12 +198,35 @@ class DutEngine:
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    async def _resolve_procedure_name(self, procedure_code: str) -> str | None:
+        """Resolve TUSS code to procedure name via Table 22."""
+        from app.db.models import TussProcedure
+        result = await self.db.execute(
+            select(TussProcedure.nome).where(TussProcedure.codigo_tuss == procedure_code).limit(1)
+        )
+        return result.scalar_one_or_none()
+
     async def find_dut_for_procedure(self, procedure_code: str) -> Any | None:
         from app.db.models import DutRule
+        # Try direct code match first
         result = await self.db.execute(
             select(DutRule).where(DutRule.procedimento_codigo == procedure_code).limit(1)
         )
-        return result.scalar_one_or_none()
+        dut = result.scalar_one_or_none()
+        if dut:
+            return dut
+
+        # Resolve code → name via Table 22, then match by name
+        proc_name = await self._resolve_procedure_name(procedure_code)
+        if proc_name:
+            result = await self.db.execute(
+                select(DutRule).where(
+                    DutRule.procedimento_nome.ilike(f"%{proc_name[:60]}%")
+                ).limit(1)
+            )
+            return result.scalar_one_or_none()
+
+        return None
 
     async def find_dut_by_number(self, numero_dut: str) -> Any | None:
         from app.db.models import DutRule
@@ -243,10 +266,54 @@ class DutEngine:
         )
         return result.scalars().all()
 
-    async def determine_compliance_mode(self, procedure_code: str, dut_rule=None) -> str:
-        """Determina o modo de compliance: rol_dut, cobertura_direta, ou fora_do_rol."""
+    async def _find_in_rol_by_name(self, proc_name: str):
+        """Busca procedimento no Rol por nome, com fallback para palavras-chave.
+
+        O Rol usa abreviações (C/ em vez de 'com') e variações de nome,
+        então fazemos busca progressiva: nome completo → palavras-chave.
+        """
         from app.db.models import RolProcedure
 
+        # Strategy 1: Full name ilike
+        result = await self.db.execute(
+            select(RolProcedure).where(
+                RolProcedure.nome.ilike(f"%{proc_name[:60]}%")
+            ).limit(1)
+        )
+        match = result.scalar_one_or_none()
+        if match:
+            return match
+
+        # Strategy 2: Extract significant words (>3 chars, skip stopwords)
+        import re as _re
+        stopwords = {"com", "sem", "para", "por", "que", "dos", "das", "nos", "nas", "uma", "cada"}
+        raw_words = _re.findall(r"[a-zA-ZÀ-ÿ]{4,}", proc_name)
+        words = [w for w in raw_words if w.lower() not in stopwords]
+        if len(words) >= 2:
+            from sqlalchemy import and_
+            # Try progressively fewer keywords: 3 → 2
+            for n_words in (min(3, len(words)), 2):
+                conditions = [RolProcedure.nome.ilike(f"%{w}%") for w in words[:n_words]]
+                result = await self.db.execute(
+                    select(RolProcedure).where(and_(*conditions)).limit(1)
+                )
+                match = result.scalar_one_or_none()
+                if match:
+                    return match
+
+        return None
+
+    async def determine_compliance_mode(self, procedure_code: str, dut_rule=None) -> str:
+        """Determina o modo de compliance: rol_dut, cobertura_direta, ou fora_do_rol.
+
+        O Rol da ANS identifica procedimentos por NOME, não por código TUSS.
+        Fluxo: código TUSS → nome (via Tabela 22) → busca no Rol por nome.
+        """
+        from app.db.models import RolProcedure
+
+        in_rol = None
+
+        # 1. Try direct code match (unlikely to work but cheap)
         rol_result = await self.db.execute(
             select(RolProcedure).where(
                 RolProcedure.codigo_procedimento == procedure_code
@@ -254,10 +321,16 @@ class DutEngine:
         )
         in_rol = rol_result.scalar_one_or_none()
 
+        # 2. Resolve code → name via Table 22, then search Rol by name
+        if not in_rol:
+            proc_name = await self._resolve_procedure_name(procedure_code)
+            if proc_name:
+                in_rol = await self._find_in_rol_by_name(proc_name)
+
         if not in_rol:
             return "fora_do_rol"
 
-        if dut_rule or (in_rol and in_rol.tem_dut):
+        if dut_rule or in_rol.tem_dut:
             return "rol_dut"
 
         return "cobertura_direta"

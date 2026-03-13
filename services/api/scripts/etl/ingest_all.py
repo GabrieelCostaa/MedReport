@@ -18,20 +18,21 @@ async def main():
     print("OPME Platform - ETL Completo ANS")
     print("=" * 60)
 
-    async with AsyncSessionLocal() as db:
-        print("\n--- TUSS 19 (Materiais/OPME) ---")
-        try:
+    print("\n--- TUSS 19 (Materiais/OPME) ---")
+    try:
+        async with AsyncSessionLocal() as db:
             tuss_result = await tuss_etl(db_session=db)
             print(f"TUSS: {tuss_result}")
-        except Exception as e:
-            print(f"TUSS ERRO: {e}")
+    except Exception as e:
+        print(f"TUSS ERRO: {e}")
 
-        print("\n--- Rol Anexo I (Procedimentos) ---")
-        try:
+    print("\n--- Rol Anexo I (Procedimentos) ---")
+    try:
+        async with AsyncSessionLocal() as db:
             rol_result = await rol_etl(db_session=db)
             print(f"Rol: {rol_result}")
-        except Exception as e:
-            print(f"Rol ERRO: {e}")
+    except Exception as e:
+        print(f"Rol ERRO: {e}")
 
     print("\n" + "=" * 60)
     print("ETL concluído.")

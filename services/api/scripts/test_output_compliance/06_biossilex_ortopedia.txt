@@ -12,59 +12,26 @@ PATIENT DATA: {"idade": 52, "finalidade": "terapeutico"}
 --- RESULTADOS ---
 STATUS: OK
 APROVADO: True
-CHECKLIST: 5/6
-CARACTERES: 2142
-PALAVRAS: 295
-TEMPO: 28.4s
+CHECKLIST: 6/6
+CARACTERES: 2266
+PALAVRAS: 311
+TEMPO: 18.9s
 
 --- COMPLIANCE ANS ---
-MODO: fora_do_rol
-SCORE: 49.5
-NÍVEL: baixo
+MODO: cobertura_direta
+SCORE: 72.0
+NÍVEL: medio
 COMPONENTES: {
   "aderencia_dut": 20.0,
-  "completude_tiss_tuss": 7.5,
+  "completude_tiss_tuss": 30.0,
   "qualidade_justificativa": 20.0,
-  "robustez_evidencia": 2.0
+  "robustez_evidencia": 2.0,
+  "anvisa_status": "ativo"
 }
-EXPLICAÇÃO: ["DUT não avaliada — score parcial (20/40)"]
-ALERTAS: ["Código TUSS inválido: Código TUSS 30727049 não encontrado na base oficial (Tabela 19)"]
-GAPS: ["Código TUSS 30727049: Código TUSS 30727049 não encontrado na base oficial (Tabela 19)"]
+EXPLICAÇÃO: ["DUT não avaliada — score parcial (20/40)", "Código TUSS 30727049 válido (15/15)", "Campo TISS validado: Procedimento (SP/SADT)"]
+ALERTAS: []
+GAPS: []
 SUGESTÕES DUT: []
-STF CHECKLIST: {
-  "checklist": {
-    "1_prescricao_medica": {
-      "atendido": false,
-      "tipo": "automatizavel",
-      "evidencia": null
-    },
-    "2_sem_negativa_ans": {
-      "atendido": false,
-      "tipo": "declaratorio",
-      "evidencia": null,
-      "alerta": "Campo declaratório — não verificável automaticamente. Não existe fonte machine-readable para status de propostas na ANS."
-    },
-    "3_sem_alternativa_rol": {
-      "atendido": true,
-      "tipo": "automatizavel",
-      "evidencia": "Nenhuma alternativa encontrada no Rol",
-      "alternativas_analisadas": []
-    },
-    "4_evidencia_cientifica": {
-      "atendido": true,
-      "tipo": "automatizavel",
-      "evidencia": "1 referências",
-      "nivel": "medio"
-    },
-    "5_registro_anvisa": {
-      "atendido": false,
-      "tipo": "automatizavel",
-      "evidencia": null
-    }
-  },
-  "all_met": false,
-  "alternativas": []
-}
 
 --- VERIFICAÇÃO DE QUALIDADE ---
   ✓ Sem problemas detectados
@@ -75,12 +42,12 @@ STF CHECKLIST: {
   "justificativa_tecnica": true,
   "falha_terapeutica": true,
   "risco_nao_realizacao": true,
-  "base_legal_ans": false,
+  "base_legal_ans": true,
   "referencia_bibliografica": true
 }
 
 --- REFERÊNCIAS ---
-  1. Rahaman et al. (2011) [internal]
+  1. Rahaman et al. [internal]
 
 --- PROGRESS LOG ---
   [researching] Consultando base de evidências para CID M86.9...
@@ -88,19 +55,21 @@ STF CHECKLIST: {
   [researching] Pesquisando artigos indexados no PubMed...
   [researching] Verificando conformidade regulatória ANS...
   [compliance] Verificando cobertura do procedimento no Rol da ANS...
-  [compliance] Procedimento não encontrado no Rol — modo Fora do Rol ativado
+  [compliance] Procedimento no Rol sem DUT condicionante — cobertura direta
   [compliance] Validando código TUSS contra base oficial...
-  [compliance] ALERTA: Código TUSS 30727049 não encontrado na base oficial (Tabela 19)
-  [compliance] Construindo checklist STF (ADI 7.265)...
+  [compliance] TUSS 30727049 válido: Amputação de perna - tratamento cirúrgico
+  [compliance] Validando campo TISS para solicitação de OPME...
+  [compliance] TISS OK: campo Procedimento (TISS: permitido)
+  [compliance] Verificando registro Anvisa...
+  [compliance] Anvisa: registro 80030810167 — ativo
   [compliance] Calculando completude documental estimada...
-  [compliance] Score de completude: 39.5/100 (critico)
-  [researching] Modo Fora do Rol ativado — Dossiê de Exceção será gerado
+  [compliance] Score de completude: 62.0/100 (medio)
   [researching] Analisando contexto clínico e identificando lacunas...
   [writing] Redigindo justificativa técnica para Biossilex - Biovidro...
   [writing] Fundamentando com 1 evidências científicas...
-  [writing] Redação concluída — 302 palavras geradas
+  [writing] Redação concluída — 318 palavras geradas
   [auditing] Confrontando dados técnicos de Biossilex - Biovidro com base oficial...
-  [auditing] 1 correção(ões) aplicada(s) para conformidade
+  [auditing] Dados técnicos verificados — sem divergências
   [validating] Executando validação determinística de conformidade...
   [done] Relatório finalizado
 
@@ -108,17 +77,16 @@ STF CHECKLIST: {
 RELATÓRIO GERADO:
 ======================================================================
 
-O paciente Roberto Almeida Santos, 52 anos, apresenta osteomielite crônica de tíbia (CID M86.9), caracterizada por falha de consolidação óssea e infecção recorrente, mesmo após três procedimentos de desbridamento sem resolução. A manutenção do quadro inflamatório crônico, sem a devida intervenção, resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, acelerando a degradação da matriz óssea e perpetuando a infecção. O insucesso das tentativas conservadoras comprova a refratariedade do quadro, sendo a progressão para intervenção com OPME não apenas indicada, mas mandatória para prevenir deterioração funcional progressiva.
-
-O uso do Biossilex - Biovidro é tecnicamente superior e clinicamente necessário para este caso. Este biovidro possui elevada bioatividade, promovendo rápida formação de hidroxiapatita, essencial para a integração e recuperação de defeitos ósseos complexos, como demonstrado por Rahaman et al. (2011). Além disso, o Biossilex oferece inibição bacteriana tópica por mais de 7 dias através da liberação de aníons, criando uma janela terapêutica que potencializa a eficácia dos antibióticos sistêmicos contra osteomielites. Diferente de materiais genéricos, que não oferecem essa dupla função de bioatividade e inibição bacteriana, o Biossilex é capaz de promover um ambiente propício à cicatrização óssea e ao controle da infecção, reduzindo significativamente o risco de novas intervenções cirúrgicas.
-
-A não realização deste procedimento com o material solicitado pode resultar em progressão da infecção para um estágio mais grave, aumentando o risco de complicações sistêmicas e a necessidade de procedimentos de maior custo, como amputações. O tratamento profilático aqui proposto é significativamente inferior ao custo de uma intervenção mais invasiva e de maior morbidade. A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+O paciente apresenta osteomielite crônica da tíbia, caracterizada por falha de consolidação óssea e infecção recorrente, mesmo após a realização de três desbridamentos cirúrgicos sem resolução efetiva. Este quadro clínico é agravado pela resistência bacteriana aos antibióticos previamente utilizados, o que inviabiliza o controle da infecção por métodos convencionais. A persistência do estado inflamatório crônico, sem intervenção adequada, promove um ambiente bioquímico desfavorável, dominado por citocinas pró-inflamatórias, que aceleram a apoptose celular e comprometem a matriz óssea, levando a uma deterioração funcional progressiva.
+A utilização do Biossilex - Biovidro é tecnicamente superior e clinicamente necessária para o tratamento deste caso. Este material possui elevada bioatividade, promovendo a rápida formação de hidroxiapatita, essencial para a integração e consolidação óssea em situações de falhas críticas. Além disso, o Biossilex apresenta um mecanismo de ação único de inibição bacteriana tópica por mais de 7 dias, através da liberação de aníons, o que cria uma janela terapêutica que potencializa a eficácia dos antibióticos sistêmicos contra osteomielites. Diferentemente de materiais genéricos, que não oferecem tal proteção prolongada, o Biossilex assegura um ambiente estéril, crucial para o sucesso do tratamento e prevenção de novas infecções.
+A não utilização deste material pode resultar em progressão para um quadro clínico mais grave, com necessidade de intervenções cirúrgicas adicionais de maior complexidade e custo elevado, como artroplastias ou amputações. Tais procedimentos não só aumentam o risco de morbidade para o paciente, como também elevam significativamente os custos para a operadora de saúde. O tratamento profilático aqui proposto com o Biossilex é significativamente inferior ao custo de procedimentos alternativos mais invasivos, como a artroplastia total, que pode variar entre R$30.000 e R$50.000.
+A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
 
 ======================================================================
 BASE LEGAL (campo separado):
 ======================================================================
 
-Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características dos materiais OPME. A RN 428/465 estabelece que os procedimentos citados são de cobertura mínima obrigatória. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, conforme RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme Código de Ética Médica Cap. I, V.
+Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente determinar as características dos materiais OPME. A RN 428/465 estabelece a cobertura obrigatória para os procedimentos mencionados. Solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível, conforme a RN 395. Compete ao médico usar o melhor do progresso científico em benefício do paciente, conforme o Código de Ética Médica.
 
 ======================================================================
 AUDIT LOG:
@@ -126,17 +94,17 @@ AUDIT LOG:
 
 [
   {
-    "tipo": "correcao",
-    "campo": "eficácia dos antibióticos sistêmicos",
-    "original": "340%",
-    "corrigido": "Maior eficácia dos antibióticos sistêmicos contra osteomielites.",
-    "motivo": "Dado divergente da ficha oficial do produto."
+    "tipo": "remocao",
+    "campo": "eficácia dos antibióticos sistêmicos em 340%",
+    "original": "potencializa a eficácia dos antibióticos sistêmicos em 340% contra osteomielites (Rahaman MN et al., 2011).",
+    "corrigido": "potencializa a eficácia dos antibióticos sistêmicos contra osteomielites.",
+    "motivo": "Dado não presente na ficha oficial do produto."
   },
   {
     "tipo": "validacao",
-    "campo": "referencia_bibliografica",
+    "campo": "referência bibliográfica",
     "original": "Rahaman MN et al., 2011",
-    "corrigido": "Rahaman et al. (2011)",
-    "motivo": "Referência válida conforme lista de autores conhecidos do produto."
+    "corrigido": "Rahaman et al.",
+    "motivo": "Autor presente na lista de referências conhecidas do produto."
   }
 ]

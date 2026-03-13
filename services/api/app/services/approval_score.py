@@ -95,41 +95,32 @@ def compute_approval_score(
     components["aderencia_dut"] = round(dut_score, 1)
 
     # 2. Completude TISS/TUSS (0-30)
-    tiss_score = 0.0
-
+    # TUSS code validation (0-15)
+    tuss_component = 0.0
     if tuss_validation:
         if tuss_validation.valido:
-            tiss_score += 15.0
+            tuss_component = 15.0
             explanations.append(f"Código TUSS {tuss_validation.codigo} válido (15/15)")
         else:
             alerts.append(f"Código TUSS inválido: {tuss_validation.mensagem}")
             gaps.append(f"Código TUSS {tuss_validation.codigo}: {tuss_validation.mensagem}")
     else:
-        tiss_score += 7.5
         gaps.append("Código TUSS não validado contra base oficial")
 
-    if tiss_validation and tiss_validation is not None:
-        tiss_score += 7.5
-
+    # TISS field validation (0-15)
+    tiss_component = 0.0
     if tiss_validation:
-        if isinstance(tiss_validation, TissValidation):
-            pass
+        if tiss_validation.permitido:
+            tiss_component = 15.0
+            explanations.append(f"Campo TISS validado: {tiss_validation.campo} ({tiss_validation.tipo_guia})")
         else:
-            tiss_score += 7.5
-
-    if tiss_validation:
-        tiss_score = min(tiss_score, 22.5)
-
-    tiss_score += 7.5  # Base for having any structure
-
-    tiss_score = min(30.0, tiss_score)
-    components["completude_tiss_tuss"] = round(tiss_score, 1)
-
-    if tiss_validation and hasattr(tiss_validation, 'permitido'):
-        if not tiss_validation.permitido:
-            tiss_score = 0
             alerts.append(f"GLOSA TISS: {tiss_validation.mensagem}")
-            components["completude_tiss_tuss"] = 0
+            gaps.append(f"Código TUSS no campo TISS incorreto: {tiss_validation.mensagem}")
+    else:
+        gaps.append("Validação TISS não realizada (tabela tiss_rules vazia ou não consultada)")
+
+    tiss_score = min(30.0, tuss_component + tiss_component)
+    components["completude_tiss_tuss"] = round(tiss_score, 1)
 
     # 3. Qualidade da justificativa (0-20)
     just_score = 0.0

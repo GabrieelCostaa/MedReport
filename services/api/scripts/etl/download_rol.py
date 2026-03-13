@@ -40,22 +40,36 @@ def parse_rol_xlsx(xlsx_bytes: bytes) -> list[dict]:
         if len(rows) < 2:
             continue
 
-        header = [str(c).strip().upper() if c else "" for c in rows[0]]
+        # Find the actual header row: must have "PROCEDIMENTO" as an exact cell value
+        # (not as part of a title like "Rol de Procedimentos e Eventos em Saúde")
+        header_row_idx = 0
+        header = []
+        for ri, r in enumerate(rows):
+            cells = [str(c).strip().upper() if c else "" for c in r]
+            cell_values = {c for c in cells if c}
+            if "PROCEDIMENTO" in cell_values or "CÓDIGO" in cell_values or "CODIGO" in cell_values:
+                header = cells
+                header_row_idx = ri
+                break
+
+        if not header:
+            continue
+
         col_map = {}
         for i, h in enumerate(header):
             h_lower = h.lower()
             if "procedimento" in h_lower or "código" in h_lower or "codigo" in h_lower:
                 if "código" in h_lower or "codigo" in h_lower:
                     col_map["codigo"] = i
-                elif "procedimento" in h_lower and "codigo" not in col_map:
-                    col_map["nome"] = i
-            elif "ambulat" in h_lower:
+                elif "procedimento" in h_lower:
+                    col_map.setdefault("nome", i)
+            elif h_lower in ("amb", "ambulat") or "ambulat" in h_lower:
                 col_map["amb"] = i
-            elif "hospit" in h_lower and "obst" not in h_lower:
+            elif h_lower in ("hco",) or ("hospit" in h_lower and "obst" not in h_lower):
                 col_map["hosp"] = i
-            elif "obst" in h_lower:
+            elif h_lower in ("hso",) or "obst" in h_lower:
                 col_map["obst"] = i
-            elif "odonto" in h_lower:
+            elif h_lower in ("od",) or "odonto" in h_lower:
                 col_map["odonto"] = i
             elif "dut" in h_lower or "diretriz" in h_lower:
                 col_map["dut"] = i
@@ -63,25 +77,34 @@ def parse_rol_xlsx(xlsx_bytes: bytes) -> list[dict]:
                 col_map["grupo"] = i
             elif "subgrupo" in h_lower:
                 col_map["subgrupo"] = i
+            elif h_lower == "ref":
+                col_map["ref"] = i
 
-        if "codigo" not in col_map and "nome" not in col_map:
-            for i, h in enumerate(header):
-                if i == 0:
-                    col_map["codigo"] = i
-                elif i == 1 and "nome" not in col_map:
-                    col_map["nome"] = i
+        # If no explicit "codigo" column, use "nome" as the procedure identifier
+        if "codigo" not in col_map and "nome" in col_map:
+            col_map["codigo"] = col_map["nome"]
 
-        for row in rows[1:]:
-            raw_code = row[col_map["codigo"]] if "codigo" in col_map and col_map["codigo"] < len(row) else None
-            raw_name = row[col_map.get("nome", 1)] if col_map.get("nome", 1) < len(row) else None
+        if "codigo" not in col_map:
+            continue
 
-            if not raw_code and not raw_name:
+        for row in rows[header_row_idx + 1:]:
+            raw_code = row[col_map["codigo"]] if col_map["codigo"] < len(row) else None
+
+            if not raw_code:
                 continue
 
-            code = str(raw_code).strip() if raw_code else ""
-            name = str(raw_name).strip() if raw_name else ""
+            code = str(raw_code).strip()
             if not code or code == "None":
                 continue
+            # Skip title/subtitle/header echo rows
+            if code.startswith("(") or code.startswith("Rol ") or code == "PROCEDIMENTO":
+                continue
+
+            # Use the name column if separate from code, otherwise code IS the name
+            name = code
+            if "nome" in col_map and col_map["nome"] != col_map["codigo"]:
+                raw_name = row[col_map["nome"]] if col_map["nome"] < len(row) else None
+                name = str(raw_name).strip() if raw_name else code
 
             def _seg_bool(col_key):
                 idx = col_map.get(col_key)
@@ -91,13 +114,17 @@ def parse_rol_xlsx(xlsx_bytes: bytes) -> list[dict]:
                 if v is None:
                     return False
                 sv = str(v).strip().upper()
-                return sv in ("SIM", "S", "X", "1", "TRUE", "OAM")
+                return sv in ("SIM", "S", "X", "1", "TRUE", "OAM", "AMB", "HCO", "HSO", "OD", "REF")
 
+            # DUT detection: explicit column OR "(COM DIRETRIZ DE UTILIZAÇÃO)" in name
             dut_val = ""
             if "dut" in col_map and col_map["dut"] < len(row):
                 dut_val = str(row[col_map["dut"]] or "").strip()
 
             has_dut = bool(dut_val and dut_val.lower() not in ("", "none", "nan", "-"))
+            if not has_dut and "diretriz de utilização" in code.lower():
+                has_dut = True
+                dut_val = "sim"
 
             raw_data = {}
             for ci, cv in enumerate(row):
@@ -105,7 +132,7 @@ def parse_rol_xlsx(xlsx_bytes: bytes) -> list[dict]:
                     raw_data[header[ci]] = str(cv)
 
             records.append({
-                "codigo_procedimento": code,
+                "codigo_procedimento": code[:50],
                 "nome": name,
                 "segmentacao_ambulatorial": _seg_bool("amb"),
                 "segmentacao_hospitalar": _seg_bool("hosp"),

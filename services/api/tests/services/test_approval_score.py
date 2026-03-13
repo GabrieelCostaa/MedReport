@@ -40,10 +40,12 @@ class TestScoreNiveis:
         assert score.score >= 80
 
     def test_medio(self):
+        from app.services.tuss_validator import TissValidation
         ev = _make_evaluation(met=3, unknown=2)
         score = compute_approval_score(
             dut_evaluation=ev,
             tuss_validation=TussValidation(codigo="123", valido=True),
+            tiss_validation=TissValidation(tipo_guia="SP/SADT", campo="Mat/Med", codigo="123", permitido=True),
             evidence_count=1,
             has_justification=True,
         )

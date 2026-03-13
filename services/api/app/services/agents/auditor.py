@@ -122,9 +122,14 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None) ->
 
     known_authors_set = {a.strip() for a in known_authors.split(",") if len(a.strip()) > 2}
 
+    # Include base_legal in the draft text so the auditor can see it
+    draft_text_for_audit = draft.justificativa_completa or ""
+    if draft.base_legal:
+        draft_text_for_audit += f"\n\n[CAMPO SEPARADO — BASE LEGAL]\n{draft.base_legal}"
+
     system_prompt = AUDITOR_SYSTEM.format(
         product_facts=product_facts,
-        draft_text=draft.justificativa_completa,
+        draft_text=draft_text_for_audit,
         known_authors=known_authors,
     )
 
@@ -181,6 +186,19 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None) ->
         texto_corrigido = data.get("texto_corrigido", draft.justificativa_completa)
         refs_validadas = data.get("referencias_validadas", [])
 
+        # Fix: base_legal in separate field should satisfy checklist item 5
+        if not checklist.get("base_legal_ans", False) and draft.base_legal:
+            base_legal_lower = draft.base_legal.lower()
+            if any(term in base_legal_lower for term in ("rn 395", "rn 424", "rn 428", "rn 465", "resolução normativa", "ans")):
+                checklist["base_legal_ans"] = True
+                audit_log_entries.append(AuditEntry(
+                    tipo="validacao",
+                    campo="base_legal_ans",
+                    original="",
+                    corrigido="Base legal presente no campo separado",
+                    motivo="Fundamentação legal detectada no campo base_legal (separado da justificativa, conforme template).",
+                ))
+
         has_local_refs, local_refs = _local_verify_references(texto_corrigido, known_authors_set)
         if has_local_refs and not checklist.get("referencia_bibliografica", False):
             checklist["referencia_bibliografica"] = True
@@ -197,6 +215,11 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None) ->
 
         if not aprovado:
             aprovado = all(checklist.values()) if checklist else False
+
+        # Deterministic post-processing: strip RN mentions from body
+        # when base_legal exists as separate field (prevents PDF duplication)
+        if draft.base_legal:
+            texto_corrigido = _strip_legal_from_body(texto_corrigido)
 
         return AuditResult(
             texto_corrigido=texto_corrigido,
@@ -227,14 +250,49 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None) ->
         )
 
 
+def _strip_legal_from_body(text: str) -> str:
+    """Remove sentenças com RNs da ANS do corpo da justificativa.
+
+    Quando base_legal existe como campo separado, menções a RNs no corpo
+    causam duplicação no PDF. Esta função remove deterministicamente
+    sentenças que mencionem RNs da ANS.
+    """
+    if not text:
+        return text
+
+    # Also strip the auditor's appended "[CAMPO SEPARADO" block if present
+    marker = "\n\n[CAMPO SEPARADO"
+    if marker in text:
+        text = text[:text.index(marker)]
+
+    rn_pattern = re.compile(
+        r"(?:rn\s*\d{3}|resolução\s+normativa|código\s+de\s+ética\s+médica)",
+        re.IGNORECASE,
+    )
+
+    lines = text.split("\n")
+    cleaned_lines = []
+    for line in lines:
+        # Split line into sentences and filter
+        sentences = re.split(r"(?<=[.!?])\s+", line)
+        kept = [s for s in sentences if not rn_pattern.search(s)]
+        cleaned = " ".join(kept).strip()
+        if cleaned:
+            cleaned_lines.append(cleaned)
+
+    return "\n".join(cleaned_lines)
+
+
 def _local_checklist(draft: DraftReport) -> dict:
     """Checklist local sem LLM."""
     text = (draft.justificativa_completa or "").lower()
+    base_legal_text = (draft.base_legal or "").lower()
+    combined_legal = text + " " + base_legal_text
     return {
         "diagnostico": bool(draft.diagnostico_resumo),
         "justificativa_tecnica": len(text) > 100,
         "falha_terapeutica": bool(draft.falha_terapeutica),
         "risco_nao_realizacao": bool(draft.risco_nao_realizacao),
-        "base_legal_ans": "rn 395" in text or "ans" in text,
+        "base_legal_ans": any(term in combined_legal for term in ("rn 395", "rn 424", "rn 428", "rn 465", "ans")),
         "referencia_bibliografica": len(draft.referencias) > 0,
     }

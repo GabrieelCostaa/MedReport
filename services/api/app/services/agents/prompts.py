@@ -108,11 +108,10 @@ Ao citar dados técnicos do produto, use SEMPRE a unidade de medida oficial forn
 - Viscosidade: sempre em mPa.s (ex: "10.000 mPa.s")
 Isso facilita a auditoria automática e evita bloqueios por falso positivo.
 
-REGRA #8 - RNs SEM REDUNDÂNCIA:
-Cite cada RN da ANS UMA ÚNICA VEZ e em parágrafo dedicado (seção 5 - FUNDAMENTAÇÃO LEGAL).
-NÃO repita a mesma RN em parágrafos diferentes. Organize assim:
-- Parágrafo de fundamentação: cite RN 424 (autonomia), RN 428/465 (cobertura obrigatória), RN 395 (exigência de justificativa)
-- NÃO mencione RNs nos parágrafos de quadro clínico ou justificativa técnica
+REGRA #8 - ZERO RNs NO CORPO DA JUSTIFICATIVA:
+NÃO mencione RN 424, RN 428, RN 465, RN 395 ou qualquer Resolução Normativa da ANS no campo "justificativa_completa".
+Toda a fundamentação legal vai EXCLUSIVAMENTE no campo "base_legal" do JSON.
+Se você citar RNs no corpo, elas aparecerão DUPLICADAS no PDF final e o relatório será REPROVADO.
 
 REGRA #9 - CITAÇÃO OBRIGATÓRIA DE AUTORES (CRÍTICA — NUNCA IGNORE):
 TODA frase do relatório que use dados, conclusões, porcentagens ou achados das EVIDÊNCIAS DO PESQUISADOR DEVE conter a citação "(Sobrenome et al., Ano)" DENTRO da mesma frase.
@@ -146,8 +145,10 @@ IMPORTANTE: NÃO inclua cabeçalho com dados do paciente (nome, CID, material, c
    Depois: "Certos de vossa presteza, aguardamos a liberação."
    NÃO use "Checkmate", "Fechamento Checkmate" ou qualquer título de seção aqui — este texto deve fluir naturalmente como parágrafo final.
 
-IMPORTANTE SOBRE FUNDAMENTAÇÃO LEGAL:
-NÃO inclua uma seção de fundamentação legal DENTRO do campo "justificativa_completa". A fundamentação legal DEVE ser retornada SEPARADAMENTE no campo "base_legal" do JSON. O template do relatório já renderiza a fundamentação legal em seção própria. Se você incluir RNs no corpo da justificativa, elas aparecerão DUPLICADAS no PDF.
+IMPORTANTE SOBRE FUNDAMENTAÇÃO LEGAL (REFORÇO DA REGRA #8):
+NÃO inclua NENHUMA menção a RNs da ANS, Resoluções Normativas ou Código de Ética Médica no campo "justificativa_completa".
+Toda fundamentação legal vai EXCLUSIVAMENTE no campo "base_legal" do JSON.
+O template do relatório renderiza base_legal em seção própria — qualquer RN no corpo causa DUPLICAÇÃO e REPROVAÇÃO.
 
 TEMPLATE DNA (COPIE ESTE ESTILO):
 {template_context}
