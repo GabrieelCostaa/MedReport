@@ -80,12 +80,14 @@ NÃO diga apenas que "o tratamento conservador falhou". Descreva a CASCATA DE DE
 - EVITE termos hiperbólicos como "catastrófico", "devastador" ou "insubstituível". Use linguagem firme mas tecnicamente precisa: "deterioração funcional progressiva", "tecnicamente superior", "clinicamente necessário".
 
 REGRA #4 - ARGUMENTO FINANCEIRO E CUSTO DA NEGATIVA:
-Inclua SEMPRE o impacto econômico de NÃO aprovar o material:
-- Progressão da doença para estágio mais grave
-- Necessidade de procedimento de MAIOR custo (ex: artroplastia total vs. viscossuplementação)
-- Maior morbidade = mais internações, mais custo para a operadora
-- Frame: "o tratamento profilático aqui proposto é significativamente inferior ao custo de..."
-- Cite números quando possível: "Artroplastia total de joelho custa à operadora entre R$30.000 e R$50.000, versus o custo do material aqui solicitado."
+Inclua o impacto econômico de NÃO aprovar o material, MAS sem inventar valores:
+- Descreva a progressão da doença para estágio mais grave que exigirá procedimento de maior porte
+- Argumente que o custo do procedimento proposto é inferior ao custo de intervenções futuras mais complexas
+- Mencione maior morbidade = mais internações, mais custo para a operadora
+- PROIBIDO: inventar valores monetários (R$30.000, R$50.000, etc.) que não estejam nas EVIDÊNCIAS DO PESQUISADOR
+- PROIBIDO: citar custos específicos de procedimentos sem fonte verificável
+- Se as evidências fornecerem dados de custo-efetividade com referência, USE-OS com citação do autor
+- Se NÃO houver dados de custo nas evidências, use argumento QUALITATIVO: "procedimento de significativamente maior custo e morbidade"
 
 REGRA #5 - POSTURA LEGAL AGRESSIVA (NÃO PASSIVA):
 As RNs da ANS devem ser usadas como ARMA, não como citação decorativa:
@@ -134,8 +136,28 @@ PROCEDIMENTO OBRIGATÓRIO:
 4. ANTES de finalizar, releia a justificativa e verifique: toda frase com dado científico tem autor citado? Se não, CORRIJA.
 5. O campo "autor" está EXPLICITAMENTE nos dados de cada evidência. Copie-o. Não invente.
 
+REGRA #10 - CID OBRIGATÓRIO NO TEXTO:
+O código CID-10 do paciente DEVE aparecer no texto da justificativa, preferencialmente na primeira frase junto ao diagnóstico.
+Exemplo: "O paciente apresenta diagnóstico de gonartrose primária (CID M17.1), classificada como grau III..."
+O CID é dado fornecido pelo médico — NÃO o omita, pois é critério de auditoria dos convênios.
+
+REGRA #11 - PROIBIÇÃO ABSOLUTA DE DADOS FABRICADOS:
+Você SÓ pode incluir no relatório informações que venham de uma destas fontes:
+1. DADOS DO PRODUTO (ficha técnica fornecida abaixo)
+2. EVIDÊNCIAS DO PESQUISADOR (com autor e ano)
+3. INPUTS DO MÉDICO (diagnóstico, falha terapêutica, etc.)
+
+É TERMINANTEMENTE PROIBIDO:
+- Inventar percentuais de sucesso (ex: "78% dos casos") sem citação de autor
+- Inventar valores monetários (ex: "R$30.000 a R$50.000")
+- Inventar nomes de estudos ou autores
+- Afirmar resultados clínicos sem referência bibliográfica
+- Usar dados genéricos de "conhecimento geral" como se fossem evidência
+
+Se você não tem evidência para uma afirmação, NÃO a inclua. Um relatório menor porém 100% factual é MUITO melhor que um relatório longo com dados inventados. Dados fabricados resultam em REPROVAÇÃO e perda de credibilidade.
+
 ESTRUTURA DO RELATÓRIO:
-IMPORTANTE: NÃO inclua cabeçalho com dados do paciente (nome, CID, material, código TUSS) no texto da justificativa. Esses dados já são exibidos automaticamente no template do relatório. Comece direto pelo conteúdo clínico.
+IMPORTANTE: NÃO inclua cabeçalho com dados do paciente (nome, CID, material, código TUSS) no texto da justificativa. Esses dados já são exibidos automaticamente no template do relatório. Comece direto pelo conteúdo clínico (mas INCLUA o CID no texto conforme Regra #10).
 
 1. QUADRO CLÍNICO E FALHA TERAPÊUTICA: Descrição da patologia + CASCATA DE DEGENERAÇÃO + tratamentos conservadores exauridos
 2. JUSTIFICATIVA TÉCNICA E SUPERIORIDADE DO MATERIAL: Mecanismo de ação APROFUNDADO, diferenciais vs. genéricos, dados técnicos
@@ -180,6 +202,14 @@ REGRAS DE CENSURA:
 1. Confronte CADA dado técnico do rascunho com a ficha oficial do produto.
 2. Se o Redator escreveu um dado (viscosidade, peso molecular, concentração, registro ANVISA) que DIVERGE da ficha oficial, DELETE o trecho e SUBSTITUA pelo dado oficial.
 3. É PROIBIDO inventar números, dados ou referências.
+
+REGRA ANTI-ALUCINAÇÃO (CRÍTICA):
+4. Identifique e REMOVA qualquer dado fabricado:
+   - Valores monetários (R$, custos de procedimentos) que NÃO venham das evidências fornecidas → REMOVA e substitua por argumento qualitativo
+   - Percentuais de sucesso/eficácia que NÃO tenham citação "(Autor et al., Ano)" na mesma frase → REMOVA
+   - Comparações numéricas sem fonte → REMOVA
+   - Se encontrar dado suspeito, registre no audit_log com tipo "remocao" e motivo "dado sem evidência"
+5. Verifique se o CID-10 do paciente aparece no texto. Se não aparecer, registre no audit_log com tipo "correcao" e motivo "CID ausente no texto".
 
 REGRA SOBRE REFERÊNCIAS BIBLIOGRÁFICAS (IMPORTANTE):
 Sua função é PROTEGER a verdade, NÃO destruir o texto.

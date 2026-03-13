@@ -13,9 +13,10 @@ from app.db.session import AsyncSessionLocal
 async def main():
     from scripts.etl.download_tuss import run_etl as tuss_etl
     from scripts.etl.download_rol import run_etl as rol_etl
+    from scripts.etl.download_anvisa import run_etl as anvisa_etl
 
     print("=" * 60)
-    print("OPME Platform - ETL Completo ANS")
+    print("OPME Platform - ETL Completo ANS + Anvisa")
     print("=" * 60)
 
     print("\n--- TUSS 19 (Materiais/OPME) ---")
@@ -33,6 +34,14 @@ async def main():
             print(f"Rol: {rol_result}")
     except Exception as e:
         print(f"Rol ERRO: {e}")
+
+    print("\n--- Anvisa Produtos para Saúde (CSV Dados Abertos) ---")
+    try:
+        async with AsyncSessionLocal() as db:
+            anvisa_result = await anvisa_etl(db_session=db)
+            print(f"Anvisa: {anvisa_result}")
+    except Exception as e:
+        print(f"Anvisa ERRO: {e}")
 
     print("\n" + "=" * 60)
     print("ETL concluído.")

@@ -149,7 +149,7 @@ async def write_justification(
                 {"role": "user", "content": user_message},
             ],
             response_format={"type": "json_object"},
-            temperature=0.4,
+            temperature=0.2,
             max_tokens=4000,
         )
 

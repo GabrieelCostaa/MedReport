@@ -221,6 +221,16 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None) ->
         if draft.base_legal:
             texto_corrigido = _strip_legal_from_body(texto_corrigido)
 
+        # Deterministic anti-hallucination: remove fabricated monetary values
+        texto_corrigido, money_entries = _strip_fabricated_costs(
+            texto_corrigido, clinical_evidences or []
+        )
+        audit_log_entries.extend(money_entries)
+
+        # Deterministic: check CID presence in text
+        cid_entries = _check_cid_in_text(texto_corrigido)
+        audit_log_entries.extend(cid_entries)
+
         return AuditResult(
             texto_corrigido=texto_corrigido,
             aprovado=aprovado,
@@ -248,6 +258,94 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None) ->
             referencias_validadas=draft.referencias,
             raw_response=str(e),
         )
+
+
+def _strip_fabricated_costs(text: str, evidences: list) -> tuple[str, list[AuditEntry]]:
+    """Remove valores monetários fabricados (R$X.XXX) que não venham das evidências.
+
+    Verifica se os valores R$ encontrados no texto existem em alguma evidência.
+    Se não, remove a frase inteira contendo o valor e registra no audit_log.
+    """
+    entries = []
+    if not text:
+        return text, entries
+
+    # Extrair valores monetários das evidências (fontes válidas)
+    evidence_text = " ".join(
+        ev.get("snippet", "") + " " + ev.get("texto", "")
+        for ev in evidences
+        if isinstance(ev, dict)
+    )
+    evidence_money = set(re.findall(r"R\$[\d.,]+", evidence_text))
+
+    # Encontrar valores monetários no texto gerado
+    money_pattern = re.compile(r"R\$\s*[\d.,]+(?:\s*(?:a|e|até)\s*R\$\s*[\d.,]+)?")
+    matches = list(money_pattern.finditer(text))
+
+    if not matches:
+        return text, entries
+
+    # Verificar quais valores NÃO vêm das evidências
+    fabricated_sentences = set()
+    for match in matches:
+        value_str = match.group(0)
+        # Extrair valores individuais
+        individual_values = re.findall(r"R\$\s*[\d.,]+", value_str)
+        has_evidence = any(
+            v.replace(" ", "") in {e.replace(" ", "") for e in evidence_money}
+            for v in individual_values
+        )
+        if not has_evidence:
+            # Encontrar a frase que contém este valor
+            start = text.rfind(".", 0, match.start())
+            end = text.find(".", match.end())
+            if start == -1:
+                start = 0
+            else:
+                start += 1
+            if end == -1:
+                end = len(text)
+            else:
+                end += 1
+            sentence = text[start:end].strip()
+            if sentence:
+                fabricated_sentences.add(sentence)
+                entries.append(AuditEntry(
+                    tipo="remocao",
+                    campo="custo_fabricado",
+                    original=sentence,
+                    corrigido="",
+                    motivo=f"Valor monetário '{value_str}' sem evidência científica — removido para evitar alucinação.",
+                ))
+
+    # Remover frases fabricadas
+    for sentence in fabricated_sentences:
+        text = text.replace(sentence, "")
+
+    # Limpar espaços duplos e linhas vazias
+    text = re.sub(r"\n\s*\n\s*\n", "\n\n", text)
+    text = re.sub(r"  +", " ", text)
+
+    return text.strip(), entries
+
+
+def _check_cid_in_text(text: str) -> list[AuditEntry]:
+    """Verifica se algum código CID-10 aparece no texto."""
+    entries = []
+    if not text:
+        return entries
+
+    cid_pattern = re.compile(r"CID[\s-]*[A-Z]\d{2,3}(?:\.\d)?", re.IGNORECASE)
+    if not cid_pattern.search(text):
+        entries.append(AuditEntry(
+            tipo="correcao",
+            campo="cid_ausente",
+            original="",
+            corrigido="",
+            motivo="CID-10 não encontrado no texto da justificativa. Convênios exigem CID explícito.",
+        ))
+
+    return entries
 
 
 def _strip_legal_from_body(text: str) -> str:
