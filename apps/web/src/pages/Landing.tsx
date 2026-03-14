@@ -152,80 +152,28 @@ function ArrowRight() {
 }
 
 /* ─── Roll Button (Lando Norris hover effect — text slides up on hover) ─── */
-const rollBtnCss = `
-  .roll-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 56px;
-    padding: 0 32px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-    text-decoration: none;
-    position: relative;
-    overflow: hidden !important;
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
-  .roll-btn:hover {
-    transform: translateY(-2px);
-  }
-  .roll-btn .roll-track {
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.45s cubic-bezier(0.65, 0.05, 0, 1);
-  }
-  .roll-btn:hover .roll-track {
-    transform: translateY(-50%);
-  }
-  .roll-btn .roll-track span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    height: 56px;
-  }
-  .roll-btn--filled {
-    background: ${C.accent};
-    color: ${C.dark};
-  }
-  .roll-btn--filled:hover {
-    box-shadow: 0 20px 40px ${C.accent}44;
-  }
-  .roll-btn--outline {
-    background: transparent;
-    color: white;
-    border: 1px solid rgba(255,255,255,0.3);
-    font-weight: 500;
-  }
-  .roll-btn--outline:hover {
-    border-color: ${C.accent};
-    color: ${C.accent};
-  }
-  .roll-btn--sm {
-    height: 36px;
-    padding: 0 20px;
-    font-size: 14px;
-    border-radius: 8px;
-  }
-  .roll-btn--sm .roll-track span {
-    height: 36px;
-  }
-`;
-
-function RollStyles() {
-  return <style>{rollBtnCss}</style>;
-}
-
-function RollButton({ children, icon, to = '/login' }: {
-  children: string; icon?: React.ReactNode; to?: string;
+function RollButton({ children, icon, to = '/login', h = 56 }: {
+  children: string; icon?: React.ReactNode; to?: string; h?: number;
 }) {
+  const [hovered, setHovered] = useState(false);
   return (
-    <RouterLink to={to} className="roll-btn roll-btn--filled">
-      <div className="roll-track">
-        <span>{children}{icon}</span>
-        <span>{children}{icon}</span>
+    <RouterLink to={to}
+      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'inline-block', height: h, borderRadius: 12, overflow: 'hidden',
+        background: C.accent, color: C.dark, textDecoration: 'none',
+        fontWeight: 700, fontSize: h === 36 ? 14 : 16, padding: `0 ${h === 36 ? 20 : 32}px`,
+        transition: 'transform 0.3s, box-shadow 0.3s',
+        transform: hovered ? 'translateY(-2px)' : 'none',
+        boxShadow: hovered ? `0 20px 40px ${C.accent}44` : 'none',
+      }}>
+      <div style={{
+        display: 'flex', flexDirection: 'column',
+        transition: 'transform 0.45s cubic-bezier(0.65, 0.05, 0, 1)',
+        transform: hovered ? 'translateY(-50%)' : 'translateY(0)',
+      }}>
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, height: h }}>{children}{icon}</span>
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, height: h }}>{children}{icon}</span>
       </div>
     </RouterLink>
   );
@@ -234,11 +182,25 @@ function RollButton({ children, icon, to = '/login' }: {
 function RollOutlineButton({ children, href = '#sobre' }: {
   children: string; href?: string;
 }) {
+  const [hovered, setHovered] = useState(false);
   return (
-    <a href={href} className="roll-btn roll-btn--outline">
-      <div className="roll-track">
-        <span>{children}</span>
-        <span>{children}</span>
+    <a href={href}
+      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'inline-block', height: 56, borderRadius: 12, overflow: 'hidden',
+        background: 'transparent', color: hovered ? C.accent : 'white',
+        border: `1px solid ${hovered ? C.accent : 'rgba(255,255,255,0.3)'}`,
+        textDecoration: 'none', fontWeight: 500, fontSize: 16, padding: '0 32px',
+        transition: 'transform 0.3s, color 0.3s, border-color 0.3s',
+        transform: hovered ? 'translateY(-2px)' : 'none',
+      }}>
+      <div style={{
+        display: 'flex', flexDirection: 'column',
+        transition: 'transform 0.45s cubic-bezier(0.65, 0.05, 0, 1)',
+        transform: hovered ? 'translateY(-50%)' : 'translateY(0)',
+      }}>
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 56 }}>{children}</span>
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 56 }}>{children}</span>
       </div>
     </a>
   );
@@ -418,12 +380,7 @@ function Nav() {
               _hover={{ bg: navTheme === 'dark' ? 'whiteAlpha.100' : 'blackAlpha.50' }}>
               Entrar
             </Button>
-            <RouterLink to="/login" className="roll-btn roll-btn--filled roll-btn--sm">
-              <div className="roll-track">
-                <span>Comecar gratis</span>
-                <span>Comecar gratis</span>
-              </div>
-            </RouterLink>
+            <RollButton to="/login" h={36}>Comecar gratis</RollButton>
           </HStack>
         </Flex>
       </Container>
@@ -1061,7 +1018,6 @@ export default function Landing() {
 
   return (
     <Box sx={{ overflowX: 'clip' }}>
-      <RollStyles />
       <Nav />
       <Hero />
       <Marquee />
