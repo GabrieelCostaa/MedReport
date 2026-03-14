@@ -43,10 +43,10 @@ const fadeInUp = keyframes`
 `;
 
 const STEPS = [
-  { title: 'CID & Diagnóstico', description: 'Busca automática de evidências' },
-  { title: 'Paciente & Material', description: 'Dados e seleção do produto' },
-  { title: 'IA & Edição', description: 'Justificativa técnica' },
-  { title: 'Revisão & PDF', description: 'Checklist e download' },
+  { title: 'Diagnostico', description: 'CID e quadro clinico' },
+  { title: 'Paciente & OPME', description: 'Dados e material' },
+  { title: 'Geracao IA', description: 'Justificativa inteligente' },
+  { title: 'Revisao', description: 'Download e assinatura' },
 ];
 
 const cursorBlink = keyframes`
@@ -79,13 +79,21 @@ function TypewriterLine({ text, onComplete }: { text: string; onComplete?: () =>
   return (
     <Text fontSize="sm" color="gray.600" lineHeight="tall" display="inline">
       {displayed}
-      <Box as="span" display="inline-block" w="1.5px" h="14px" bg="green.500" ml="1px"
+      <Box as="span" display="inline-block" w="1.5px" h="14px" bg="brand.500" ml="1px"
         verticalAlign="text-bottom" sx={{ animation: `${cursorBlink} 0.7s step-end infinite` }} />
     </Text>
   );
 }
 
-function PipelineProgress({ messages }: { messages: string[] }) {
+const PIPELINE_STAGE_INFO: Record<string, { label: string; icon: string; color: string }> = {
+  researching: { label: 'Pesquisador', icon: '🔬', color: 'blue' },
+  writing: { label: 'Redator', icon: '✍️', color: 'purple' },
+  auditing: { label: 'Auditor', icon: '🛡️', color: 'orange' },
+  validating: { label: 'Validador', icon: '✅', color: 'green' },
+  done: { label: 'Concluido', icon: '📄', color: 'green' },
+};
+
+function PipelineProgress({ messages, currentStage }: { messages: string[]; currentStage: string }) {
   const [typingIdx, setTypingIdx] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -99,26 +107,69 @@ function PipelineProgress({ messages }: { messages: string[] }) {
 
   const completedMessages = messages.slice(0, typingIdx);
   const currentMessage = messages[typingIdx] || '';
+  const stageInfo = PIPELINE_STAGE_INFO[currentStage] || PIPELINE_STAGE_INFO['researching'];
+
+  // Group stages for visual progress
+  const stages = ['researching', 'writing', 'auditing', 'validating'];
+  const currentIdx = stages.indexOf(currentStage);
 
   return (
     <Box py={6} maxW="2xl" mx="auto">
-      <HStack mb={4} gap={2}>
-        <Box w="8px" h="8px" borderRadius="full" bg="green.400"
+      {/* Stage progress bar */}
+      <HStack mb={6} gap={0} justify="center">
+        {stages.map((stage, i) => {
+          const info = PIPELINE_STAGE_INFO[stage];
+          const isActive = i === currentIdx;
+          const isDone = i < currentIdx;
+          return (
+            <HStack key={stage} gap={0}>
+              <Box textAlign="center" px={3}>
+                <Box
+                  w="32px" h="32px" borderRadius="full" mx="auto" mb={1}
+                  display="flex" alignItems="center" justifyContent="center"
+                  fontSize="sm"
+                  bg={isDone ? `${info.color}.100` : isActive ? `${info.color}.500` : 'gray.100'}
+                  color={isActive ? 'white' : undefined}
+                  transition="all 0.3s"
+                  sx={isActive ? { animation: `${cursorBlink} 2s ease infinite` } : undefined}
+                >
+                  {info.icon}
+                </Box>
+                <Text fontSize="2xs" color={isActive ? `${info.color}.600` : isDone ? 'gray.600' : 'gray.400'}
+                  fontWeight={isActive ? '600' : '400'}>
+                  {info.label}
+                </Text>
+              </Box>
+              {i < stages.length - 1 && (
+                <Box w="40px" h="2px" bg={isDone ? `${info.color}.200` : 'gray.100'} mt="-12px" />
+              )}
+            </HStack>
+          );
+        })}
+      </HStack>
+
+      {/* Current stage label */}
+      <HStack mb={4} gap={2} justify="center">
+        <Box w="8px" h="8px" borderRadius="full" bg={`${stageInfo.color}.400`}
           sx={{ animation: `${cursorBlink} 1.2s ease infinite` }} />
-        <Text fontSize="xs" color="gray.400" fontWeight="medium" textTransform="uppercase" letterSpacing="wider">
-          Processando
+        <Text fontSize="sm" color={`${stageInfo.color}.600`} fontWeight="600">
+          {stageInfo.icon} {stageInfo.label} em acao
         </Text>
       </HStack>
 
-      <VStack align="stretch" gap={0} pl={4} borderLeft="2px solid" borderColor="gray.100">
+      {/* Message log */}
+      <VStack align="stretch" gap={0} pl={4} borderLeft="2px solid" borderColor={`${stageInfo.color}.100`}>
         {completedMessages.map((msg, i) => (
-          <Text key={i} fontSize="sm" color="gray.400" lineHeight="tall" py="2px"
-            sx={{ animation: `${fadeInUp} 0.2s ease both` }}>
-            {msg}
-          </Text>
+          <HStack key={i} py="3px" sx={{ animation: `${fadeInUp} 0.2s ease both` }}>
+            <Box w="4px" h="4px" borderRadius="full" bg="gray.300" flexShrink={0} />
+            <Text fontSize="sm" color="gray.400" lineHeight="tall">
+              {msg}
+            </Text>
+          </HStack>
         ))}
         {currentMessage && (
-          <Box py="2px">
+          <HStack py="3px">
+            <Box w="4px" h="4px" borderRadius="full" bg={`${stageInfo.color}.400`} flexShrink={0} />
             <TypewriterLine
               text={currentMessage}
               onComplete={() => {
@@ -127,7 +178,7 @@ function PipelineProgress({ messages }: { messages: string[] }) {
                 }
               }}
             />
-          </Box>
+          </HStack>
         )}
         <Box ref={bottomRef} />
       </VStack>
@@ -171,7 +222,7 @@ function TextReveal({ text, onComplete }: { text: string; onComplete: () => void
         <Text fontSize="sm" color="gray.700" whiteSpace="pre-wrap" lineHeight="tall">
           {words.slice(0, visibleCount).join('')}
           {visibleCount < words.length && (
-            <Box as="span" display="inline-block" w="1.5px" h="14px" bg="green.500" ml="1px"
+            <Box as="span" display="inline-block" w="1.5px" h="14px" bg="brand.500" ml="1px"
               verticalAlign="text-bottom" sx={{ animation: `${cursorBlink} 0.7s step-end infinite` }} />
           )}
         </Text>
@@ -271,7 +322,7 @@ function EvidencesBadge({ preview, loading }: { preview: EvidencesPreview | null
   return (
     <Box mt={2} p={3} bg="green.50" borderRadius="md" border="1px solid" borderColor="green.200">
       <HStack mb={2}>
-        <Badge colorScheme="green" fontSize="sm" px={2} py={1}>
+        <Badge colorScheme="brand" fontSize="sm" px={2} py={1}>
           {preview.total_count} evidências encontradas
         </Badge>
         <Text fontSize="xs" color="gray.600">
@@ -306,11 +357,11 @@ function UsageBox({ usage }: { usage: PipelineUsage | null | undefined }) {
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500">Custo USD</Text>
-          <Text fontSize="sm" fontWeight="bold" color="green.700">${totals.cost_usd.toFixed(4)}</Text>
+          <Text fontSize="sm" fontWeight="bold" color="brand.700">${totals.cost_usd.toFixed(4)}</Text>
         </Box>
         <Box>
           <Text fontSize="xs" color="gray.500">Custo BRL</Text>
-          <Text fontSize="sm" fontWeight="bold" color="green.700">R$ {totals.cost_brl.toFixed(4)}</Text>
+          <Text fontSize="sm" fontWeight="bold" color="brand.700">R$ {totals.cost_brl.toFixed(4)}</Text>
         </Box>
       </HStack>
       <Divider my={2} />
@@ -442,7 +493,7 @@ export default function ReportCreate() {
 
   // Step 3: IA
   const [pipelineLoading, setPipelineLoading] = useState(false);
-  const [, setPipelineStep] = useState('');
+  const [pipelineStep, setPipelineStep] = useState('');
   const [pipelineMessages, setPipelineMessages] = useState<string[]>([]);
   const [textRevealing, setTextRevealing] = useState(false);
   const [pipelineResult, setPipelineResult] = useState<PipelineResult | null>(null);
@@ -681,7 +732,7 @@ export default function ReportCreate() {
     <Box>
       <Heading size="md" mb={6}>Novo Relatório OPME</Heading>
 
-      <Stepper index={activeStep} mb={8} colorScheme="green">
+      <Stepper index={activeStep} mb={8} colorScheme="brand">
         {STEPS.map((step, index) => (
           <Step key={index} onClick={() => index < activeStep && setActiveStep(index)}>
             <StepIndicator>
@@ -733,7 +784,7 @@ export default function ReportCreate() {
             <FormLabel>Procedimento cirúrgico</FormLabel>
             <Textarea value={surgeryDescription} onChange={(e) => setSurgeryDescription(e.target.value)} placeholder="Ex: Artroplastia total de joelho" rows={2} />
           </FormControl>
-          <Button colorScheme="green" onClick={handleNext}>Próximo: Paciente & Material</Button>
+          <Button colorScheme="brand" onClick={handleNext}>Próximo: Paciente & Material</Button>
         </VStack>
       )}
 
@@ -756,7 +807,7 @@ export default function ReportCreate() {
               onChange={(e) => handleProductSearchChange(e.target.value)}
               placeholder="Digite para buscar o produto..."
             />
-            {loadingProducts && <Spinner size="xs" color="green.400" mt={1} />}
+            {loadingProducts && <Spinner size="xs" color="brand.400" mt={1} />}
           </FormControl>
 
           {products.length === 0 && !loadingProducts && (
@@ -769,12 +820,12 @@ export default function ReportCreate() {
                 key={p.id}
                 p={4}
                 border="2px solid"
-                borderColor={selectedProduct?.id === p.id ? 'green.400' : 'gray.200'}
+                borderColor={selectedProduct?.id === p.id ? 'brand.400' : 'gray.200'}
                 borderRadius="md"
                 cursor="pointer"
                 onClick={() => setSelectedProduct(p)}
-                bg={selectedProduct?.id === p.id ? 'green.50' : 'white'}
-                _hover={{ borderColor: 'green.300' }}
+                bg={selectedProduct?.id === p.id ? 'brand.50' : 'white'}
+                _hover={{ borderColor: 'brand.300' }}
               >
                 <HStack justify="space-between">
                   <Box>
@@ -795,7 +846,7 @@ export default function ReportCreate() {
 
           <HStack>
             <Button variant="outline" onClick={handleBack}>Voltar</Button>
-            <Button colorScheme="green" onClick={handleNext} isDisabled={!selectedProduct}>
+            <Button colorScheme="brand" onClick={handleNext} isDisabled={!selectedProduct}>
               Gerar Justificativa com IA
             </Button>
           </HStack>
@@ -807,7 +858,7 @@ export default function ReportCreate() {
         <VStack gap={4} align="stretch" maxW="3xl">
           {/* Fase 1: Progresso do pipeline */}
           {pipelineLoading && (
-            <PipelineProgress messages={pipelineMessages} />
+            <PipelineProgress messages={pipelineMessages} currentStage={pipelineStep || 'researching'} />
           )}
 
           {/* Fase 2: Texto sendo escrito ao vivo */}
@@ -848,7 +899,7 @@ export default function ReportCreate() {
               ))}
 
               <Button
-                colorScheme="green"
+                colorScheme="brand"
                 onClick={submitAnswers}
                 isDisabled={Object.keys(questionAnswers).length < questions.length}
               >
@@ -936,7 +987,7 @@ export default function ReportCreate() {
                 <Button variant="outline" onClick={handleRegenerate} isLoading={pipelineLoading}>
                   Regenerar
                 </Button>
-                <Button colorScheme="green" onClick={() => {
+                <Button colorScheme="brand" onClick={() => {
                   if (justificativaOriginal && justificativa !== justificativaOriginal && pipelineResult?.report_id) {
                     aiAssistantApi.saveEdit({
                       report_id: pipelineResult.report_id,
@@ -978,7 +1029,7 @@ export default function ReportCreate() {
 
           <HStack>
             <Button variant="outline" onClick={() => setActiveStep(2)}>Voltar para Edição</Button>
-            <Button colorScheme="green" onClick={goToReview}>
+            <Button colorScheme="brand" onClick={goToReview}>
               Abrir Revisão & Download PDF
             </Button>
           </HStack>
