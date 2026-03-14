@@ -224,7 +224,7 @@ function ClipReveal({ children, delay = 0 }: { children: React.ReactNode; delay?
   const ref = useRef(null);
   const isInView = useInView(ref, { margin: '-60px', once: false });
   return (
-    <Box ref={ref} overflow="hidden" pb="0.15em">
+    <Box ref={ref} overflow="hidden" pb="0.2em" mb="-0.2em">
       <MotionBox initial={{ y: '110%' }} animate={isInView ? { y: '0%' } : { y: '110%' }}
         transition={{ duration: 0.9, ease: EASE, delay }}>
         {children}
@@ -438,25 +438,24 @@ function Hero() {
             </MotionBox>
 
             <Box>
-              <ClipReveal delay={0.5}>
-                <Heading fontFamily={SERIF} fontSize={{ base: '3.5rem', md: '6rem', lg: '8rem' }}
-                  fontWeight="900" lineHeight="0.92" letterSpacing="-0.03em">
-                  <Text as="span" color={C.accent}>Aprovando</Text>
-                  <Text as="span" color="white"> laudos,</Text>
-                </Heading>
-              </ClipReveal>
-              <ClipReveal delay={0.65}>
-                <Heading fontFamily={SERIF} fontSize={{ base: '3.5rem', md: '6rem', lg: '8rem' }}
-                  fontWeight="900" color="white" lineHeight="0.92" letterSpacing="-0.03em">
-                  protegendo
-                </Heading>
-              </ClipReveal>
-              <ClipReveal delay={0.8}>
-                <Heading fontFamily={SERIF} fontSize={{ base: '3.5rem', md: '6rem', lg: '8rem' }}
-                  fontWeight="900" color="white" lineHeight="0.92" letterSpacing="-0.03em">
-                  pacientes.
-                </Heading>
-              </ClipReveal>
+              {[
+                { delay: 0.5, content: <><Text as="span" color={C.accent}>Aprovando</Text><Text as="span" color="white"> laudos,</Text></> },
+                { delay: 0.7, content: <Text as="span" color="white">protegendo</Text> },
+                { delay: 0.9, content: <Text as="span" color="white">pacientes.</Text> },
+              ].map((line, i) => (
+                <Box key={i} overflow="hidden" pb="0.2em" mb="-0.2em">
+                  <MotionBox
+                    initial={{ y: '110%' }}
+                    animate={{ y: '0%' }}
+                    transition={{ duration: 0.9, ease: EASE, delay: line.delay }}
+                  >
+                    <Heading fontFamily={SERIF} fontSize={{ base: '3.5rem', md: '6rem', lg: '8rem' }}
+                      fontWeight="900" lineHeight="0.95" letterSpacing="-0.03em">
+                      {line.content}
+                    </Heading>
+                  </MotionBox>
+                </Box>
+              ))}
             </Box>
 
             <MotionBox initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
