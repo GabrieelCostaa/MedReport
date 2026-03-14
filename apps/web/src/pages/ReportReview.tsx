@@ -71,6 +71,21 @@ export default function ReportReview() {
     }
   };
 
+  const handleDownloadDocx = async () => {
+    if (!id) return;
+    try {
+      const blob = await reportsApi.downloadDocx(id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `relatorio-${id}.docx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast({ title: 'Erro ao baixar DOCX', status: 'error' });
+    }
+  };
+
   const handleSign = async () => {
     if (!id) return;
     setSigning(true);
@@ -141,6 +156,9 @@ export default function ReportReview() {
       <HStack gap={3}>
         <Button onClick={handleDownloadPdf} variant="outline">
           Baixar PDF
+        </Button>
+        <Button onClick={handleDownloadDocx} variant="outline">
+          Baixar Word
         </Button>
         <Button onClick={handleDownloadXml} variant="outline">
           Baixar XML (TISS)

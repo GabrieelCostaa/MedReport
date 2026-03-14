@@ -177,7 +177,7 @@ async def _review_text(db: AsyncSession, text: str) -> list[dict]:
 @router.get("/{report_id}/download")
 async def download_report(
     report_id: UUID,
-    format: str = Query("pdf", regex="^(pdf|xml)$"),
+    format: str = Query("pdf", regex="^(pdf|xml|docx)$"),
     user_id: str = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
@@ -195,6 +195,28 @@ async def download_report(
             content=xml_str,
             media_type="application/xml",
             headers={"Content-Disposition": f"attachment; filename=guia-tiss-{report_id}.xml"},
+        )
+    if format == "docx":
+        from app.services.docx_generator import generate_docx_bytes
+        checklist = r.checklist_status if hasattr(r, "checklist_status") else None
+        refs = r.referencias_bib if hasattr(r, "referencias_bib") else []
+        docx_bytes = generate_docx_bytes(
+            justificativa=r.justificativa_ia or "",
+            paciente_nome=r.paciente_nome or "",
+            cid=r.cid or "",
+            diagnostico_resumo=r.diagnosis or "",
+            produto_nome=getattr(r, "product_nome", "") or "",
+            convenio=r.health_plan or "",
+            especialidade=r.especialidade or "",
+            codigo_tuss="",
+            referencias=refs if isinstance(refs, list) else [],
+            checklist=checklist if isinstance(checklist, dict) else None,
+            aprovado=True,
+        )
+        return Response(
+            content=docx_bytes,
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            headers={"Content-Disposition": f"attachment; filename=relatorio-{report_id}.docx"},
         )
     pdf_bytes = build_guia_pdf(r)
     return Response(

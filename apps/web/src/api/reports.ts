@@ -48,6 +48,10 @@ export const reportsApi = {
     return apiBlob(`/reports/${id}/download?format=xml`);
   },
 
+  downloadDocx(id: string) {
+    return apiBlob(`/reports/${id}/download?format=docx`);
+  },
+
   reviewUpload(file: File) {
     const form = new FormData();
     form.append('file', file);
