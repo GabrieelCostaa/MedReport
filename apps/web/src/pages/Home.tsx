@@ -33,7 +33,7 @@ export default function Home() {
   useEffect(() => {
     reportsApi
       .listAll()
-      .then((res) => setReports(res.items))
+      .then((res) => setReports(res?.items || []))
       .catch(() => setReports([]))
       .finally(() => setLoading(false));
   }, []);
