@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import Lenis from 'lenis';
 import {
   Box,
   Button,
@@ -151,19 +152,15 @@ function ArrowRight() {
 }
 
 /* ─── Roll Button (Lando Norris hover effect — text slides up on hover) ─── */
-const rollSx = {
-  '& .roll-wrap': {
-    transition: 'transform 0.4s cubic-bezier(0.65, 0.05, 0, 1)',
-  },
-};
-
 function RollButton({ children, icon, ...rest }: {
   children: string; icon?: React.ReactNode;
 } & Record<string, unknown>) {
   return (
-    <Button
+    <Box
       as={RouterLink}
-      size="lg"
+      display="inline-flex"
+      alignItems="center"
+      justifyContent="center"
       bg={C.accent}
       color={C.dark}
       fontWeight="700"
@@ -173,27 +170,33 @@ function RollButton({ children, icon, ...rest }: {
       fontSize="md"
       position="relative"
       overflow="hidden"
+      cursor="pointer"
+      textDecoration="none"
+      transition="all 0.3s"
       _hover={{
-        bg: C.accent,
         transform: 'translateY(-2px)',
         shadow: `0 20px 40px ${C.accent}44`,
-        '& .roll-wrap': { transform: 'translateY(-100%)' },
+        '& .roll-inner': { transform: 'translateY(-50%)' },
       }}
-      transition="all 0.3s"
-      sx={rollSx}
+      sx={{
+        '& .roll-inner': {
+          transition: 'transform 0.4s cubic-bezier(0.65, 0.05, 0, 1)',
+        },
+      }}
       {...rest}
     >
-      <Box className="roll-wrap" display="flex" flexDirection="column" alignItems="center">
-        <Box display="flex" alignItems="center" gap={2} h="56px" lineHeight="56px">
+      <Box className="roll-inner" display="flex" flexDirection="column" alignItems="center"
+        position="relative" h="auto">
+        <Box display="flex" alignItems="center" justifyContent="center" gap={2} h="56px">
           <span>{children}</span>
           {icon}
         </Box>
-        <Box display="flex" alignItems="center" gap={2} h="56px" lineHeight="56px">
+        <Box display="flex" alignItems="center" justifyContent="center" gap={2} h="56px">
           <span>{children}</span>
           {icon}
         </Box>
       </Box>
-    </Button>
+    </Box>
   );
 }
 
@@ -201,11 +204,14 @@ function RollOutlineButton({ children, ...rest }: {
   children: string;
 } & Record<string, unknown>) {
   return (
-    <Button
+    <Box
       as="a"
-      size="lg"
-      variant="outline"
+      display="inline-flex"
+      alignItems="center"
+      justifyContent="center"
+      bg="transparent"
       color="white"
+      border="1px solid"
       borderColor="whiteAlpha.300"
       fontWeight="500"
       px={8}
@@ -214,25 +220,31 @@ function RollOutlineButton({ children, ...rest }: {
       fontSize="md"
       position="relative"
       overflow="hidden"
+      cursor="pointer"
+      textDecoration="none"
+      transition="all 0.3s"
       _hover={{
-        bg: 'whiteAlpha.10',
         borderColor: C.accent,
         color: C.accent,
-        '& .roll-wrap': { transform: 'translateY(-100%)' },
+        '& .roll-inner': { transform: 'translateY(-50%)' },
       }}
-      transition="all 0.3s"
-      sx={rollSx}
+      sx={{
+        '& .roll-inner': {
+          transition: 'transform 0.4s cubic-bezier(0.65, 0.05, 0, 1)',
+        },
+      }}
       {...rest}
     >
-      <Box className="roll-wrap" display="flex" flexDirection="column" alignItems="center">
-        <Box display="flex" alignItems="center" h="56px" lineHeight="56px">
+      <Box className="roll-inner" display="flex" flexDirection="column" alignItems="center"
+        position="relative" h="auto">
+        <Box display="flex" alignItems="center" justifyContent="center" h="56px">
           <span>{children}</span>
         </Box>
-        <Box display="flex" alignItems="center" h="56px" lineHeight="56px">
+        <Box display="flex" alignItems="center" justifyContent="center" h="56px">
           <span>{children}</span>
         </Box>
       </Box>
-    </Button>
+    </Box>
   );
 }
 
@@ -410,20 +422,21 @@ function Nav() {
               _hover={{ bg: navTheme === 'dark' ? 'whiteAlpha.100' : 'blackAlpha.50' }}>
               Entrar
             </Button>
-            <Button as={RouterLink} to="/login" size="sm" bg={C.accent} color={C.dark}
-              fontWeight="700" borderRadius="lg" px={5} h="36px"
-              position="relative" overflow="hidden"
+            <Box as={RouterLink} to="/login" display="inline-flex" alignItems="center"
+              justifyContent="center" bg={C.accent} color={C.dark}
+              fontWeight="700" borderRadius="lg" px={5} h="36px" fontSize="sm"
+              overflow="hidden" cursor="pointer" textDecoration="none"
+              transition="all 0.3s"
               _hover={{
                 bg: C.accentDark, transform: 'translateY(-1px)',
-                '& .roll-wrap': { transform: 'translateY(-100%)' },
+                '& .roll-inner': { transform: 'translateY(-50%)' },
               }}
-              transition="all 0.3s"
-              sx={{ '& .roll-wrap': { transition: 'transform 0.4s cubic-bezier(0.65, 0.05, 0, 1)' } }}>
-              <Box className="roll-wrap" display="flex" flexDirection="column" alignItems="center">
-                <Box h="36px" lineHeight="36px">Comecar gratis</Box>
-                <Box h="36px" lineHeight="36px">Comecar gratis</Box>
+              sx={{ '& .roll-inner': { transition: 'transform 0.4s cubic-bezier(0.65, 0.05, 0, 1)' } }}>
+              <Box className="roll-inner" display="flex" flexDirection="column" alignItems="center">
+                <Box display="flex" alignItems="center" h="36px">Comecar gratis</Box>
+                <Box display="flex" alignItems="center" h="36px">Comecar gratis</Box>
               </Box>
-            </Button>
+            </Box>
           </HStack>
         </Flex>
       </Container>
@@ -1043,8 +1056,20 @@ function Footer() {
 
 export default function Landing() {
   useEffect(() => {
-    document.documentElement.style.scrollBehavior = 'smooth';
-    return () => { document.documentElement.style.scrollBehavior = ''; };
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    return () => { lenis.destroy(); };
   }, []);
 
   return (
