@@ -152,99 +152,95 @@ function ArrowRight() {
 }
 
 /* ─── Roll Button (Lando Norris hover effect — text slides up on hover) ─── */
-function RollButton({ children, icon, ...rest }: {
-  children: string; icon?: React.ReactNode;
-} & Record<string, unknown>) {
+const rollBtnCss = `
+  .roll-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    padding: 0 32px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden !important;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .roll-btn:hover {
+    transform: translateY(-2px);
+  }
+  .roll-btn .roll-track {
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.45s cubic-bezier(0.65, 0.05, 0, 1);
+  }
+  .roll-btn:hover .roll-track {
+    transform: translateY(-50%);
+  }
+  .roll-btn .roll-track span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 56px;
+  }
+  .roll-btn--filled {
+    background: ${C.accent};
+    color: ${C.dark};
+  }
+  .roll-btn--filled:hover {
+    box-shadow: 0 20px 40px ${C.accent}44;
+  }
+  .roll-btn--outline {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    font-weight: 500;
+  }
+  .roll-btn--outline:hover {
+    border-color: ${C.accent};
+    color: ${C.accent};
+  }
+  .roll-btn--sm {
+    height: 36px;
+    padding: 0 20px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  .roll-btn--sm .roll-track span {
+    height: 36px;
+  }
+`;
+
+function RollStyles() {
+  return <style>{rollBtnCss}</style>;
+}
+
+function RollButton({ children, icon, to = '/login' }: {
+  children: string; icon?: React.ReactNode; to?: string;
+}) {
   return (
-    <Box
-      as={RouterLink}
-      display="inline-flex"
-      alignItems="center"
-      justifyContent="center"
-      bg={C.accent}
-      color={C.dark}
-      fontWeight="700"
-      borderRadius="xl"
-      px={8}
-      h="56px"
-      fontSize="md"
-      position="relative"
-      overflow="hidden"
-      cursor="pointer"
-      textDecoration="none"
-      transition="all 0.3s"
-      _hover={{
-        transform: 'translateY(-2px)',
-        shadow: `0 20px 40px ${C.accent}44`,
-        '& .roll-inner': { transform: 'translateY(-50%)' },
-      }}
-      sx={{
-        '& .roll-inner': {
-          transition: 'transform 0.4s cubic-bezier(0.65, 0.05, 0, 1)',
-        },
-      }}
-      {...rest}
-    >
-      <Box className="roll-inner" display="flex" flexDirection="column" alignItems="center"
-        position="relative" h="auto">
-        <Box display="flex" alignItems="center" justifyContent="center" gap={2} h="56px">
-          <span>{children}</span>
-          {icon}
-        </Box>
-        <Box display="flex" alignItems="center" justifyContent="center" gap={2} h="56px">
-          <span>{children}</span>
-          {icon}
-        </Box>
-      </Box>
-    </Box>
+    <RouterLink to={to} className="roll-btn roll-btn--filled">
+      <div className="roll-track">
+        <span>{children}{icon}</span>
+        <span>{children}{icon}</span>
+      </div>
+    </RouterLink>
   );
 }
 
-function RollOutlineButton({ children, ...rest }: {
-  children: string;
-} & Record<string, unknown>) {
+function RollOutlineButton({ children, href = '#sobre' }: {
+  children: string; href?: string;
+}) {
   return (
-    <Box
-      as="a"
-      display="inline-flex"
-      alignItems="center"
-      justifyContent="center"
-      bg="transparent"
-      color="white"
-      border="1px solid"
-      borderColor="whiteAlpha.300"
-      fontWeight="500"
-      px={8}
-      h="56px"
-      borderRadius="xl"
-      fontSize="md"
-      position="relative"
-      overflow="hidden"
-      cursor="pointer"
-      textDecoration="none"
-      transition="all 0.3s"
-      _hover={{
-        borderColor: C.accent,
-        color: C.accent,
-        '& .roll-inner': { transform: 'translateY(-50%)' },
-      }}
-      sx={{
-        '& .roll-inner': {
-          transition: 'transform 0.4s cubic-bezier(0.65, 0.05, 0, 1)',
-        },
-      }}
-      {...rest}
-    >
-      <Box className="roll-inner" display="flex" flexDirection="column" alignItems="center"
-        position="relative" h="auto">
-        <Box display="flex" alignItems="center" justifyContent="center" h="56px">
-          <span>{children}</span>
-        </Box>
-        <Box display="flex" alignItems="center" justifyContent="center" h="56px">
-          <span>{children}</span>
-        </Box>
-      </Box>
-    </Box>
+    <a href={href} className="roll-btn roll-btn--outline">
+      <div className="roll-track">
+        <span>{children}</span>
+        <span>{children}</span>
+      </div>
+    </a>
   );
 }
 
@@ -422,21 +418,12 @@ function Nav() {
               _hover={{ bg: navTheme === 'dark' ? 'whiteAlpha.100' : 'blackAlpha.50' }}>
               Entrar
             </Button>
-            <Box as={RouterLink} to="/login" display="inline-flex" alignItems="center"
-              justifyContent="center" bg={C.accent} color={C.dark}
-              fontWeight="700" borderRadius="lg" px={5} h="36px" fontSize="sm"
-              overflow="hidden" cursor="pointer" textDecoration="none"
-              transition="all 0.3s"
-              _hover={{
-                bg: C.accentDark, transform: 'translateY(-1px)',
-                '& .roll-inner': { transform: 'translateY(-50%)' },
-              }}
-              sx={{ '& .roll-inner': { transition: 'transform 0.4s cubic-bezier(0.65, 0.05, 0, 1)' } }}>
-              <Box className="roll-inner" display="flex" flexDirection="column" alignItems="center">
-                <Box display="flex" alignItems="center" h="36px">Comecar gratis</Box>
-                <Box display="flex" alignItems="center" h="36px">Comecar gratis</Box>
-              </Box>
-            </Box>
+            <RouterLink to="/login" className="roll-btn roll-btn--filled roll-btn--sm">
+              <div className="roll-track">
+                <span>Comecar gratis</span>
+                <span>Comecar gratis</span>
+              </div>
+            </RouterLink>
           </HStack>
         </Flex>
       </Container>
@@ -1005,7 +992,7 @@ function FinalCTA() {
               Junte-se aos medicos que ja economizam horas por semana com justificativas
               geradas por IA e validadas contra a legislacao.
             </Text>
-            <RollButton to="/login" icon={<ArrowRight />} px={10}>
+            <RollButton to="/login" icon={<ArrowRight />}>
               Comecar agora — e gratis
             </RollButton>
             <Text fontSize="xs" color="whiteAlpha.400">
@@ -1074,6 +1061,7 @@ export default function Landing() {
 
   return (
     <Box sx={{ overflowX: 'clip' }}>
+      <RollStyles />
       <Nav />
       <Hero />
       <Marquee />
