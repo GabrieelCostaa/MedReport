@@ -224,8 +224,8 @@ function ClipReveal({ children, delay = 0 }: { children: React.ReactNode; delay?
   const ref = useRef(null);
   const isInView = useInView(ref, { margin: '-60px', once: false });
   return (
-    <Box ref={ref} overflow="hidden">
-      <MotionBox initial={{ y: '100%' }} animate={isInView ? { y: '0%' } : { y: '100%' }}
+    <Box ref={ref} overflow="hidden" pb="0.15em">
+      <MotionBox initial={{ y: '110%' }} animate={isInView ? { y: '0%' } : { y: '110%' }}
         transition={{ duration: 0.9, ease: EASE, delay }}>
         {children}
       </MotionBox>
