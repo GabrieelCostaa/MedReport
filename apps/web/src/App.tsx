@@ -4,6 +4,7 @@ import { Box, Spinner, Flex } from '@chakra-ui/react';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import LegalBasis from './pages/LegalBasis';
+import Landing from './pages/Landing';
 
 const Home = lazy(() => import('./pages/Home'));
 const ReportList = lazy(() => import('./pages/ReportList'));
@@ -23,9 +24,10 @@ function App() {
   return (
     <Box minH="100vh" bg="#f8fafc">
       <Routes>
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/legal-basis" element={<LegalBasis />} />
-        <Route path="/" element={<Layout />}>
+        <Route path="/dashboard" element={<Layout />}>
           <Route index element={<Suspense fallback={<PageLoader />}><Home /></Suspense>} />
           <Route path="reports" element={<Suspense fallback={<PageLoader />}><ReportList /></Suspense>} />
           <Route path="reports/new" element={<Suspense fallback={<PageLoader />}><ReportCreate /></Suspense>} />

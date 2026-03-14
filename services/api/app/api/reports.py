@@ -4,7 +4,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import Response, StreamingResponse
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
@@ -44,22 +44,40 @@ class ReportOut(BaseModel):
 async def list_reports(
     user_id: str = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
+    page: int = Query(1, ge=1, description="Page number"),
+    per_page: int = Query(20, ge=1, le=100, description="Items per page"),
 ):
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
+
+    base = select(Report).where(Report.user_id == UUID(user_id))
+
+    # Total count
+    count_result = await db.execute(select(func.count()).select_from(base.subquery()))
+    total = count_result.scalar() or 0
+
+    # Paginated query
+    offset = (page - 1) * per_page
     result = await db.execute(
-        select(Report).where(Report.user_id == UUID(user_id)).order_by(Report.created_at.desc())
+        base.order_by(Report.created_at.desc()).offset(offset).limit(per_page)
     )
     reports = result.scalars().all()
-    return [
-        {
-            "id": str(r.id),
-            "status": r.status,
-            "created_at": r.created_at.isoformat() if r.created_at else "",
-            "patient_diagnosis": r.diagnosis,
-        }
-        for r in reports
-    ]
+
+    return {
+        "items": [
+            {
+                "id": str(r.id),
+                "status": r.status,
+                "created_at": r.created_at.isoformat() if r.created_at else "",
+                "patient_diagnosis": r.diagnosis,
+            }
+            for r in reports
+        ],
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "total_pages": (total + per_page - 1) // per_page if total > 0 else 1,
+    }
 
 
 @router.get("/{report_id}")

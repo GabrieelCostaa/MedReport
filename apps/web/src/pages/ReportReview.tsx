@@ -129,7 +129,7 @@ export default function ReportReview() {
             </Text>
           </HStack>
         </Box>
-        <Button variant="ghost" size="sm" color="gray.500" onClick={() => navigate('/reports')}>
+        <Button variant="ghost" size="sm" color="gray.500" onClick={() => navigate('/dashboard/reports')}>
           Voltar aos documentos
         </Button>
       </HStack>

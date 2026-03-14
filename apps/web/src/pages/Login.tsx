@@ -33,7 +33,7 @@ export default function Login() {
         status: 'success',
         duration: 3000,
       });
-      navigate(res.user.legal_basis_acknowledged ? '/' : '/legal-basis');
+      navigate(res.user.legal_basis_acknowledged ? '/dashboard' : '/legal-basis');
     } catch (err: unknown) {
       toast({
         title: 'Erro no login',

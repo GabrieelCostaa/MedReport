@@ -8,11 +8,31 @@ export type ReportCreatePayload = {
   health_plan?: string;
 };
 
+export type Report = {
+  id: string;
+  status: string;
+  created_at: string;
+  patient_diagnosis?: string;
+};
+
+export type PaginatedReports = {
+  items: Report[];
+  total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+};
+
 export const reportsApi = {
-  list() {
-    return apiRequest<{ id: string; status: string; created_at: string; patient_diagnosis?: string }[]>(
-      '/reports'
+  list(page = 1, perPage = 20) {
+    return apiRequest<PaginatedReports>(
+      `/reports?page=${page}&per_page=${perPage}`
     );
+  },
+
+  /** Fetch all reports (for Home dashboard stats) */
+  listAll() {
+    return apiRequest<PaginatedReports>('/reports?page=1&per_page=1000');
   },
 
   get(id: string) {

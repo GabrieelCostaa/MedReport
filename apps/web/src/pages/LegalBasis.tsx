@@ -60,7 +60,7 @@ export default function LegalBasis() {
     try {
       await authApi.acknowledgeLegalBasis();
       toast({ title: 'Ciência registrada com sucesso', status: 'success' });
-      navigate('/reports');
+      navigate('/dashboard/reports');
     } catch {
       toast({ title: 'Erro ao registrar ciência', status: 'error' });
     } finally {

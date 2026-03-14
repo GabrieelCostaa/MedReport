@@ -18,7 +18,7 @@ import {
 
 function MedReportLogo() {
   return (
-    <HStack gap={2} as={RouterLink} to="/" _hover={{ textDecoration: 'none' }}>
+    <HStack gap={2} as={RouterLink} to="/dashboard" _hover={{ textDecoration: 'none' }}>
       <Box
         w="36px"
         h="36px"
@@ -110,13 +110,13 @@ export default function Layout() {
         <HStack gap={8}>
           <MedReportLogo />
           <HStack gap={1} display={{ base: 'none', md: 'flex' }}>
-            <NavLink to="/" isActive={location.pathname === '/'}>
+            <NavLink to="/dashboard" isActive={location.pathname === '/dashboard'}>
               Inicio
             </NavLink>
-            <NavLink to="/reports" isActive={isActive('/reports')}>
+            <NavLink to="/dashboard/reports" isActive={isActive('/dashboard/reports')}>
               Documentos
             </NavLink>
-            <NavLink to="/quotes" isActive={isActive('/quotes')}>
+            <NavLink to="/dashboard/quotes" isActive={isActive('/dashboard/quotes')}>
               Cotacoes
             </NavLink>
           </HStack>
@@ -150,7 +150,7 @@ export default function Layout() {
           />
           <Button
             as={RouterLink}
-            to="/reports/new"
+            to="/dashboard/reports/new"
             size="sm"
             colorScheme="brand"
             fontWeight="600"

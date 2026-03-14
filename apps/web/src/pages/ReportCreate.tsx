@@ -722,7 +722,7 @@ export default function ReportCreate() {
 
   const goToReview = () => {
     if (pipelineResult?.report_id) {
-      navigate(`/reports/${pipelineResult.report_id}/review`);
+      navigate(`/dashboard/reports/${pipelineResult.report_id}/review`);
     } else {
       toast({ title: 'Relatório ainda não foi salvo', status: 'warning' });
     }

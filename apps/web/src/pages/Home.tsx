@@ -11,14 +11,7 @@ import {
   Badge,
   Skeleton,
 } from '@chakra-ui/react';
-import { reportsApi } from '../api/reports';
-
-type Report = {
-  id: string;
-  status: string;
-  created_at: string;
-  patient_diagnosis?: string;
-};
+import { reportsApi, type Report } from '../api/reports';
 
 function StatCard({ label, value, color }: { label: string; value: string | number; color: string }) {
   return (
@@ -39,8 +32,8 @@ export default function Home() {
 
   useEffect(() => {
     reportsApi
-      .list()
-      .then(setReports)
+      .listAll()
+      .then((res) => setReports(res.items))
       .catch(() => setReports([]))
       .finally(() => setLoading(false));
   }, []);
@@ -82,7 +75,7 @@ export default function Home() {
           </Box>
           <Button
             as={RouterLink}
-            to="/reports/new"
+            to="/dashboard/reports/new"
             size="lg"
             bg="white"
             color="brand.700"
@@ -126,7 +119,7 @@ export default function Home() {
           <Heading size="sm" fontWeight="600" color="gray.700">
             Relatorios Recentes
           </Heading>
-          <Button as={RouterLink} to="/reports" variant="ghost" size="sm" color="brand.600" fontWeight="500">
+          <Button as={RouterLink} to="/dashboard/reports" variant="ghost" size="sm" color="brand.600" fontWeight="500">
             Ver todos
           </Button>
         </HStack>
@@ -148,7 +141,7 @@ export default function Home() {
         ) : recentReports.length === 0 ? (
           <Box p={8} bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" textAlign="center">
             <Text color="gray.400" mb={3}>Nenhum relatorio criado ainda</Text>
-            <Button as={RouterLink} to="/reports/new" colorScheme="brand" size="sm">
+            <Button as={RouterLink} to="/dashboard/reports/new" colorScheme="brand" size="sm">
               Criar primeiro relatorio
             </Button>
           </Box>
@@ -158,7 +151,7 @@ export default function Home() {
               <Box
                 key={r.id}
                 as={RouterLink}
-                to={`/reports/${r.id}/review`}
+                to={`/dashboard/reports/${r.id}/review`}
                 p={4}
                 bg="white"
                 borderRadius="lg"
