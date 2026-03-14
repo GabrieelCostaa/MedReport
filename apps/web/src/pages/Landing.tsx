@@ -728,28 +728,56 @@ const PIPELINE_FEATURES = [
 function HorizontalFeatures() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [tx, setTx] = useState(0);
-  const [prog, setProg] = useState(0);
+  const barRef = useRef<HTMLDivElement>(null);
+  const rafId = useRef(0);
+  const currentTx = useRef(0);
+  const targetTx = useRef(0);
 
   useEffect(() => {
     const section = sectionRef.current;
     const track = trackRef.current;
-    if (!section || !track) return;
+    const bar = barRef.current;
+    if (!section || !track || !bar) return;
+
+    // Lerp loop — runs every frame, smoothly interpolates toward target
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    const SMOOTH = 0.08; // lower = smoother/slower, higher = snappier
+
+    let targetProg = 0;
+    let currentProg = 0;
+
+    const tick = () => {
+      currentTx.current = lerp(currentTx.current, targetTx.current, SMOOTH);
+      currentProg = lerp(currentProg, targetProg, SMOOTH);
+
+      // Only update DOM if difference is noticeable (> 0.5px)
+      track.style.transform = `translate3d(${currentTx.current}px, 0, 0)`;
+      bar.style.transform = `scaleX(${currentProg})`;
+
+      rafId.current = requestAnimationFrame(tick);
+    };
+
     const onScroll = () => {
       const rect = section.getBoundingClientRect();
       const scrollable = section.offsetHeight - window.innerHeight;
       if (scrollable <= 0) return;
+
       const p = Math.max(0, Math.min(1, -rect.top / scrollable));
-      setProg(p);
+      targetProg = p;
+
       const maxShift = Math.max(0, track.scrollWidth - window.innerWidth + 96);
-      setTx(-p * maxShift);
+      targetTx.current = -p * maxShift;
     };
+
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
     onScroll();
+    rafId.current = requestAnimationFrame(tick);
+
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(rafId.current);
     };
   }, []);
 
@@ -774,8 +802,7 @@ function HorizontalFeatures() {
         <div style={{ overflow: 'hidden', paddingLeft: '48px' }}>
           <div ref={trackRef} style={{
             display: 'flex', gap: '24px', paddingRight: '48px',
-            transform: `translate3d(${tx}px, 0, 0)`, willChange: 'transform',
-            transition: 'transform 0.05s linear',
+            willChange: 'transform',
           }}>
             {PIPELINE_FEATURES.map((f) => (
               <Box key={f.num} minW={{ base: '300px', md: '560px' }} flexShrink={0}>
@@ -803,10 +830,9 @@ function HorizontalFeatures() {
 
         <Container maxW="7xl" mt={5}>
           <Box h="2px" bg="gray.200" borderRadius="full" overflow="hidden" maxW="200px">
-            <div style={{
+            <div ref={barRef} style={{
               height: '100%', background: C.accent, borderRadius: '9999px',
-              transform: `scaleX(${prog})`, transformOrigin: 'left',
-              transition: 'transform 0.05s linear',
+              transformOrigin: 'left', willChange: 'transform',
             }} />
           </Box>
         </Container>
