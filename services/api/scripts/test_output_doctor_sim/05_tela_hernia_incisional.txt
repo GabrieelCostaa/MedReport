@@ -10,37 +10,27 @@ CONVÊNIO: Amil
 ESPECIALIDADE: Cirurgia Geral
 
 --- RESULTADOS ---
-APROVADO: True
-CHECKLIST: 6/6
-PALAVRAS: 270
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 82
 SCORE: 100.0/100 (alto)
 MODO: cobertura_direta
-TEMPO: 46.4s
+TEMPO: 6.0s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-O paciente Francisco Oliveira Neto apresenta diagnóstico de hérnia incisional recidivada (CID K43.1), com um defeito de 8 cm, sendo esta a segunda recidiva após reparo primário. A manutenção do quadro sem intervenção adequada resulta em um ambiente bioquímico propício à progressão da hérnia, com risco de complicações como encarceramento e estrangulamento, que podem levar a intervenções cirúrgicas de maior porte e morbidade. O tratamento conservador, incluindo fisioterapia e uso de cintas, foi exaurido por mais de seis meses sem melhora significativa, evidenciando a refratariedade do quadro e a necessidade de intervenção cirúrgica com OPME.
-A Tela de Polipropileno Macroporosa, linha Opus Mesh, é tecnicamente superior devido à sua macroporosidade, que permite melhor integração tecidual e reduz a resposta inflamatória, minimizando o risco de recidiva e complicações pós-operatórias (Lichtenstein et al., 1989). Diferente de materiais genéricos, sua estrutura leve reduz a sensação de corpo estranho e oferece resistência mecânica adequada para reparos inguinais, incisionais e paraestomais (Cross et al., 2017; Aiolfi et al., 2023). Estudos demonstram que o uso de tela em herniorrafias incisionais reduz significativamente a taxa de recorrência em comparação com métodos sem tela (EU Hernia Trialists Collaboration, 2000).
-A não aprovação deste material pode resultar na progressão da hérnia para estágios mais graves, com risco de encarceramento e necessidade de procedimentos cirúrgicos mais complexos e de maior morbidade no futuro (Huang et al., 2024; Kritharides et al., 2023). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+Paciente com diagnóstico de Hérnia incisional recidivada, defeito de 8cm, 2a recidiva após reparo primário (CID K43.1), para o qual se faz necessária a utilização de Tela de Polipropileno Macroporosa. Macroporosidade permite melhor integração tecidual e menor resposta inflamatória. Peso leve reduz sensação de corpo estranho. Resistência mecânica adequada para reparos inguinais, incisionais e paraestomais. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. O Código de Ética Médica, Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
-
---- REFERÊNCIAS ---
-  1. Lichtenstein et al., 1989 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35034068/
-  2. Cross et al., 2017 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/28004850/
-  3. Aiolfi et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/35920944/
-  4. Huang et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38319440/
-  5. Kritharides et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38017096/
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- AUDIT LOG ---
-  [correcao] diagnostico: CID presente no texto
-  [validacao] justificativa_tecnica: Conformidade com ficha oficial
-  [validacao] referencia_bibliografica: Autor presente na lista de referências válidas
-  [validacao] referencia_bibliografica: Autor presente na lista de referências válidas
-  [validacao] referencia_bibliografica: Autor presente na lista de referências válidas
-  [validacao] referencia_bibliografica: Autor presente na lista de referências válidas
-  [validacao] referencia_bibliografica: Autor presente na lista de referências válidas
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
 
 --- ANÁLISE CRÍTICA ---
-  ✓ Nenhum problema detectado
+  ⚠ ALERTA: Apenas 82 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'Francisco Oliveira Neto' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica

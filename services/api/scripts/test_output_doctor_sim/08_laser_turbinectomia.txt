@@ -10,31 +10,27 @@ CONVÊNIO: Bradesco Saúde
 ESPECIALIDADE: Otorrinolaringologia
 
 --- RESULTADOS ---
-APROVADO: True
-CHECKLIST: 6/6
-PALAVRAS: 258
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 99
 SCORE: 100.0/100 (alto)
 MODO: cobertura_direta
-TEMPO: 38.7s
+TEMPO: 6.1s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-A paciente Fernanda Costa Ribeiro apresenta diagnóstico de hipertrofia de cornetos inferiores bilateral (CID J34.3), com obstrução nasal crônica refratária a tratamento clínico há 10 meses. A manutenção do quadro inflamatório crônico sem intervenção adequada resulta em um ambiente bioquímico hostil, dominado por citocinas pró-inflamatórias, que perpetuam a obstrução nasal e comprometem a qualidade de vida da paciente. Tentativas de manejo conservador, incluindo o uso de corticosteroides tópicos e anti-histamínicos, mostraram-se ineficazes, comprovando a refratariedade do quadro e a necessidade de intervenção cirúrgica com OPME.
-O Kit FO - Laser Cirúrgico, com sua fibra óptica flexível, permite acesso minimamente invasivo às vias aéreas superiores e inferiores, possibilitando corte e coagulação simultâneos que reduzem o sangramento intraoperatório e preservam tecidos adjacentes. Diferente de técnicas convencionais, como turbinectomia ou eletrocautério, o laser cirúrgico proporciona precisão micrométrica, minimizando danos aos tecidos circundantes e promovendo uma recuperação mais rápida e segura (Mohamed et al., 2022; Harju et al., 2018). Estudos demonstram que o uso do laser de diodo é eficaz na redução dos sintomas nasais e na melhora da contratilidade dos cornetos (Harju et al., 2021; Kankaanpää et al., 2021).
-A não aprovação deste material pode resultar na progressão da obstrução nasal, levando a um comprometimento respiratório significativo e à necessidade de procedimentos futuros de maior porte e morbidade (Calvo-Henriquez et al., 2024). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+Paciente com diagnóstico de Hipertrofia de cornetos inferiores bilateral, obstrução nasal crônica refratária a tratamento clínico 10 meses (CID J34.3), para o qual se faz necessária a utilização de Kit FO - Laser Cirúrgico. Fibra óptica flexível permite acesso minimamente invasivo a vias aéreas superiores e inferiores. Corte e coagulação simultâneos reduzem sangramento intraoperatório. Precisão micrométrica preserva tecidos adjacentes. Ponteiras descartáveis eliminam risco de contaminação cruzada. Compatível com endoscópios rígidos e flexíveis. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- BASE LEGAL ---
-Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS para os procedimentos citados. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. O Código de Ética Médica, Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
-
---- REFERÊNCIAS ---
-  1. Mohamed et al., 2022 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33389308/
-  2. Harju et al., 2018 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
-  3. Harju et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/33137675/
-  4. Kankaanpää et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32453643/
-  5. Calvo-Henriquez et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/32485468/
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- AUDIT LOG ---
-  [correcao] CID: CID ausente no texto
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
 
 --- ANÁLISE CRÍTICA ---
-  ✓ Nenhum problema detectado
+  ⚠ ALERTA: Apenas 99 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'Fernanda Costa Ribeiro' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica

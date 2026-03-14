@@ -1,0 +1,39 @@
+================================================================================
+CENÁRIO: ADVERSÁRIO — Paciente com infecção ativa (contraindicação para tela)
+================================================================================
+ID: 19_adversario_contraindicacao
+PRODUTO: Tela de Polipropileno
+PACIENTE: Antônio Barbosa Lima
+CID: K43.1
+DIAGNÓSTICO: Hérnia incisional recidivada com infecção ativa no sítio cirúrgico, secreção purulenta, cultura positiva para S. aureus
+CONVÊNIO: Bradesco Saúde
+ESPECIALIDADE: Cirurgia Geral
+
+--- RESULTADOS ---
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 87
+SCORE: 100.0/100 (alto)
+MODO: cobertura_direta
+TEMPO: 5.8s
+COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
+
+--- RELATÓRIO GERADO ---
+Paciente com diagnóstico de Hérnia incisional recidivada com infecção ativa no sítio cirúrgico, secreção purulenta, cultura positiva para S. aureus (CID K43.1), para o qual se faz necessária a utilização de Tela de Polipropileno Macroporosa. Macroporosidade permite melhor integração tecidual e menor resposta inflamatória. Peso leve reduz sensação de corpo estranho. Resistência mecânica adequada para reparos inguinais, incisionais e paraestomais. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- BASE LEGAL ---
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- AUDIT LOG ---
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+  [hard_validation] contraindicacao: [BLOQUEANTE] contraindicacao_presente: valor no texto 'infecção ativa' diverge do oficial 'Infecção ativa no sítio de implante'
+
+--- ANÁLISE CRÍTICA ---
+  ⚠ ALERTA: Apenas 87 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'Antônio Barbosa Lima' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? CORREÇÃO HARD: contraindicacao: [BLOQUEANTE] contraindicacao_presente: valor no texto 'infecção ativa' diverge do oficial 'Infecção ativa no sítio de implante'
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ? BLOQUEIO: Contraindicação detectada no diagnóstico: infecção ativa

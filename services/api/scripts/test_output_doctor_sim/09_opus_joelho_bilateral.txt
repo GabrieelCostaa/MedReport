@@ -1,0 +1,38 @@
+================================================================================
+CENÁRIO: Viscossuplementação — Gonartrose bilateral grau II-III
+================================================================================
+ID: 09_opus_joelho_bilateral
+PRODUTO: Kit EC2 - Linha Opus
+PACIENTE: Margarida Pereira dos Santos
+CID: M17.0
+DIAGNÓSTICO: Gonartrose bilateral, grau II joelho E e grau III joelho D, dor crônica há 3 anos, IMC 31, limitação para subir escadas
+CONVÊNIO: SulAmérica
+ESPECIALIDADE: Ortopedia
+
+--- RESULTADOS ---
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 96
+SCORE: 90.0/100 (alto)
+MODO: cobertura_direta
+TEMPO: 10.7s
+COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=0.0/10
+GAPS: Nenhuma evidência científica anexada
+
+--- RELATÓRIO GERADO ---
+Paciente com diagnóstico de Gonartrose bilateral, grau II joelho E e grau III joelho D, dor crônica há 3 anos, IMC 31, limitação para subir escadas (CID M17.0), para o qual se faz necessária a utilização de Kit EC2 - Linha Opus. Restauração da viscoelasticidade do líquido sinovial. Alívio prolongado de dor em osteoartrite de joelho. Alto peso molecular (6.000 kDa) proporciona maior tempo de permanência articular. Aplicação única. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- BASE LEGAL ---
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- AUDIT LOG ---
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+
+--- ANÁLISE CRÍTICA ---
+  ⚠ ALERTA: Apenas 96 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'Margarida Pereira dos Santos' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? GAP: Nenhuma evidência científica anexada
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica

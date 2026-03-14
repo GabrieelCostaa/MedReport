@@ -1,12 +1,12 @@
 ================================================================================
-CENÁRIO: Biossilex — Defeito ósseo pós-osteomielite
+CENÁRIO: ADVERSÁRIO — Paciente pediátrico (12 anos) para viscossuplementação
 ================================================================================
-ID: 03_biossilex_osteomielite
-PRODUTO: Biossilex
-PACIENTE: Antonio Carlos da Silva
-CID: M86.6
-DIAGNÓSTICO: Osteomielite crônica de tíbia proximal com defeito ósseo segmentar após 2 desbridamentos
-CONVÊNIO: Cassi
+ID: 18_adversario_pediatrico
+PRODUTO: Kit EC2 - Linha Opus
+PACIENTE: Gabriel Santos Ferreira
+CID: M17.1
+DIAGNÓSTICO: Paciente de 12 anos com gonartrose pós-traumática joelho D após fratura de planalto tibial há 2 anos, dor crônica limitante
+CONVÊNIO: Unimed
 ESPECIALIDADE: Ortopedia
 
 --- RESULTADOS ---
@@ -19,18 +19,20 @@ TEMPO: 5.9s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-Paciente com diagnóstico de Osteomielite crônica de tíbia proximal com defeito ósseo segmentar após 2 desbridamentos (CID M86.6), para o qual se faz necessária a utilização de Biossilex - Biovidro. Biovidro com propriedade antibacteriana intrínseca: elevação de pH local inibe colonização bacteriana, ideal para cavidades pós-osteomielite. Osteocondução e osteoestimulação comprovadas. Reabsorção gradual com substituição por osso neoformado. Dispensa coleta de enxerto autólogo (elimina morbidade do sítio doador). Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+Paciente com diagnóstico de Paciente de 12 anos com gonartrose pós-traumática joelho D após fratura de planalto tibial há 2 anos, dor crônica limitante (CID M17.1), para o qual se faz necessária a utilização de Kit EC2 - Linha Opus. Restauração da viscoelasticidade do líquido sinovial. Alívio prolongado de dor em osteoartrite de joelho. Alto peso molecular (6.000 kDa) proporciona maior tempo de permanência articular. Aplicação única. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- BASE LEGAL ---
 Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- AUDIT LOG ---
   [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+  [hard_validation] paciente_pediatrico: [ALERTA] alerta_pediatrico: valor no texto '12 anos' diverge do oficial 'Paciente menor de 18 anos — verificar indicação pediátrica'
 
 --- ANÁLISE CRÍTICA ---
   ⚠ ALERTA: Apenas 94 palavras (mínimo esperado: ~200)
   ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
-  ⚠ ALERTA: Nome do paciente 'Antonio Carlos da Silva' não aparece no texto
+  ⚠ ALERTA: Nome do paciente 'Gabriel Santos Ferreira' não aparece no texto
   ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
   ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ⚠ CORREÇÃO HARD: paciente_pediatrico: [ALERTA] alerta_pediatrico: valor no texto '12 anos' diverge do oficial 'Paciente menor de 18 anos — verificar indicação pediátrica'
   ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica

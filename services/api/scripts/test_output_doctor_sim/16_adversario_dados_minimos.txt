@@ -1,0 +1,43 @@
+================================================================================
+CENÁRIO: ADVERSÁRIO — Dados mínimos: só CID, sem diagnóstico descritivo
+================================================================================
+ID: 16_adversario_dados_minimos
+PRODUTO: Vitagraft
+PACIENTE: Maria Santos
+CID: M84.1
+DIAGNÓSTICO: M84.1
+CONVÊNIO: 
+ESPECIALIDADE: 
+
+--- RESULTADOS ---
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 87
+SCORE: 90.0/100 (alto)
+MODO: fora_do_rol
+TEMPO: 6.1s
+COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=10.0/20 | Evidência=10.0/10
+GAPS: Inconsistência entre CID e procedimento solicitado
+
+--- RELATÓRIO GERADO ---
+Paciente com diagnóstico de M84.1 (CID M84.1), para o qual se faz necessária a utilização de Vitagraft - Enxerto Bifásico. Composição bifásica combina estabilidade estrutural da HA com reabsorção controlada do β-TCP, promovendo osteocondução progressiva. Porosidade interconectada favorece vascularização e migração celular. Elimina necessidade de enxerto autólogo e morbidade do sítio doador. Aplicável em defeitos ósseos de múltiplas localizações anatômicas. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- BASE LEGAL ---
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- AUDIT LOG ---
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+  [hard_validation] indicacao_off_label: [BLOQUEANTE] off_label: valor no texto 'M84.1' diverge do oficial 'Pseudoartroses, artrodeses (coluna, membros superiores e inferiores), defeitos ósseos pós-ressecção tumoral, reconstrução craniana e craniofacial, per'
+  [hard_validation] diagnostico_vago: [ALERTA] diagnostico_insuficiente: valor no texto 'M84.1' diverge do oficial 'Diagnóstico com menos de 5 palavras — insuficiente para justificativa'
+
+--- ANÁLISE CRÍTICA ---
+  ⚠ ALERTA: Apenas 87 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'Maria Santos' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? CORREÇÃO HARD: indicacao_off_label: [BLOQUEANTE] off_label: valor no texto 'M84.1' diverge do oficial 'Pseudoartroses, artrodeses (coluna, membros superiores e inferiores), defeitos ósseos pós-ressecção tumoral, reconstrução craniana e craniofacial, per'
+  ⚠ CORREÇÃO HARD: diagnostico_vago: [ALERTA] diagnostico_insuficiente: valor no texto 'M84.1' diverge do oficial 'Diagnóstico com menos de 5 palavras — insuficiente para justificativa'
+  ? GAP: Inconsistência entre CID e procedimento solicitado
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ? BLOQUEIO: O valor 'M84.1' foi identificado como indicacao_off_label incorreto. O valor oficial é 'Pseudoartroses, artrodeses (coluna, membros superiores e inferiores), defeitos ósseos pós-ressecção tumoral, reconstrução craniana e craniofacial, per'.

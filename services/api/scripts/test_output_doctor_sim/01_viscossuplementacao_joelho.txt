@@ -10,32 +10,27 @@ CONVÊNIO: Unimed
 ESPECIALIDADE: Ortopedia
 
 --- RESULTADOS ---
-APROVADO: True
-CHECKLIST: 6/6
-PALAVRAS: 252
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 86
 SCORE: 100.0/100 (alto)
 MODO: cobertura_direta
-TEMPO: 31.4s
+TEMPO: 5.9s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-O paciente José Ricardo Mendes apresenta diagnóstico de gonartrose primária unilateral no joelho direito, classificada como grau III pela escala de Kellgren-Lawrence (CID M17.1), com dor crônica persistente há 2 anos. O quadro clínico é caracterizado por dor articular significativa e limitação funcional, comprometendo as atividades diárias do paciente. Após insucesso com tratamento conservador, incluindo o uso de analgésicos, anti-inflamatórios não esteroidais e fisioterapia por mais de 6 meses sem melhora significativa, a indicação é para viscossuplementação com o Kit EC2 - Linha Opus. Este produto contém ácido hialurônico de alto peso molecular (6.000 kDa) e concentração de 10 mg/mL, que restaura as propriedades viscoelásticas do líquido sinovial, proporcionando alívio prolongado da dor e melhora funcional. Estudos demonstram que o ácido hialurônico de alto peso molecular tem um tempo de permanência intra-articular superior, o que é crucial para o tratamento eficaz da osteoartrite de joelho (Bannuru et al., 2009; Altman et al., 2015). A meta-análise de Altman et al. (2015) evidenciou a eficácia superior da viscossuplementação com ácido hialurônico de alto peso molecular em comparação a formulações de menor peso molecular. A não realização do procedimento implica em progressão da degeneração articular, com potencial para perda funcional irreversível e possível evolução para necessidade de artroplastia total, conforme evidenciado por Anil et al. (2021). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+Paciente com diagnóstico de Gonartrose primária unilateral joelho D, grau III KL, dor crônica 2 anos (CID M17.1), para o qual se faz necessária a utilização de Kit EC2 - Linha Opus. Restauração da viscoelasticidade do líquido sinovial. Alívio prolongado de dor em osteoartrite de joelho. Alto peso molecular (6.000 kDa) proporciona maior tempo de permanência articular. Aplicação única. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
-
---- REFERÊNCIAS ---
-  1. Altman et al., 2015 [internal]
-  2. Bannuru et al., 2009 [internal]
-  3. Anil et al., 2021 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/34500430/
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- AUDIT LOG ---
-  [correcao] CID: CID ausente no texto
-  [validacao] peso_molecular: Dado conforme ficha oficial
-  [validacao] concentracao: Dado conforme ficha oficial
-  [validacao] referencia: Referência válida
-  [validacao] referencia: Referência válida
-  [validacao] referencia: Referência válida
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
 
 --- ANÁLISE CRÍTICA ---
-  ✓ Nenhum problema detectado
+  ⚠ ALERTA: Apenas 86 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'José Ricardo Mendes' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica

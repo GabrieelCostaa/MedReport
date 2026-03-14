@@ -1,0 +1,40 @@
+================================================================================
+CENÁRIO: ADVERSÁRIO — Diagnóstico vago: 'dor no joelho'
+================================================================================
+ID: 11_adversario_diagnostico_vago
+PRODUTO: Kit EC2 - Linha Opus
+PACIENTE: Pedro Silva
+CID: M25.5
+DIAGNÓSTICO: dor no joelho
+CONVÊNIO: Unimed
+ESPECIALIDADE: Ortopedia
+
+--- RESULTADOS ---
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 77
+SCORE: 90.0/100 (alto)
+MODO: cobertura_direta
+TEMPO: 10.6s
+COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=0.0/10
+GAPS: Nenhuma evidência científica anexada
+
+--- RELATÓRIO GERADO ---
+Paciente com diagnóstico de dor no joelho (CID M25.5), para o qual se faz necessária a utilização de Kit EC2 - Linha Opus. Restauração da viscoelasticidade do líquido sinovial. Alívio prolongado de dor em osteoartrite de joelho. Alto peso molecular (6.000 kDa) proporciona maior tempo de permanência articular. Aplicação única. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- BASE LEGAL ---
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- AUDIT LOG ---
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+  [hard_validation] diagnostico_vago: [ALERTA] diagnostico_insuficiente: valor no texto 'dor no joelho' diverge do oficial 'Diagnóstico com menos de 5 palavras — insuficiente para justificativa'
+
+--- ANÁLISE CRÍTICA ---
+  ⚠ ALERTA: Apenas 77 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'Pedro Silva' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ⚠ CORREÇÃO HARD: diagnostico_vago: [ALERTA] diagnostico_insuficiente: valor no texto 'dor no joelho' diverge do oficial 'Diagnóstico com menos de 5 palavras — insuficiente para justificativa'
+  ? GAP: Nenhuma evidência científica anexada
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica

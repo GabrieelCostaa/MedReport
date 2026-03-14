@@ -1,25 +1,25 @@
 ================================================================================
-CENÁRIO: Parafuso bioabsorvível — Reconstrução de LCA
+CENÁRIO: Adhesion STP+ — Miomectomia com risco de aderências pélvicas
 ================================================================================
-ID: 02_parafuso_lca
-PRODUTO: Parafuso de Interferência Bioabsorvível
-PACIENTE: Lucas Andrade Ferreira
-CID: S83.5
-DIAGNÓSTICO: Ruptura de LCA joelho esquerdo, instabilidade anterior grau III, RM confirmando lesão completa
-CONVÊNIO: Bradesco Saúde
-ESPECIALIDADE: Ortopedia
+ID: 10_adhesion_ginecologia
+PRODUTO: Adhesion STP+
+PACIENTE: Juliana Martins de Oliveira
+CID: D25.1
+DIAGNÓSTICO: Leiomioma uterino intramural de 7cm, sangramento uterino anormal refratário, desejo reprodutivo preservado, miomectomia programada com risco de aderências pélvicas
+CONVÊNIO: Amil
+ESPECIALIDADE: Ginecologia
 
 --- RESULTADOS ---
 APROVADO: False
 CHECKLIST: 3/6
-PALAVRAS: 81
+PALAVRAS: 94
 SCORE: 100.0/100 (alto)
-MODO: cobertura_direta
+MODO: fora_do_rol
 TEMPO: 6.1s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-Paciente com diagnóstico de Ruptura de LCA joelho esquerdo, instabilidade anterior grau III, RM confirmando lesão completa (CID S83.5), para o qual se faz necessária a utilização de Parafuso de Interferência Bioabsorvível. Fixação segura de enxertos tendíneos em túnel ósseo. Elimina necessidade de remoção posterior (bioabsorvível). Não gera artefato em ressonância magnética. Osteointegração progressiva. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+Paciente com diagnóstico de Leiomioma uterino intramural de 7cm, sangramento uterino anormal refratário, desejo reprodutivo preservado, miomectomia programada com risco de aderências pélvicas (CID D25.1), para o qual se faz necessária a utilização de Adhesion STP+. Prevenção de aderências pós-cirúrgicas com eficácia comprovada em cirurgias abdominais, pélvicas e ortopédicas. Biorreabsorvível em 7 dias. Não interfere no processo cicatricial. Reduz necessidade de reoperação por aderência em até 50%. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- BASE LEGAL ---
 Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
@@ -28,9 +28,9 @@ Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do mater
   [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
 
 --- ANÁLISE CRÍTICA ---
-  ⚠ ALERTA: Apenas 81 palavras (mínimo esperado: ~200)
+  ⚠ ALERTA: Apenas 94 palavras (mínimo esperado: ~200)
   ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
-  ⚠ ALERTA: Nome do paciente 'Lucas Andrade Ferreira' não aparece no texto
+  ⚠ ALERTA: Nome do paciente 'Juliana Martins de Oliveira' não aparece no texto
   ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
   ✗ CRÍTICO: Nenhuma referência bibliográfica
   ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica

@@ -353,6 +353,7 @@ class ReportPipeline:
         validation = validate_technical_data(
             audit_result.texto_corrigido,
             session.product,
+            medico_inputs=session.medico_inputs,
         )
 
         audit_log = [
@@ -379,12 +380,24 @@ class ReportPipeline:
             missing = [k for k, v in audit_result.checklist.items() if not v]
             if missing:
                 motivos_bloqueio.append(f"Checklist incompleto: faltam {', '.join(missing)}")
+        _CLINICAL_ISSUE_MSGS = {
+            "indicacao_off_label": "Produto não indicado para este diagnóstico",
+            "contraindicacao_presente": "Contraindicação detectada no diagnóstico",
+            "cid_inconsistente": "CID incompatível com o produto solicitado",
+            "copypaste_detectado": "Nome de outro paciente detectado no diagnóstico (possível copy/paste)",
+            "diagnostico_ausente": "Diagnóstico não informado",
+        }
         for issue in validation.issues:
             if issue.severidade == "bloqueante":
-                motivos_bloqueio.append(
-                    f"O valor '{issue.valor_no_texto}' foi identificado como {issue.campo} incorreto. "
-                    f"O valor oficial é '{issue.valor_oficial}'."
-                )
+                msg = _CLINICAL_ISSUE_MSGS.get(issue.tipo)
+                if msg:
+                    detail = f": {issue.valor_no_texto}" if issue.valor_no_texto else ""
+                    motivos_bloqueio.append(f"{msg}{detail}")
+                else:
+                    motivos_bloqueio.append(
+                        f"O valor '{issue.valor_no_texto}' foi identificado como {issue.campo} incorreto. "
+                        f"O valor oficial é '{issue.valor_oficial}'."
+                    )
 
         logger.info(
             "Pipeline concluído: session=%s, aprovado=%s, hard_validation=%s",
@@ -413,7 +426,10 @@ class ReportPipeline:
                     evidence_count=len(session.clinical_evidences) + len(session.pubmed_evidences),
                     evidence_levels=evidence_lvls or None,
                     has_justification=bool(audit_result.texto_corrigido),
-                    cid_procedure_consistent=True,
+                    cid_procedure_consistent=not any(
+                        i.campo in ("cid_inconsistente", "indicacao_off_label")
+                        for i in validation.issues
+                    ),
                     compliance_mode=session.compliance_context.mode,
                     stf_checklist=getattr(session.compliance_context, "stf_checklist", None),
                 )

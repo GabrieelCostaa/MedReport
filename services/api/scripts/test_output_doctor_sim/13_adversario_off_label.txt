@@ -1,0 +1,44 @@
+================================================================================
+CENÁRIO: ADVERSÁRIO — Tela de hérnia para cirurgia de joelho
+================================================================================
+ID: 13_adversario_off_label
+PRODUTO: Tela de Polipropileno
+PACIENTE: Carlos Eduardo Ramos
+CID: M17.1
+DIAGNÓSTICO: Gonartrose primária joelho esquerdo grau III, falha de tratamento conservador
+CONVÊNIO: SulAmérica
+ESPECIALIDADE: Ortopedia
+
+--- RESULTADOS ---
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 81
+SCORE: 90.0/100 (alto)
+MODO: cobertura_direta
+TEMPO: 6.1s
+COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=10.0/20 | Evidência=10.0/10
+GAPS: Inconsistência entre CID e procedimento solicitado
+
+--- RELATÓRIO GERADO ---
+Paciente com diagnóstico de Gonartrose primária joelho esquerdo grau III, falha de tratamento conservador (CID M17.1), para o qual se faz necessária a utilização de Tela de Polipropileno Macroporosa. Macroporosidade permite melhor integração tecidual e menor resposta inflamatória. Peso leve reduz sensação de corpo estranho. Resistência mecânica adequada para reparos inguinais, incisionais e paraestomais. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- BASE LEGAL ---
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- AUDIT LOG ---
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+  [hard_validation] indicacao_off_label: [BLOQUEANTE] off_label: valor no texto 'Gonartrose primária joelho esquerdo grau III, falha de tratamento conservador' diverge do oficial 'Herniorrafias inguinais, incisionais, umbilicais e paraestomais.'
+  [hard_validation] cid_inconsistente: [BLOQUEANTE] cid_produto_incompativel: valor no texto 'M17.1' diverge do oficial 'CID M17.1 incompatível com indicações do produto: herniorrafias inguinais, incisionais, umbilicais e paraestomais.'
+
+--- ANÁLISE CRÍTICA ---
+  ⚠ ALERTA: Apenas 81 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'Carlos Eduardo Ramos' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? CORREÇÃO HARD: indicacao_off_label: [BLOQUEANTE] off_label: valor no texto 'Gonartrose primária joelho esquerdo grau III, falha de tratamento conservador' diverge do oficial 'Herniorrafias inguinais, incisionais, umbilicais e paraestomais.'
+  ? CORREÇÃO HARD: cid_inconsistente: [BLOQUEANTE] cid_produto_incompativel: valor no texto 'M17.1' diverge do oficial 'CID M17.1 incompatível com indicações do produto: herniorrafias inguinais, incisionais, umbilicais e paraestomais.'
+  ? GAP: Inconsistência entre CID e procedimento solicitado
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ? BLOQUEIO: O valor 'Gonartrose primária joelho esquerdo grau III, falha de tratamento conservador' foi identificado como indicacao_off_label incorreto. O valor oficial é 'Herniorrafias inguinais, incisionais, umbilicais e paraestomais.'.
+  ? BLOQUEIO: O valor 'M17.1' foi identificado como cid_inconsistente incorreto. O valor oficial é 'CID M17.1 incompatível com indicações do produto: herniorrafias inguinais, incisionais, umbilicais e paraestomais.'.

@@ -301,10 +301,331 @@ def _extract_all_entities(text: str) -> list[dict]:
     return entities
 
 
-def validate_technical_data(text: str, product) -> ValidationResult:
+# ---------------------------------------------------------------------------
+# Clinical safety checks (Bug fixes from adversarial testing)
+# ---------------------------------------------------------------------------
+
+# CID prefix → expected product category keywords
+_CID_PRODUCT_MAP = {
+    "M17": ["joelho", "articular", "viscossuplementação", "hialurônico", "artroscop"],
+    "M16": ["quadril", "articular", "prótese", "artroplastia"],
+    "K40": ["hérnia", "inguinal", "tela", "herniorrafia"],
+    "K41": ["hérnia", "femoral", "tela", "herniorrafia"],
+    "K42": ["hérnia", "umbilical", "tela", "herniorrafia"],
+    "K43": ["hérnia", "incisional", "tela", "herniorrafia"],
+    "K66": ["aderência", "peritone", "anti-aderên", "barreira"],
+    "M23": ["joelho", "menisco", "ligament", "artroscop"],
+    "M75": ["ombro", "manguito", "rotador"],
+    "N48": ["peyronie", "penian", "erétil"],
+    "J34": ["nasal", "turbinec", "septo"],
+}
+
+
+def _extract_stems(text: str, min_len: int = 5) -> set[str]:
+    """Extrai radicais simplificados (primeiros 5+ chars) para matching morfológico PT-BR."""
+    words = re.findall(r"[a-záéíóúàãõâêôü]{4,}", text.lower())
+    stems = set()
+    for w in words:
+        # Use first 5 chars as a rough stem (handles PT-BR inflections)
+        if len(w) >= min_len:
+            stems.add(w[:min_len])
+        stems.add(w)
+    return stems
+
+
+# Medical acronyms and abbreviations → full terms for matching
+_MEDICAL_ABBREVIATIONS = {
+    "lca": ["ligamento cruzado anterior", "lca"],
+    "lcp": ["ligamento cruzado posterior", "lcp"],
+    "lce": ["ligamento colateral"],
+    "pyr": ["peyronie"],
+    "de": ["disfunção erétil", "disfunção"],
+    "atj": ["artroplastia total joelho"],
+    "atq": ["artroplastia total quadril"],
+    "rm": ["ressonância magnética"],
+    "tc": ["tomografia"],
+    "pde5i": ["inibidor fosfodiesterase", "sildenafil", "tadalafil"],
+}
+
+
+def _check_product_indication(diagnosis: str, product) -> list[ValidationIssue]:
+    """Bug #2: Detecta uso off-label — produto não indicado para o diagnóstico."""
+    issues = []
+    indicacoes = getattr(product, "indicacoes", None)
+    descricao = getattr(product, "descricao_tecnica", None) or ""
+    if not indicacoes or not diagnosis:
+        return issues
+
+    indicacoes_lower = indicacoes.lower()
+    diag_lower = diagnosis.lower()
+
+    # Strategy 0: acronym/abbreviation expansion
+    diag_tokens = re.findall(r"[A-Za-záéíóúàãõâêôü]+", diagnosis)
+    for token in diag_tokens:
+        token_lower = token.lower()
+        expansions = _MEDICAL_ABBREVIATIONS.get(token_lower, [])
+        for expansion in expansions:
+            if expansion in indicacoes_lower or expansion in descricao.lower():
+                return issues
+        # Also match uppercase acronyms directly (e.g., "LCA" in indicações)
+        if len(token) >= 2 and token.isupper() and token.lower() in indicacoes_lower:
+            return issues
+
+    # Strategy 1: exact word overlap
+    diag_words = set(re.findall(r"[a-záéíóúàãõâêôü]{4,}", diag_lower))
+    indic_words = set(re.findall(r"[a-záéíóúàãõâêôü]{4,}", indicacoes_lower))
+    if diag_words & indic_words:
+        return issues  # Direct match found
+
+    # Strategy 2: substring match (e.g., "joelho" in indicações text)
+    for kw in diag_words:
+        if len(kw) >= 5 and kw in indicacoes_lower:
+            return issues
+
+    # Strategy 3: stem overlap (handles PT-BR morphology: incisional/incisionais)
+    diag_stems = _extract_stems(diag_lower)
+    indic_stems = _extract_stems(indicacoes_lower + " " + descricao.lower())
+    if diag_stems & indic_stems:
+        return issues  # Stem match found
+
+    # Strategy 4: known medical synonyms / related terms
+    _RELATED_TERMS = {
+        "hérnia": ["herniorrafia", "hernio", "hernioplast"],
+        "aderência": ["aderên", "anti-aderên", "barreira", "peritone", "laparotom", "abdomin"],
+        "aderências": ["aderên", "anti-aderên", "barreira", "peritone", "laparotom", "abdomin"],
+        "suboclusão": ["aderên", "peritone", "abdomin", "intestin"],
+        "gonartrose": ["joelho", "articular", "hialurôn", "viscossup"],
+        "osteoartrite": ["articular", "hialurôn", "viscossup", "joelho"],
+        "pseudoartrose": ["enxerto", "ósseo", "artrodese"],
+        "osteomielite": ["enxerto", "ósseo", "desbridam"],
+    }
+    for diag_word in diag_words:
+        for key, synonyms in _RELATED_TERMS.items():
+            if key in diag_word or diag_word in key:
+                for syn in synonyms:
+                    if syn in indicacoes_lower or syn in descricao.lower():
+                        return issues
+
+    # No match found at all — likely off-label
+    issues.append(ValidationIssue(
+        campo="indicacao_off_label",
+        valor_no_texto=diagnosis[:100],
+        valor_oficial=indicacoes[:150],
+        tipo="off_label",
+        severidade="bloqueante",
+    ))
+
+    return issues
+
+
+def _check_contraindicacoes(diagnosis: str, product) -> list[ValidationIssue]:
+    """Bug #4: Detecta contraindicações presentes no diagnóstico."""
+    issues = []
+    contras = getattr(product, "contraindicacoes", None)
+    if not contras or not diagnosis:
+        return issues
+
+    diag_lower = diagnosis.lower()
+
+    # Split contraindications into individual items
+    contra_items = re.split(r"[.;]\s*", contras)
+    for item in contra_items:
+        item = item.strip()
+        if len(item) < 5:
+            continue
+        # Extract key phrases from each contraindication
+        # e.g., "Infecção ativa no sítio cirúrgico" → check "infecção ativa"
+        key_phrases = []
+        item_lower = item.lower()
+        if "infecção ativa" in item_lower:
+            key_phrases.append("infecção ativa")
+        if "hipersensibilidade" in item_lower:
+            key_phrases.append("hipersensibilidade")
+        if "coagulopatia" in item_lower:
+            key_phrases.append("coagulopatia")
+        if "osteoporose severa" in item_lower:
+            key_phrases.append("osteoporose severa")
+
+        # Also try matching significant words (4+ chars) from the contraindication
+        if not key_phrases:
+            contra_words = set(re.findall(r"[a-záéíóúàãõâêô]{5,}", item_lower))
+            stopwords = {"componentes", "componente", "direto", "contato", "ativa", "sítio"}
+            contra_words -= stopwords
+            matches = [w for w in contra_words if w in diag_lower]
+            if len(matches) >= 2:
+                key_phrases.append(" + ".join(matches))
+
+        for phrase in key_phrases:
+            if phrase in diag_lower:
+                issues.append(ValidationIssue(
+                    campo="contraindicacao",
+                    valor_no_texto=phrase,
+                    valor_oficial=item.strip(),
+                    tipo="contraindicacao_presente",
+                    severidade="bloqueante",
+                ))
+
+    return issues
+
+
+def _check_cid_diagnosis_consistency(cid: str, diagnosis: str, product) -> list[ValidationIssue]:
+    """Bug #3: Detecta CID incompatível com diagnóstico/produto."""
+    issues = []
+    if not cid or not diagnosis:
+        return issues
+
+    cid_upper = cid.upper().strip()
+    cid_prefix = re.match(r"[A-Z]\d{2}", cid_upper)
+    if not cid_prefix:
+        return issues
+
+    prefix = cid_prefix.group(0)
+    indicacoes = (getattr(product, "indicacoes", "") or "").lower()
+
+    # Check if CID prefix maps to a known category
+    for known_prefix, expected_keywords in _CID_PRODUCT_MAP.items():
+        if prefix == known_prefix:
+            # CID matches a known category — check if product indicacoes match
+            if any(kw in indicacoes for kw in expected_keywords):
+                return issues  # Product matches the CID category — OK
+
+    # Check for clearly wrong CID categories
+    # J = Respiratory, applied to orthopedic product
+    cid_chapter = cid_upper[0]
+    ortho_product = any(kw in indicacoes for kw in ["joelho", "articular", "hialurônico", "ombro", "quadril", "ligament"])
+    hernia_product = any(kw in indicacoes for kw in ["hérnia", "herniorrafia", "inguinal"])
+    abdominal_product = any(kw in indicacoes for kw in ["abdomin", "peritone", "laparotom"])
+
+    mismatch = False
+    if cid_chapter == "J" and (ortho_product or hernia_product):  # Respiratory CID + ortho/hernia product
+        mismatch = True
+    elif cid_chapter in ("M",) and hernia_product:  # Musculoskeletal CID + hernia product
+        mismatch = True
+    elif cid_chapter in ("K",) and ortho_product:  # Digestive CID + ortho product
+        mismatch = True
+
+    if mismatch:
+        issues.append(ValidationIssue(
+            campo="cid_inconsistente",
+            valor_no_texto=cid,
+            valor_oficial=f"CID {cid} incompatível com indicações do produto: {indicacoes[:100]}",
+            tipo="cid_produto_incompativel",
+            severidade="bloqueante",
+        ))
+
+    return issues
+
+
+def _check_patient_name_conflict(diagnosis: str, patient_name: str) -> list[ValidationIssue]:
+    """Bug #5: Detecta nome de outro paciente no diagnóstico (copy/paste)."""
+    issues = []
+    if not diagnosis or not patient_name:
+        return issues
+
+    # Look for "Paciente NOME" pattern in diagnosis that differs from actual patient
+    name_in_diag = re.search(
+        r"[Pp]aciente\s+([A-ZÀ-Ú][A-ZÀ-Ú\s]{5,})",
+        diagnosis,
+    )
+    if name_in_diag:
+        found_name = name_in_diag.group(1).strip()
+        patient_upper = patient_name.upper().strip()
+        # Compare: if names don't share any word, it's a conflict
+        found_words = set(found_name.upper().split())
+        patient_words = set(patient_upper.split())
+        # Remove common short words (de, da, do, dos)
+        stopwords = {"DE", "DA", "DO", "DAS", "DOS"}
+        found_words -= stopwords
+        patient_words -= stopwords
+        if found_words and patient_words and not (found_words & patient_words):
+            issues.append(ValidationIssue(
+                campo="nome_paciente_conflito",
+                valor_no_texto=found_name,
+                valor_oficial=patient_name,
+                tipo="copypaste_detectado",
+                severidade="bloqueante",
+            ))
+
+    return issues
+
+
+def _check_pediatric_warning(diagnosis: str) -> list[ValidationIssue]:
+    """Bug #4b: Alerta para pacientes pediátricos."""
+    issues = []
+    if not diagnosis:
+        return issues
+
+    # Match explicit age patterns: "12 anos", "paciente de 12 anos", "12 anos de idade"
+    # Exclude duration patterns: "há 2 anos", "por 3 anos", "últimos 5 anos"
+    age_patterns = [
+        re.compile(r"(?:paciente\s+de|idade\s+de|criança\s+de|menor\s+de|adolescente\s+de)\s+(\d{1,2})\s*anos?", re.IGNORECASE),
+        re.compile(r"(\d{1,2})\s*anos?\s+de\s+idade", re.IGNORECASE),
+    ]
+    # Negative lookbehind: exclude "há X anos", "por X anos", "últimos X anos", "em X anos"
+    duration_context = re.compile(r"(?:há|por|últimos?|em|faz|depois\s+de)\s+\d{1,2}\s*anos?", re.IGNORECASE)
+
+    for pattern in age_patterns:
+        match = pattern.search(diagnosis)
+        if match:
+            age = int(match.group(1))
+            # Verify it's not a duration context
+            window_start = max(0, match.start() - 15)
+            window = diagnosis[window_start:match.end()]
+            if duration_context.search(window):
+                continue
+            if age < 18:
+                issues.append(ValidationIssue(
+                    campo="paciente_pediatrico",
+                    valor_no_texto=f"{age} anos",
+                    valor_oficial="Paciente menor de 18 anos — verificar indicação pediátrica",
+                    tipo="alerta_pediatrico",
+                    severidade="alerta",
+                ))
+                break
+
+    return issues
+
+
+def _check_diagnosis_quality(diagnosis: str) -> list[ValidationIssue]:
+    """Bug #6: Detecta diagnóstico vago ou insuficiente."""
+    issues = []
+    if not diagnosis:
+        issues.append(ValidationIssue(
+            campo="diagnostico_vago",
+            valor_no_texto="(vazio)",
+            valor_oficial="Diagnóstico clínico detalhado obrigatório",
+            tipo="diagnostico_ausente",
+            severidade="bloqueante",
+        ))
+        return issues
+
+    # Count meaningful words (excluding very short ones)
+    words = [w for w in diagnosis.split() if len(w) > 2]
+    if len(words) < 5:
+        issues.append(ValidationIssue(
+            campo="diagnostico_vago",
+            valor_no_texto=diagnosis[:100],
+            valor_oficial="Diagnóstico com menos de 5 palavras — insuficiente para justificativa",
+            tipo="diagnostico_insuficiente",
+            severidade="alerta",
+        ))
+
+    return issues
+
+
+def validate_technical_data(
+    text: str,
+    product,
+    medico_inputs: dict | None = None,
+) -> ValidationResult:
     """
     Valida dados técnicos no texto contra os dados oficiais do produto.
     Última camada de segurança antes da geração do PDF.
+
+    Args:
+        text: Texto final da justificativa (pós-auditoria).
+        product: Objeto Product com dados oficiais.
+        medico_inputs: Dados do médico (paciente_nome, cid, diagnostico).
 
     Returns:
         ValidationResult com lista de issues encontrados.
@@ -313,10 +634,24 @@ def validate_technical_data(text: str, product) -> ValidationResult:
     result = ValidationResult()
     result.entities_found = _extract_all_entities(text)
 
+    # --- Technical spec validation (existing) ---
     result.issues.extend(_check_viscosidade(text, getattr(product, 'viscosidade', None)))
     result.issues.extend(_check_peso_molecular(text, getattr(product, 'peso_molecular', None)))
     result.issues.extend(_check_concentracao(text, getattr(product, 'concentracao', None)))
     result.issues.extend(_check_registro_anvisa(text, getattr(product, 'registro_anvisa', None)))
+
+    # --- Clinical safety validation (new) ---
+    if medico_inputs:
+        diagnosis = medico_inputs.get("diagnostico", "")
+        cid = medico_inputs.get("cid", "")
+        patient_name = medico_inputs.get("paciente_nome", "")
+
+        result.issues.extend(_check_product_indication(diagnosis, product))
+        result.issues.extend(_check_contraindicacoes(diagnosis, product))
+        result.issues.extend(_check_cid_diagnosis_consistency(cid, diagnosis, product))
+        result.issues.extend(_check_patient_name_conflict(diagnosis, patient_name))
+        result.issues.extend(_check_pediatric_warning(diagnosis))
+        result.issues.extend(_check_diagnosis_quality(diagnosis))
 
     result.aprovado = not result.has_blocking_issues
 

@@ -1,25 +1,25 @@
 ================================================================================
-CENÁRIO: Enxerto Composto — Doença de Peyronie (fora do Rol)
+CENÁRIO: ADVERSÁRIO — Diagnóstico cheio de abreviações médicas
 ================================================================================
-ID: 07_enxerto_peyronie
+ID: 17_adversario_abreviacoes
 PRODUTO: Kit EC2 - Enxerto Composto
-PACIENTE: Roberto Augusto Lima
+PACIENTE: Fernando Alves
 CID: N48.6
-DIAGNÓSTICO: Doença de Peyronie com curvatura peniana >60 graus, placa estável, disfunção erétil
-CONVÊNIO: Unimed
+DIAGNÓSTICO: Pyr c/ curv >60° dx bil, DE sec, calc CC bil, FT prévio c/ colch + PDE5i s/ resp
+CONVÊNIO: Porto Seguro
 ESPECIALIDADE: Urologia
 
 --- RESULTADOS ---
 APROVADO: False
 CHECKLIST: 3/6
-PALAVRAS: 106
+PALAVRAS: 113
 SCORE: 99.0/100 (alto)
-MODO: cobertura_direta
+MODO: fora_do_rol
 TEMPO: 6.1s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=9/10
 
 --- RELATÓRIO GERADO ---
-Paciente com diagnóstico de Doença de Peyronie com curvatura peniana >60 graus, placa estável, disfunção erétil (CID N48.6), para o qual se faz necessária a utilização de Kit EC2 - Enxerto Composto. Permite colheita e reimplantação de enxerto composto autólogo rico em células do estroma vascular (SVF) para promoção de vasculogênese e angiogênese. Gel carreador preserva viabilidade celular entre colheita e reimplantação. Modulação do processo inflamatório e cicatricial. Aplicação em urologia (Peyronie, disfunção erétil, estenose uretral) e medicina regenerativa. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+Paciente com diagnóstico de Pyr c/ curv >60° dx bil, DE sec, calc CC bil, FT prévio c/ colch + PDE5i s/ resp (CID N48.6), para o qual se faz necessária a utilização de Kit EC2 - Enxerto Composto. Permite colheita e reimplantação de enxerto composto autólogo rico em células do estroma vascular (SVF) para promoção de vasculogênese e angiogênese. Gel carreador preserva viabilidade celular entre colheita e reimplantação. Modulação do processo inflamatório e cicatricial. Aplicação em urologia (Peyronie, disfunção erétil, estenose uretral) e medicina regenerativa. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- BASE LEGAL ---
 Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
@@ -28,9 +28,9 @@ Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do mater
   [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
 
 --- ANÁLISE CRÍTICA ---
-  ⚠ ALERTA: Apenas 106 palavras (mínimo esperado: ~200)
+  ⚠ ALERTA: Apenas 113 palavras (mínimo esperado: ~200)
   ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
-  ⚠ ALERTA: Nome do paciente 'Roberto Augusto Lima' não aparece no texto
+  ⚠ ALERTA: Nome do paciente 'Fernando Alves' não aparece no texto
   ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
   ✗ CRÍTICO: Nenhuma referência bibliográfica
   ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica

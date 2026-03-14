@@ -10,39 +10,27 @@ CONVÊNIO: Porto Seguro
 ESPECIALIDADE: Cirurgia Geral
 
 --- RESULTADOS ---
-APROVADO: True
-CHECKLIST: 6/6
-PALAVRAS: 230
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 87
 SCORE: 100.0/100 (alto)
 MODO: fora_do_rol
-TEMPO: 54.4s
+TEMPO: 5.8s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-A paciente Claudia Regina Santos, portadora de bridas peritoneais recidivantes (CID K66.0), será submetida a procedimento cirúrgico para lise de aderências. A formação de aderências pós-operatórias é uma complicação comum e significativa em cirurgias abdominais, ocorrendo em até 93% dos casos (Diamond, 1996). Essas aderências podem resultar em obstrução intestinal, dor crônica e infertilidade, conforme destacado por Wallwiener et al. (1998) e Ouaïssi et al. (2012). A utilização de barreiras anti-aderência, como o Adhesion STP+, é essencial para prevenir essas complicações. Este produto é composto por carboximetilcelulose sódica (CMC) e ácido hialurônico, formando uma barreira física temporária que é biorreabsorvível em aproximadamente 7 dias, sem interferir no processo cicatricial. Estudos, como o de Ten Broek et al. (2014), demonstram que barreiras anti-aderência são eficazes na redução da formação de aderências após cirurgias peritoneais, e a revisão sistemática de Maheta et al. (2024) confirma a eficácia de barreiras de ácido hialurônico na prevenção de complicações pós-operatórias. A não utilização do Adhesion STP+ pode levar a uma evolução natural da patologia, resultando em obstruções intestinais recorrentes e potencial necessidade de reoperações, conforme evidenciado por Kumar et al. (2009) e Lin et al. (2025). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+Paciente com diagnóstico de Aderências peritoneais pós-operatórias com suboclusão intestinal recorrente, 3 episódios em 6 meses (CID K66.0), para o qual se faz necessária a utilização de Adhesion STP+. Prevenção de aderências pós-cirúrgicas com eficácia comprovada em cirurgias abdominais, pélvicas e ortopédicas. Biorreabsorvível em 7 dias. Não interfere no processo cicatricial. Reduz necessidade de reoperação por aderência em até 50%. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- BASE LEGAL ---
-Conforme a RN 424, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
-
---- REFERÊNCIAS ---
-  1. Diamond et al., 1996 [internal]
-  2. Wallwiener et al., 1998 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/9457948/
-  3. Ouaïssi et al., 2012 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/22261580/
-  4. Ten Broek et al., 2014 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/24075279/
-  5. Maheta et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38795014/
-  6. Kumar et al., 2009 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/19160246/
-  7. Lin et al., 2025 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/40754073/
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- AUDIT LOG ---
-  [correcao] CID: CID ausente no texto
-  [remocao] percentual de sucesso: dado sem evidência
-  [validacao] referencia: verificar
-  [validacao] referencia: verificar
-  [validacao] referencia: verificar
-  [validacao] referencia: verificar
-  [validacao] referencia: verificar
-  [validacao] referencia: verificar
-  [validacao] referencia: verificar
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
 
 --- ANÁLISE CRÍTICA ---
-  ? DADO REMOVIDO PELO AUDITOR: percentual de sucesso: dado sem evidência
+  ⚠ ALERTA: Apenas 87 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'Claudia Regina Santos' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica

@@ -113,6 +113,143 @@ SCENARIOS = [
         "especialidade": "Otorrinolaringologia",
         "health_plan": "Bradesco Saúde",
     },
+    # --- ORTOPEDIA (JOELHO BILATERAL) ---
+    {
+        "id": "09_opus_joelho_bilateral",
+        "descricao": "Viscossuplementação — Gonartrose bilateral grau II-III",
+        "product_keyword": "Kit EC2 - Linha Opus",
+        "paciente_nome": "Margarida Pereira dos Santos",
+        "cid": "M17.0",
+        "diagnostico": "Gonartrose bilateral, grau II joelho E e grau III joelho D, dor crônica há 3 anos, IMC 31, limitação para subir escadas",
+        "especialidade": "Ortopedia",
+        "health_plan": "SulAmérica",
+    },
+    # --- GINECOLOGIA ---
+    {
+        "id": "10_adhesion_ginecologia",
+        "descricao": "Adhesion STP+ — Miomectomia com risco de aderências pélvicas",
+        "product_keyword": "Adhesion STP+",
+        "paciente_nome": "Juliana Martins de Oliveira",
+        "cid": "D25.1",
+        "diagnostico": "Leiomioma uterino intramural de 7cm, sangramento uterino anormal refratário, desejo reprodutivo preservado, miomectomia programada com risco de aderências pélvicas",
+        "especialidade": "Ginecologia",
+        "health_plan": "Amil",
+    },
+
+    # =========================================================================
+    # CENÁRIOS ADVERSÁRIOS — projetados para FORÇAR falhas no pipeline
+    # =========================================================================
+
+    # ADVERSÁRIO 1: Diagnóstico extremamente vago (médico com pressa)
+    {
+        "id": "11_adversario_diagnostico_vago",
+        "descricao": "ADVERSÁRIO — Diagnóstico vago: 'dor no joelho'",
+        "product_keyword": "Kit EC2 - Linha Opus",
+        "paciente_nome": "Pedro Silva",
+        "cid": "M25.5",
+        "diagnostico": "dor no joelho",
+        "especialidade": "Ortopedia",
+        "health_plan": "Unimed",
+    },
+    # ADVERSÁRIO 2: CID errado para o procedimento/produto
+    {
+        "id": "12_adversario_cid_errado",
+        "descricao": "ADVERSÁRIO — CID de gripe para viscossuplementação",
+        "product_keyword": "Kit EC2 - Linha Opus",
+        "paciente_nome": "Ana Beatriz Costa",
+        "cid": "J11",
+        "diagnostico": "Gonartrose grau III joelho direito com limitação funcional",
+        "especialidade": "Ortopedia",
+        "health_plan": "Bradesco Saúde",
+    },
+    # ADVERSÁRIO 3: Produto para indicação totalmente fora (off-label)
+    {
+        "id": "13_adversario_off_label",
+        "descricao": "ADVERSÁRIO — Tela de hérnia para cirurgia de joelho",
+        "product_keyword": "Tela de Polipropileno",
+        "paciente_nome": "Carlos Eduardo Ramos",
+        "cid": "M17.1",
+        "diagnostico": "Gonartrose primária joelho esquerdo grau III, falha de tratamento conservador",
+        "especialidade": "Ortopedia",
+        "health_plan": "SulAmérica",
+    },
+    # ADVERSÁRIO 4: Nome do paciente com caracteres especiais e acentos
+    {
+        "id": "14_adversario_nome_especial",
+        "descricao": "ADVERSÁRIO — Nome com acentos e caracteres especiais",
+        "product_keyword": "Parafuso de Interferência Bioabsorvível",
+        "paciente_nome": "José María O'Connor-Müller Júnior",
+        "cid": "S83.5",
+        "diagnostico": "Ruptura de LCA joelho D confirmada por RM, instabilidade grau III",
+        "especialidade": "Ortopedia",
+        "health_plan": "Cassi",
+    },
+    # ADVERSÁRIO 5: Diagnóstico em inglês
+    {
+        "id": "15_adversario_ingles",
+        "descricao": "ADVERSÁRIO — Diagnóstico escrito em inglês",
+        "product_keyword": "Biossilex",
+        "paciente_nome": "Roberto Nascimento",
+        "cid": "M86.6",
+        "diagnostico": "Chronic osteomyelitis of proximal tibia with segmental bone defect after 3 debridements, culture positive for MRSA",
+        "especialidade": "Ortopedia",
+        "health_plan": "Amil",
+    },
+    # ADVERSÁRIO 6: Dados mínimos absolutos (só nome e CID, zero diagnóstico descritivo)
+    {
+        "id": "16_adversario_dados_minimos",
+        "descricao": "ADVERSÁRIO — Dados mínimos: só CID, sem diagnóstico descritivo",
+        "product_keyword": "Vitagraft",
+        "paciente_nome": "Maria Santos",
+        "cid": "M84.1",
+        "diagnostico": "M84.1",
+        "especialidade": "",
+        "health_plan": "",
+    },
+    # ADVERSÁRIO 7: Diagnóstico com abreviações médicas extremas
+    {
+        "id": "17_adversario_abreviacoes",
+        "descricao": "ADVERSÁRIO — Diagnóstico cheio de abreviações médicas",
+        "product_keyword": "Kit EC2 - Enxerto Composto",
+        "paciente_nome": "Fernando Alves",
+        "cid": "N48.6",
+        "diagnostico": "Pyr c/ curv >60° dx bil, DE sec, calc CC bil, FT prévio c/ colch + PDE5i s/ resp",
+        "especialidade": "Urologia",
+        "health_plan": "Porto Seguro",
+    },
+    # ADVERSÁRIO 8: Mesmo produto, mesma indicação, mas paciente pediátrico (12 anos)
+    {
+        "id": "18_adversario_pediatrico",
+        "descricao": "ADVERSÁRIO — Paciente pediátrico (12 anos) para viscossuplementação",
+        "product_keyword": "Kit EC2 - Linha Opus",
+        "paciente_nome": "Gabriel Santos Ferreira",
+        "cid": "M17.1",
+        "diagnostico": "Paciente de 12 anos com gonartrose pós-traumática joelho D após fratura de planalto tibial há 2 anos, dor crônica limitante",
+        "especialidade": "Ortopedia",
+        "health_plan": "Unimed",
+    },
+    # ADVERSÁRIO 9: Diagnóstico contraditório (contraindicação no próprio diagnóstico)
+    {
+        "id": "19_adversario_contraindicacao",
+        "descricao": "ADVERSÁRIO — Paciente com infecção ativa (contraindicação para tela)",
+        "product_keyword": "Tela de Polipropileno",
+        "paciente_nome": "Antônio Barbosa Lima",
+        "cid": "K43.1",
+        "diagnostico": "Hérnia incisional recidivada com infecção ativa no sítio cirúrgico, secreção purulenta, cultura positiva para S. aureus",
+        "especialidade": "Cirurgia Geral",
+        "health_plan": "Bradesco Saúde",
+    },
+    # ADVERSÁRIO 10: Copiar/colar de outro paciente (nomes conflitantes no diagnóstico)
+    {
+        "id": "20_adversario_copypaste",
+        "descricao": "ADVERSÁRIO — Copy/paste: nome no diagnóstico difere do paciente",
+        "product_keyword": "Adhesion STP+",
+        "paciente_nome": "Ricardo Moreira Filho",
+        "cid": "K66.0",
+        "diagnostico": "Paciente JOANA MARIA DA SILVA portadora de aderências peritoneais pós-operatórias extensas com suboclusão intestinal recorrente, 4 episódios em 8 meses, 2 cirurgias abdominais prévias",
+        "especialidade": "Cirurgia Geral",
+        "health_plan": "SulAmérica",
+    },
 ]
 
 # Respostas que o médico daria para as perguntas do pipeline
@@ -538,4 +675,16 @@ async def run_simulation():
 
 
 if __name__ == "__main__":
+    import sys
+    # Filter scenarios by prefix: python simulate_doctor.py --only adversario
+    # Or by ID: python simulate_doctor.py --only 11,12,13
+    if "--only" in sys.argv:
+        idx = sys.argv.index("--only")
+        filter_val = sys.argv[idx + 1] if idx + 1 < len(sys.argv) else ""
+        if filter_val:
+            ids = [f.strip() for f in filter_val.split(",")]
+            SCENARIOS[:] = [
+                s for s in SCENARIOS
+                if any(fid in s["id"] for fid in ids)
+            ]
     asyncio.run(run_simulation())

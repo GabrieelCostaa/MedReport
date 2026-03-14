@@ -1,25 +1,25 @@
 ================================================================================
-CENÁRIO: Parafuso bioabsorvível — Reconstrução de LCA
+CENÁRIO: ADVERSÁRIO — Nome com acentos e caracteres especiais
 ================================================================================
-ID: 02_parafuso_lca
+ID: 14_adversario_nome_especial
 PRODUTO: Parafuso de Interferência Bioabsorvível
-PACIENTE: Lucas Andrade Ferreira
+PACIENTE: José María O'Connor-Müller Júnior
 CID: S83.5
-DIAGNÓSTICO: Ruptura de LCA joelho esquerdo, instabilidade anterior grau III, RM confirmando lesão completa
-CONVÊNIO: Bradesco Saúde
+DIAGNÓSTICO: Ruptura de LCA joelho D confirmada por RM, instabilidade grau III
+CONVÊNIO: Cassi
 ESPECIALIDADE: Ortopedia
 
 --- RESULTADOS ---
 APROVADO: False
 CHECKLIST: 3/6
-PALAVRAS: 81
+PALAVRAS: 79
 SCORE: 100.0/100 (alto)
 MODO: cobertura_direta
-TEMPO: 6.1s
+TEMPO: 6.0s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-Paciente com diagnóstico de Ruptura de LCA joelho esquerdo, instabilidade anterior grau III, RM confirmando lesão completa (CID S83.5), para o qual se faz necessária a utilização de Parafuso de Interferência Bioabsorvível. Fixação segura de enxertos tendíneos em túnel ósseo. Elimina necessidade de remoção posterior (bioabsorvível). Não gera artefato em ressonância magnética. Osteointegração progressiva. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+Paciente com diagnóstico de Ruptura de LCA joelho D confirmada por RM, instabilidade grau III (CID S83.5), para o qual se faz necessária a utilização de Parafuso de Interferência Bioabsorvível. Fixação segura de enxertos tendíneos em túnel ósseo. Elimina necessidade de remoção posterior (bioabsorvível). Não gera artefato em ressonância magnética. Osteointegração progressiva. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- BASE LEGAL ---
 Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
@@ -28,9 +28,9 @@ Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do mater
   [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
 
 --- ANÁLISE CRÍTICA ---
-  ⚠ ALERTA: Apenas 81 palavras (mínimo esperado: ~200)
+  ⚠ ALERTA: Apenas 79 palavras (mínimo esperado: ~200)
   ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
-  ⚠ ALERTA: Nome do paciente 'Lucas Andrade Ferreira' não aparece no texto
+  ⚠ ALERTA: Nome do paciente 'José María O'Connor-Müller Júnior' não aparece no texto
   ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
   ✗ CRÍTICO: Nenhuma referência bibliográfica
   ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica

@@ -1,0 +1,39 @@
+================================================================================
+CENÁRIO: ADVERSÁRIO — Copy/paste: nome no diagnóstico difere do paciente
+================================================================================
+ID: 20_adversario_copypaste
+PRODUTO: Adhesion STP+
+PACIENTE: Ricardo Moreira Filho
+CID: K66.0
+DIAGNÓSTICO: Paciente JOANA MARIA DA SILVA portadora de aderências peritoneais pós-operatórias extensas com suboclusão intestinal recorrente, 4 episódios em 8 meses, 2 cirurgias abdominais prévias
+CONVÊNIO: SulAmérica
+ESPECIALIDADE: Cirurgia Geral
+
+--- RESULTADOS ---
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 99
+SCORE: 100.0/100 (alto)
+MODO: fora_do_rol
+TEMPO: 6.0s
+COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
+
+--- RELATÓRIO GERADO ---
+Paciente com diagnóstico de Paciente JOANA MARIA DA SILVA portadora de aderências peritoneais pós-operatórias extensas com suboclusão intestinal recorrente, 4 episódios em 8 meses, 2 cirurgias abdominais prévias (CID K66.0), para o qual se faz necessária a utilização de Adhesion STP+. Prevenção de aderências pós-cirúrgicas com eficácia comprovada em cirurgias abdominais, pélvicas e ortopédicas. Biorreabsorvível em 7 dias. Não interfere no processo cicatricial. Reduz necessidade de reoperação por aderência em até 50%. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- BASE LEGAL ---
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- AUDIT LOG ---
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+  [hard_validation] nome_paciente_conflito: [BLOQUEANTE] copypaste_detectado: valor no texto 'JOANA MARIA DA SILVA' diverge do oficial 'Ricardo Moreira Filho'
+
+--- ANÁLISE CRÍTICA ---
+  ⚠ ALERTA: Apenas 99 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'Ricardo Moreira Filho' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? CORREÇÃO HARD: nome_paciente_conflito: [BLOQUEANTE] copypaste_detectado: valor no texto 'JOANA MARIA DA SILVA' diverge do oficial 'Ricardo Moreira Filho'
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ? BLOQUEIO: Nome de outro paciente detectado no diagnóstico (possível copy/paste): JOANA MARIA DA SILVA

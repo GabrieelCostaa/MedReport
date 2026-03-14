@@ -1,0 +1,41 @@
+================================================================================
+CENÁRIO: ADVERSÁRIO — CID de gripe para viscossuplementação
+================================================================================
+ID: 12_adversario_cid_errado
+PRODUTO: Kit EC2 - Linha Opus
+PACIENTE: Ana Beatriz Costa
+CID: J11
+DIAGNÓSTICO: Gonartrose grau III joelho direito com limitação funcional
+CONVÊNIO: Bradesco Saúde
+ESPECIALIDADE: Ortopedia
+
+--- RESULTADOS ---
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 82
+SCORE: 88.0/100 (alto)
+MODO: cobertura_direta
+TEMPO: 5.7s
+COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=10.0/20 | Evidência=8/10
+GAPS: Inconsistência entre CID e procedimento solicitado
+
+--- RELATÓRIO GERADO ---
+Paciente com diagnóstico de Gonartrose grau III joelho direito com limitação funcional (CID J11), para o qual se faz necessária a utilização de Kit EC2 - Linha Opus. Restauração da viscoelasticidade do líquido sinovial. Alívio prolongado de dor em osteoartrite de joelho. Alto peso molecular (6.000 kDa) proporciona maior tempo de permanência articular. Aplicação única. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- BASE LEGAL ---
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
+
+--- AUDIT LOG ---
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+  [hard_validation] cid_inconsistente: [BLOQUEANTE] cid_produto_incompativel: valor no texto 'J11' diverge do oficial 'CID J11 incompatível com indicações do produto: osteoartrite de joelho (graus ii e iii de kellgren-lawrence). tratamento sintomático de dor articula'
+
+--- ANÁLISE CRÍTICA ---
+  ⚠ ALERTA: Apenas 82 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'Ana Beatriz Costa' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? CORREÇÃO HARD: cid_inconsistente: [BLOQUEANTE] cid_produto_incompativel: valor no texto 'J11' diverge do oficial 'CID J11 incompatível com indicações do produto: osteoartrite de joelho (graus ii e iii de kellgren-lawrence). tratamento sintomático de dor articula'
+  ? GAP: Inconsistência entre CID e procedimento solicitado
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ? BLOQUEIO: O valor 'J11' foi identificado como cid_inconsistente incorreto. O valor oficial é 'CID J11 incompatível com indicações do produto: osteoartrite de joelho (graus ii e iii de kellgren-lawrence). tratamento sintomático de dor articula'.

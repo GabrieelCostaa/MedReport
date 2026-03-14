@@ -10,38 +10,27 @@ CONVÊNIO: SulAmérica
 ESPECIALIDADE: Ortopedia
 
 --- RESULTADOS ---
-APROVADO: True
-CHECKLIST: 6/6
-PALAVRAS: 269
+APROVADO: False
+CHECKLIST: 3/6
+PALAVRAS: 97
 SCORE: 100.0/100 (alto)
-MODO: cobertura_direta
-TEMPO: 37.3s
+MODO: fora_do_rol
+TEMPO: 5.7s
 COMPONENTES: DUT=40.0/40 | TUSS/TISS=30.0/30 | Justificativa=20.0/20 | Evidência=10.0/10
 
 --- RELATÓRIO GERADO ---
-A paciente Maria Helena Souza apresenta diagnóstico de pseudoartrose de diáfise de úmero direito (CID M84.1), com 9 meses sem consolidação pós-fratura. A persistência deste quadro, mesmo após tratamento conservador por mais de 6 meses, evidencia a refratariedade à abordagem clínica convencional, que incluiu imobilização e fisioterapia, sem melhora significativa. A manutenção da pseudoartrose gera um ambiente bioquímico desfavorável, com predomínio de citocinas pró-inflamatórias, que comprometem a regeneração óssea e aumentam o risco de complicações adicionais, como dor crônica e perda funcional do membro afetado.
-O uso do Vitagraft - Enxerto Bifásico é tecnicamente superior e clinicamente necessário para este caso. Este material é composto por 60% de hidroxiapatita (HA) e 40% de beta-tricálcio fosfato (β-TCP), promovendo osteocondução progressiva. A composição bifásica do Vitagraft combina a estabilidade estrutural da HA com a reabsorção controlada do β-TCP, favorecendo a osteogênese e eliminando a necessidade de enxerto autólogo, evitando assim a morbidade do sítio doador (Daculsi et al., 1998; LeGeros, 2008; Ebrahimi et al., 2017). A porosidade interconectada do material facilita a vascularização e a migração celular, essenciais para a consolidação óssea (Toosi et al., 2023; Boonsirikamchai et al., 2024).
-A não realização do procedimento com o Vitagraft pode resultar na progressão da pseudoartrose para um quadro de maior complexidade, com potencial necessidade de intervenções cirúrgicas mais invasivas e de maior morbidade no futuro (Baamir et al., 2024; Tripathy et al., 2015). A substituição deste material por opção de menor desempenho técnico transfere à operadora de saúde a responsabilidade integral por eventuais complicações clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil profissional. Certos de vossa presteza, aguardamos a liberação.
+Paciente com diagnóstico de Pseudoartrose de diáfise de úmero D, 9 meses sem consolidação pós-fratura (CID M84.1), para o qual se faz necessária a utilização de Vitagraft - Enxerto Bifásico. Composição bifásica combina estabilidade estrutural da HA com reabsorção controlada do β-TCP, promovendo osteocondução progressiva. Porosidade interconectada favorece vascularização e migração celular. Elimina necessidade de enxerto autólogo e morbidade do sítio doador. Aplicável em defeitos ósseos de múltiplas localizações anatômicas. Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- BASE LEGAL ---
-Conforme a RN 424 da ANS, cabe exclusivamente ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME). A RN 428/465 estabelece a obrigação de cobertura mínima obrigatória pela ANS. A RN 395 exige que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de mesmo nível das aqui citadas, sob pena de descumprimento. O Código de Ética Médica Cap. I, V, compete ao médico usar o melhor do progresso científico em benefício do paciente.
-
---- REFERÊNCIAS ---
-  1. Daculsi et al., 1998 [internal]
-  2. LeGeros, 2008 [internal]
-  3. Ebrahimi et al., 2017 [internal]
-  4. Toosi et al., 2023 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/36939654/
-  5. Boonsirikamchai et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/38831392/
-  6. Baamir et al., 2024 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/39122186/
-  7. Tripathy et al., 2015 [pubmed] — https://pubmed.ncbi.nlm.nih.gov/26037993/
+Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.
 
 --- AUDIT LOG ---
-  [validacao] diagnostico: CID presente no texto
-  [validacao] justificativa_tecnica: Conforme ficha oficial
-  [validacao] falha_terapeutica: Falha terapêutica descrita
-  [validacao] risco_nao_realizacao: Risco descrito
-  [validacao] base_legal_ans: Base legal presente
-  [validacao] referencia_bibliografica: Referências válidas
+  [validacao] geral: Auditoria automática (LLM indisponível): Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
 
 --- ANÁLISE CRÍTICA ---
-  ? VERIFICAR: Percentual 60% no texto — confirmar se tem evidência
+  ⚠ ALERTA: Apenas 97 palavras (mínimo esperado: ~200)
+  ✗ CRÍTICO: Checklist incompleto — faltam: falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
+  ⚠ ALERTA: Nome do paciente 'Maria Helena Souza' não aparece no texto
+  ⚠ ALERTA: RNs encontradas no corpo da justificativa: ['RN 395'] (devem ficar na base_legal)
+  ✗ CRÍTICO: Nenhuma referência bibliográfica
+  ? BLOQUEIO: Checklist incompleto: faltam falha_terapeutica, risco_nao_realizacao, referencia_bibliografica
