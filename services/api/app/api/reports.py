@@ -9,9 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
 from app.db.session import get_db
-from app.db.models import Report
+from app.db.models import Report, Product
 from app.core.security import get_current_user_id
-from app.services.tiss import build_guia_solicitacao_xml, build_guia_pdf
+from app.services.tiss import build_guia_solicitacao_xml
 
 router = APIRouter()
 
@@ -226,29 +226,46 @@ async def download_report(
             media_type="application/xml",
             headers={"Content-Disposition": f"attachment; filename=guia-tiss-{report_id}.xml"},
         )
+    # Resolve product name
+    product_name = ""
+    if hasattr(r, "product_id") and r.product_id:
+        prod_result = await db.execute(select(Product).where(Product.id == r.product_id))
+        product = prod_result.scalar_one_or_none()
+        if product:
+            product_name = product.nome or ""
+
+    checklist = r.checklist_status if isinstance(getattr(r, "checklist_status", None), dict) else None
+    refs = r.referencias_bib if isinstance(getattr(r, "referencias_bib", None), list) else []
+    aprovado = all(checklist.values()) if checklist else False
+
+    common_kwargs = dict(
+        justificativa=r.justificativa_ia or "",
+        paciente_nome=r.paciente_nome or "",
+        cid=r.cid or "",
+        diagnostico_resumo=r.diagnosis or "",
+        produto_nome=product_name or r.materials or "",
+        convenio=r.health_plan or "",
+        especialidade=getattr(r, "especialidade", "") or "",
+        codigo_tuss="",
+        referencias=refs,
+        checklist=checklist,
+        aprovado=aprovado,
+        falha_terapeutica=getattr(r, "falha_terapeutica", "") or "",
+        risco_nao_realizacao=getattr(r, "risco_nao_realizacao", "") or "",
+        base_legal=getattr(r, "base_legal_ans", "") or "",
+    )
+
     if format == "docx":
         from app.services.docx_generator import generate_docx_bytes
-        checklist = r.checklist_status if hasattr(r, "checklist_status") else None
-        refs = r.referencias_bib if hasattr(r, "referencias_bib") else []
-        docx_bytes = generate_docx_bytes(
-            justificativa=r.justificativa_ia or "",
-            paciente_nome=r.paciente_nome or "",
-            cid=r.cid or "",
-            diagnostico_resumo=r.diagnosis or "",
-            produto_nome=getattr(r, "product_nome", "") or "",
-            convenio=r.health_plan or "",
-            especialidade=r.especialidade or "",
-            codigo_tuss="",
-            referencias=refs if isinstance(refs, list) else [],
-            checklist=checklist if isinstance(checklist, dict) else None,
-            aprovado=True,
-        )
+        docx_bytes = generate_docx_bytes(**common_kwargs)
         return Response(
             content=docx_bytes,
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             headers={"Content-Disposition": f"attachment; filename=relatorio-{report_id}.docx"},
         )
-    pdf_bytes = build_guia_pdf(r)
+
+    from app.services.pdf_generator import generate_pdf_bytes
+    pdf_bytes = generate_pdf_bytes(**common_kwargs)
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",

@@ -584,12 +584,15 @@ async def download_pdf(
         paciente_nome=report.paciente_nome or "",
         cid=report.cid or "",
         diagnostico_resumo=report.diagnosis or "",
-        produto_nome=product_name,
+        produto_nome=product_name or report.materials or "",
         convenio=report.health_plan or "",
         especialidade=report.especialidade or "",
         referencias=report.referencias_bib or [],
         checklist=checklist,
         aprovado=aprovado,
+        falha_terapeutica=getattr(report, "falha_terapeutica", "") or "",
+        risco_nao_realizacao=getattr(report, "risco_nao_realizacao", "") or "",
+        base_legal=getattr(report, "base_legal_ans", "") or "",
     )
 
     safe_name = (report.paciente_nome or "relatorio").replace(" ", "_")
