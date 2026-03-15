@@ -1,17 +1,21 @@
 """API de Produtos OPME — busca em catálogo interno + base ANVISA (96k+ registros)."""
+import logging
 from uuid import UUID
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from sqlalchemy import select, or_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
 from sqlalchemy import text as sql_text
 
-from app.db.session import get_db
+from app.db.session import get_db, AsyncSessionLocal
 from app.db.models import Product, AnvisaProduct, ProductTussMapping, TussMaterial
 from app.core.security import get_current_user_id
+from app.services.ifu_enrichment import enrich_product_from_ifu
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -154,9 +158,31 @@ async def create_product_quick(
     }
 
 
+async def _background_ifu_enrich(product_id: str):
+    """Background task: enrich product from manufacturer IFU PDF."""
+    try:
+        async with AsyncSessionLocal() as db:
+            result = await db.execute(
+                select(Product).where(Product.id == product_id)
+            )
+            product = result.scalar_one_or_none()
+            if product:
+                enriched = await enrich_product_from_ifu(db, product)
+                if enriched:
+                    logger.info(
+                        "IFU enrichment OK para %s: %s",
+                        product.nome, list(enriched.keys())
+                    )
+                else:
+                    logger.info("IFU não encontrado para %s", product.nome)
+    except Exception as e:
+        logger.warning("Background IFU enrichment falhou: %s", e)
+
+
 @router.post("/from-anvisa/{registro}")
 async def create_from_anvisa(
     registro: str,
+    background_tasks: BackgroundTasks,
     user_id: str = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
@@ -235,6 +261,9 @@ async def create_from_anvisa(
     await db.commit()
     await db.refresh(product)
 
+    # Background: enriquecer com dados da instrução de uso do fabricante (zero custo)
+    background_tasks.add_task(_background_ifu_enrich, str(product.id))
+
     return {
         "id": str(product.id),
         "nome": product.nome,
@@ -244,6 +273,35 @@ async def create_from_anvisa(
         "classe_risco": ap.classe_risco,
         "already_exists": False,
         "tuss_mappings": tuss_codes_mapped,
+    }
+
+
+@router.post("/{product_id}/enrich")
+async def enrich_product_endpoint(
+    product_id: UUID,
+    user_id: str = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """Enriquece produto com dados da instrução de uso do fabricante (zero custo IA)."""
+    result = await db.execute(select(Product).where(Product.id == product_id))
+    product = result.scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    enriched = await enrich_product_from_ifu(db, product)
+
+    if not enriched:
+        return {
+            "status": "not_found",
+            "message": "Instrução de uso não encontrada para este produto",
+        }
+
+    return {
+        "status": "enriched",
+        "fields_updated": [k for k in enriched.keys()],
+        "bula_url": enriched.get("bula_url"),
+        "indicacoes_preview": (enriched.get("indicacoes") or "")[:200],
+        "contraindicacoes_preview": (enriched.get("contraindicacoes") or "")[:200],
     }
 
 
