@@ -381,6 +381,8 @@ class AnvisaProduct(Base):
     classe_risco = Column(String(20), nullable=True)
     data_consulta = Column(DateTime(timezone=True), nullable=True)
     dados_json = Column(JSON, nullable=True)
+    nome_tecnico = Column(String(500), nullable=True)
+    modelos_descricao = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 

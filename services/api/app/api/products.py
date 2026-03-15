@@ -83,8 +83,8 @@ async def list_products(
                     "id": f"anvisa:{ap.registro}",
                     "nome": ap.nome_comercial or f"Produto ANVISA {ap.registro}",
                     "linha": ap.fabricante,
-                    "descricao_tecnica": "",
-                    "diferenciais_clinicos": "",
+                    "descricao_tecnica": ap.nome_tecnico or "",
+                    "diferenciais_clinicos": (ap.modelos_descricao or "")[:200],
                     "codigo_tuss_sugerido": "",
                     "registro_anvisa": ap.registro,
                     "classe_risco": ap.classe_risco,
@@ -158,11 +158,13 @@ async def create_from_anvisa(
     if not ap:
         raise HTTPException(status_code=404, detail="Registro ANVISA não encontrado")
 
-    # Cria produto no catálogo
+    # Cria produto no catálogo com dados técnicos da ANVISA
     product = Product(
         nome=ap.nome_comercial or f"Produto ANVISA {ap.registro}",
         linha=ap.fabricante,
         registro_anvisa=ap.registro,
+        descricao_tecnica=ap.nome_tecnico,
+        indicacoes=ap.modelos_descricao,
     )
     db.add(product)
     await db.flush()
