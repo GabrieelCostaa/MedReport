@@ -206,6 +206,95 @@ class DutEngine:
         )
         return result.scalar_one_or_none()
 
+    async def _resolve_material_context(self, material_code: str) -> list[str]:
+        """Resolve TUSS material code to search terms for ROL matching.
+
+        Materials (Table 19) are not procedures — they are used IN procedures.
+        We extract the material's 'grupo' (e.g., 'PRÓTESES TOTAIS DE JOELHO')
+        which contains keywords that can match ROL procedures
+        (e.g., 'ARTROPLASTIA TOTAL DE JOELHO COM IMPLANTES').
+        """
+        from app.db.models import TussMaterial
+        result = await self.db.execute(
+            select(TussMaterial.grupo, TussMaterial.nome)
+            .where(TussMaterial.codigo_tuss == material_code)
+            .limit(1)
+        )
+        row = result.first()
+        if not row:
+            return []
+        terms = []
+        if row.grupo:
+            terms.append(row.grupo)
+        if row.nome:
+            terms.append(row.nome)
+        return terms
+
+    async def _find_in_rol_for_material(self, material_code: str):
+        """Find ROL procedure for a TUSS material code.
+
+        Materials use different vocabulary than procedures in the ROL.
+        E.g., 'PRÓTESES TOTAIS DE JOELHO' → 'ARTROPLASTIA TOTAL DE JOELHO'.
+        We bridge this gap using anatomical keywords extracted from the
+        material's grupo/nome, then search ROL with procedure-specific terms.
+        """
+        import re as _re
+        from app.db.models import RolProcedure, TussMaterial
+        from sqlalchemy import and_
+
+        result = await self.db.execute(
+            select(TussMaterial.grupo, TussMaterial.nome)
+            .where(TussMaterial.codigo_tuss == material_code)
+            .limit(1)
+        )
+        row = result.first()
+        if not row:
+            return None
+
+        # Combine grupo and nome for keyword extraction
+        context = f"{row.grupo or ''} {row.nome or ''}".upper()
+
+        # Map anatomical/device keywords to ROL search strategies
+        # Each entry: (material keyword, ROL search conditions)
+        MATERIAL_TO_ROL = [
+            ("JOELHO", [RolProcedure.nome.ilike("%joelho%"), RolProcedure.nome.ilike("%implante%")]),
+            ("QUADRIL", [RolProcedure.nome.ilike("%quadril%"), RolProcedure.nome.ilike("%implante%")]),
+            ("OMBRO", [RolProcedure.nome.ilike("%umeral%"), RolProcedure.nome.ilike("%implante%")]),
+            ("UMERAL", [RolProcedure.nome.ilike("%umeral%"), RolProcedure.nome.ilike("%implante%")]),
+            ("COLUNA", [RolProcedure.nome.ilike("%coluna%"), RolProcedure.nome.ilike("%artrodese%")]),
+            ("CORONAR", [RolProcedure.nome.ilike("%stent coron%")]),
+            ("STENT", [RolProcedure.nome.ilike("%implante%stent%")]),
+            ("LENTE INTRA", [RolProcedure.nome.ilike("%lente intra%")]),
+            ("INTRAOCULAR", [RolProcedure.nome.ilike("%lente intra%")]),
+            ("PARAFUSO", [RolProcedure.nome.ilike("%osteoss%ntese%")]),
+            ("PLACA", [RolProcedure.nome.ilike("%osteoss%ntese%")]),
+            ("HASTE INTRAMEDULAR", [RolProcedure.nome.ilike("%osteoss%ntese%")]),
+            ("PINO", [RolProcedure.nome.ilike("%osteoss%ntese%")]),
+            ("TELA CIRURGICA", [RolProcedure.nome.ilike("%herniorrafia%")]),
+            ("HERNIA", [RolProcedure.nome.ilike("%herniorrafia%")]),
+            ("MEMBRANA", [RolProcedure.nome.ilike("%membrana%")]),
+            ("TORNOZELO", [RolProcedure.nome.ilike("%tornozelo%"), RolProcedure.nome.ilike("%implante%")]),
+            ("COTOVELO", [RolProcedure.nome.ilike("%cotovelo%"), RolProcedure.nome.ilike("%implante%")]),
+            ("PUNHO", [RolProcedure.nome.ilike("%punho%"), RolProcedure.nome.ilike("%implante%")]),
+        ]
+
+        for keyword, conditions in MATERIAL_TO_ROL:
+            if keyword in context:
+                r = await self.db.execute(
+                    select(RolProcedure).where(and_(*conditions)).limit(1)
+                )
+                match = r.scalar_one_or_none()
+                if match:
+                    return match
+
+        # Generic fallback: try _find_in_rol_by_name with grupo
+        if row.grupo:
+            match = await self._find_in_rol_by_name(row.grupo)
+            if match:
+                return match
+
+        return None
+
     async def find_dut_for_procedure(self, procedure_code: str) -> Any | None:
         from app.db.models import DutRule
         # Try direct code match first
@@ -264,15 +353,18 @@ class DutEngine:
         """
         from app.db.models import RolProcedure
 
-        # Resolve procedure name to search for related procedures
+        # Try procedure name first (Table 22)
         proc_name = await self._resolve_procedure_name(procedure_code)
-        if not proc_name:
-            return []
+        if proc_name:
+            candidates = await self._find_in_rol_by_name(proc_name)
+            if candidates:
+                return [candidates]
 
-        # Search for Rol procedures matching keywords from the procedure name
-        candidates = await self._find_in_rol_by_name(proc_name)
-        if candidates:
-            return [candidates]
+        # Fallback: try material context (Table 19)
+        match = await self._find_in_rol_for_material(procedure_code)
+        if match:
+            return [match]
+
         return []
 
     async def _find_in_rol_by_name(self, proc_name: str):
@@ -302,7 +394,7 @@ class DutEngine:
             overlap = search & rol
             jaccard = len(overlap) / len(search | rol)
             coverage = len(overlap) / len(rol) if rol else 0.0
-            return jaccard > 0.5 or coverage > 0.6
+            return jaccard >= 0.4 or coverage >= 0.5
 
         search_kw = _keywords(proc_name)
 
@@ -317,7 +409,8 @@ class DutEngine:
             return match
 
         # Strategy 2: Keyword search with Jaccard similarity validation
-        words = list(search_kw)
+        # Sort by length desc (longer keywords are more specific, better for matching)
+        words = sorted(search_kw, key=len, reverse=True)
         if len(words) >= 2:
             from sqlalchemy import and_
             for n_words in (min(3, len(words)), 2):
@@ -331,13 +424,32 @@ class DutEngine:
                     if _is_good_match(search_kw, rol_kw):
                         return candidate
 
+        # Strategy 3: Single longest keyword (≥8 chars) — specific enough to avoid
+        # false positives (e.g., "turbinectomia", "artroplastia", "herniorrafia")
+        if words:
+            long_words = [w for w in words if len(w) >= 8]
+            for w in long_words[:2]:
+                result = await self.db.execute(
+                    select(RolProcedure).where(
+                        RolProcedure.nome.ilike(f"%{w}%")
+                    ).limit(5)
+                )
+                candidates = result.scalars().all()
+                for candidate in candidates:
+                    rol_kw = _keywords(candidate.nome)
+                    if _is_good_match(search_kw, rol_kw):
+                        return candidate
+
         return None
 
     async def determine_compliance_mode(self, procedure_code: str, dut_rule=None) -> str:
         """Determina o modo de compliance: rol_dut, cobertura_direta, ou fora_do_rol.
 
         O Rol da ANS identifica procedimentos por NOME, não por código TUSS.
-        Fluxo: código TUSS → nome (via Tabela 22) → busca no Rol por nome.
+        Fluxo:
+          1. código TUSS → nome (via Tabela 22) → busca no Rol por nome
+          2. Se código é de material (Tabela 19), usa grupo/nome do material
+             para encontrar o procedimento cirúrgico correspondente no Rol.
         """
         from app.db.models import RolProcedure
 
@@ -351,11 +463,18 @@ class DutEngine:
         )
         in_rol = rol_result.scalar_one_or_none()
 
-        # 2. Resolve code → name via Table 22, then search Rol by name
+        # 2. Resolve code → name via Table 22 (procedures), then search Rol by name
         if not in_rol:
             proc_name = await self._resolve_procedure_name(procedure_code)
             if proc_name:
                 in_rol = await self._find_in_rol_by_name(proc_name)
+
+        # 3. Fallback: code might be a material (Table 19), not a procedure.
+        #    Materials (e.g., "Prótese de Joelho") are used IN procedures
+        #    (e.g., "Artroplastia total de joelho com implantes").
+        #    Use anatomical keyword bridging to find the matching ROL procedure.
+        if not in_rol:
+            in_rol = await self._find_in_rol_for_material(procedure_code)
 
         if not in_rol:
             return "fora_do_rol"
