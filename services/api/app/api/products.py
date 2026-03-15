@@ -7,8 +7,10 @@ from sqlalchemy import select, or_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
+from sqlalchemy import text as sql_text
+
 from app.db.session import get_db
-from app.db.models import Product, AnvisaProduct
+from app.db.models import Product, AnvisaProduct, ProductTussMapping, TussMaterial
 from app.core.security import get_current_user_id
 
 router = APIRouter()
@@ -111,13 +113,44 @@ async def create_product_quick(
     db.add(product)
     await db.flush()
     await db.refresh(product)
+
+    # Mapeamento automático TUSS se tem registro ANVISA
+    tuss_codes_mapped = []
+    if body.registro_anvisa:
+        tuss_result = await db.execute(
+            select(TussMaterial).where(
+                TussMaterial.registro_anvisa == body.registro_anvisa,
+                TussMaterial.ativo == True,
+            )
+        )
+        tuss_matches = tuss_result.scalars().all()
+
+        for i, tm in enumerate(tuss_matches):
+            mapping = ProductTussMapping(
+                product_id=product.id,
+                tuss_code=tm.codigo_tuss,
+                procedure_name=tm.nome,
+                subgroup=tm.subgrupo,
+                is_primary=(i == 0),
+            )
+            db.add(mapping)
+            tuss_codes_mapped.append({
+                "tuss_code": tm.codigo_tuss,
+                "nome": tm.nome,
+            })
+
+        if tuss_matches and not body.codigo_tuss_sugerido:
+            product.codigo_tuss_sugerido = tuss_matches[0].codigo_tuss
+
     await db.commit()
+    await db.refresh(product)
     return {
         "id": str(product.id),
         "nome": product.nome,
         "linha": product.linha,
         "registro_anvisa": product.registro_anvisa,
         "codigo_tuss_sugerido": product.codigo_tuss_sugerido,
+        "tuss_mappings": tuss_codes_mapped,
     }
 
 
@@ -169,7 +202,38 @@ async def create_from_anvisa(
     db.add(product)
     await db.flush()
     await db.refresh(product)
+
+    # 🔗 Mapeamento automático TUSS via registro_anvisa
+    tuss_result = await db.execute(
+        select(TussMaterial).where(
+            TussMaterial.registro_anvisa == registro,
+            TussMaterial.ativo == True,
+        )
+    )
+    tuss_matches = tuss_result.scalars().all()
+
+    tuss_codes_mapped = []
+    for i, tm in enumerate(tuss_matches):
+        mapping = ProductTussMapping(
+            product_id=product.id,
+            tuss_code=tm.codigo_tuss,
+            procedure_name=tm.nome,
+            subgroup=tm.subgrupo,
+            is_primary=(i == 0),
+        )
+        db.add(mapping)
+        tuss_codes_mapped.append({
+            "tuss_code": tm.codigo_tuss,
+            "nome": tm.nome,
+            "is_primary": (i == 0),
+        })
+
+    # Define o primeiro código TUSS como sugerido no produto
+    if tuss_matches:
+        product.codigo_tuss_sugerido = tuss_matches[0].codigo_tuss
+
     await db.commit()
+    await db.refresh(product)
 
     return {
         "id": str(product.id),
@@ -179,6 +243,7 @@ async def create_from_anvisa(
         "codigo_tuss_sugerido": product.codigo_tuss_sugerido,
         "classe_risco": ap.classe_risco,
         "already_exists": False,
+        "tuss_mappings": tuss_codes_mapped,
     }
 
 
@@ -195,6 +260,20 @@ async def get_product(
     if not p:
         raise HTTPException(status_code=404, detail="Product not found")
 
+    # Busca mapeamentos TUSS do produto
+    tuss_result = await db.execute(
+        select(ProductTussMapping).where(ProductTussMapping.product_id == p.id)
+    )
+    tuss_mappings = [
+        {
+            "tuss_code": m.tuss_code,
+            "procedure_name": m.procedure_name,
+            "subgroup": m.subgroup,
+            "is_primary": m.is_primary,
+        }
+        for m in tuss_result.scalars().all()
+    ]
+
     return {
         "id": str(p.id),
         "nome": p.nome,
@@ -210,4 +289,5 @@ async def get_product(
         "codigo_tuss_sugerido": p.codigo_tuss_sugerido,
         "bula_url": p.bula_url,
         "referencias_bibliograficas": p.referencias_bibliograficas,
+        "tuss_mappings": tuss_mappings,
     }
