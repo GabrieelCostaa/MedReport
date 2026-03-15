@@ -226,13 +226,23 @@ async def download_report(
             media_type="application/xml",
             headers={"Content-Disposition": f"attachment; filename=guia-tiss-{report_id}.xml"},
         )
-    # Resolve product name
+    # Resolve product name and TUSS code
     product_name = ""
+    product_tuss = ""
     if hasattr(r, "product_id") and r.product_id:
         prod_result = await db.execute(select(Product).where(Product.id == r.product_id))
         product = prod_result.scalar_one_or_none()
         if product:
             product_name = product.nome or ""
+            product_tuss = product.codigo_tuss_sugerido or ""
+
+    # Extract TUSS from report.tuss_codes JSON or product
+    tuss_codes = getattr(r, "tuss_codes", None) or []
+    if tuss_codes and isinstance(tuss_codes, list):
+        codes = [t.get("code", "") if isinstance(t, dict) else str(t) for t in tuss_codes]
+        codigo_tuss = ", ".join(c for c in codes if c)
+    else:
+        codigo_tuss = product_tuss
 
     checklist = r.checklist_status if isinstance(getattr(r, "checklist_status", None), dict) else None
     refs = r.referencias_bib if isinstance(getattr(r, "referencias_bib", None), list) else []
@@ -246,7 +256,7 @@ async def download_report(
         produto_nome=product_name or r.materials or "",
         convenio=r.health_plan or "",
         especialidade=getattr(r, "especialidade", "") or "",
-        codigo_tuss="",
+        codigo_tuss=codigo_tuss,
         referencias=refs,
         checklist=checklist,
         aprovado=aprovado,

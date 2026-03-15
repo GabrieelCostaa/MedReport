@@ -571,10 +571,21 @@ async def download_pdf(
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
 
     product_name = ""
+    product_tuss = ""
     if report.product_id:
         prod_result = await db.execute(select(Product).where(Product.id == report.product_id))
         product = prod_result.scalar_one_or_none()
-        product_name = product.nome if product else ""
+        if product:
+            product_name = product.nome or ""
+            product_tuss = product.codigo_tuss_sugerido or ""
+
+    # Extract TUSS from report or product
+    tuss_codes = getattr(report, "tuss_codes", None) or []
+    if tuss_codes and isinstance(tuss_codes, list):
+        codes = [t.get("code", "") if isinstance(t, dict) else str(t) for t in tuss_codes]
+        codigo_tuss = ", ".join(c for c in codes if c)
+    else:
+        codigo_tuss = product_tuss
 
     checklist = report.checklist_status if isinstance(report.checklist_status, dict) else {}
     aprovado = all(checklist.values()) if checklist else False
@@ -587,6 +598,7 @@ async def download_pdf(
         produto_nome=product_name or report.materials or "",
         convenio=report.health_plan or "",
         especialidade=report.especialidade or "",
+        codigo_tuss=codigo_tuss,
         referencias=report.referencias_bib or [],
         checklist=checklist,
         aprovado=aprovado,
