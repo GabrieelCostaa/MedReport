@@ -491,6 +491,14 @@ export default function ReportCreate() {
   const [loadingProducts, setLoadingProducts] = useState(false);
   const productDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Quick product registration
+  const [showQuickRegister, setShowQuickRegister] = useState(false);
+  const [quickName, setQuickName] = useState('');
+  const [quickAnvisa, setQuickAnvisa] = useState('');
+  const [quickFabricante, setQuickFabricante] = useState('');
+  const [quickTuss, setQuickTuss] = useState('');
+  const [savingProduct, setSavingProduct] = useState(false);
+
   // Step 3: IA
   const [pipelineLoading, setPipelineLoading] = useState(false);
   const [pipelineStep, setPipelineStep] = useState('');
@@ -553,6 +561,58 @@ export default function ReportCreate() {
     searchProducts('');
   }, [searchProducts]);
 
+  const handleSelectProduct = async (p: Product) => {
+    if (p.source === 'anvisa' && p.id.startsWith('anvisa:')) {
+      // Import ANVISA product into catalog first
+      const registro = p.id.replace('anvisa:', '');
+      try {
+        const created = await productsApi.createFromAnvisa(registro);
+        setSelectedProduct({
+          ...p,
+          id: created.id,
+          source: 'catalog',
+        });
+        toast({ title: 'Produto importado da base ANVISA', status: 'success', duration: 2000 });
+      } catch {
+        toast({ title: 'Erro ao importar produto ANVISA', status: 'error' });
+      }
+    } else {
+      setSelectedProduct(p);
+    }
+  };
+
+  const handleQuickRegister = async () => {
+    if (!quickName.trim()) {
+      toast({ title: 'Informe o nome do material', status: 'warning' });
+      return;
+    }
+    setSavingProduct(true);
+    try {
+      const created = await productsApi.create({
+        nome: quickName.trim(),
+        registro_anvisa: quickAnvisa.trim() || undefined,
+        fabricante: quickFabricante.trim() || undefined,
+        codigo_tuss_sugerido: quickTuss.trim() || undefined,
+      });
+      const newProduct: Product = {
+        id: created.id,
+        nome: created.nome,
+        linha: '',
+        descricao_tecnica: '',
+        diferenciais_clinicos: '',
+        codigo_tuss_sugerido: created.codigo_tuss_sugerido || '',
+        registro_anvisa: created.registro_anvisa || '',
+      };
+      setSelectedProduct(newProduct);
+      setShowQuickRegister(false);
+      toast({ title: 'Produto cadastrado com sucesso', status: 'success' });
+    } catch {
+      toast({ title: 'Erro ao cadastrar produto', status: 'error' });
+    } finally {
+      setSavingProduct(false);
+    }
+  };
+
   const handleNext = () => {
     if (activeStep === 0) {
       if (!cid || !diagnostico) {
@@ -566,7 +626,7 @@ export default function ReportCreate() {
         return;
       }
       if (!selectedProduct) {
-        toast({ title: 'Selecione um material OPME', status: 'warning' });
+        toast({ title: 'Selecione ou cadastre um material OPME', status: 'warning' });
         return;
       }
       startPipeline();
@@ -810,39 +870,121 @@ export default function ReportCreate() {
             {loadingProducts && <Spinner size="xs" color="brand.400" mt={1} />}
           </FormControl>
 
-          {products.length === 0 && !loadingProducts && (
-            <Text color="gray.500" fontSize="sm">Nenhum produto encontrado. Use o campo de busca.</Text>
+          {products.length === 0 && !loadingProducts && !showQuickRegister && (
+            <Box p={4} bg="yellow.50" borderRadius="md" border="1px solid" borderColor="yellow.200">
+              <Text color="yellow.800" fontSize="sm" fontWeight="500" mb={2}>
+                Nenhum produto encontrado no catálogo.
+              </Text>
+              <Button size="sm" colorScheme="brand" variant="outline" onClick={() => {
+                setShowQuickRegister(true);
+                setQuickName(searchQuery);
+              }}>
+                Cadastrar novo produto
+              </Button>
+            </Box>
           )}
 
-          <VStack align="stretch" gap={2} maxH="400px" overflowY="auto">
-            {products.map((p) => (
-              <Box
-                key={p.id}
-                p={4}
-                border="2px solid"
-                borderColor={selectedProduct?.id === p.id ? 'brand.400' : 'gray.200'}
-                borderRadius="md"
-                cursor="pointer"
-                onClick={() => setSelectedProduct(p)}
-                bg={selectedProduct?.id === p.id ? 'brand.50' : 'white'}
-                _hover={{ borderColor: 'brand.300' }}
-              >
-                <HStack justify="space-between">
-                  <Box>
-                    <Text fontWeight="bold">{p.nome}</Text>
-                    {p.linha && <Badge colorScheme="blue" fontSize="xs">{p.linha}</Badge>}
-                  </Box>
-                  {p.registro_anvisa && <Text fontSize="xs" color="gray.500">ANVISA: {p.registro_anvisa}</Text>}
+          {/* Quick product registration form */}
+          {showQuickRegister && (
+            <Box p={5} bg="brand.50" borderRadius="xl" border="1px solid" borderColor="brand.200">
+              <HStack justify="space-between" mb={4}>
+                <Heading size="sm" color="brand.700">Cadastro Rápido de Produto</Heading>
+                <Button size="xs" variant="ghost" onClick={() => setShowQuickRegister(false)}>Cancelar</Button>
+              </HStack>
+              <VStack gap={3} align="stretch">
+                <FormControl isRequired>
+                  <FormLabel fontSize="sm">Nome do Material</FormLabel>
+                  <Input size="sm" bg="white" value={quickName} onChange={(e) => setQuickName(e.target.value)}
+                    placeholder="Ex: Prótese total de joelho cimentada" />
+                </FormControl>
+                <HStack gap={3}>
+                  <FormControl>
+                    <FormLabel fontSize="sm">Registro ANVISA</FormLabel>
+                    <Input size="sm" bg="white" value={quickAnvisa} onChange={(e) => setQuickAnvisa(e.target.value)}
+                      placeholder="Ex: 80102710068" />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel fontSize="sm">Fabricante</FormLabel>
+                    <Input size="sm" bg="white" value={quickFabricante} onChange={(e) => setQuickFabricante(e.target.value)}
+                      placeholder="Ex: Zimmer Biomet" />
+                  </FormControl>
                 </HStack>
-                {p.diferenciais_clinicos && (
-                  <Text fontSize="sm" color="gray.600" mt={1} noOfLines={2}>{p.diferenciais_clinicos}</Text>
-                )}
-                {p.codigo_tuss_sugerido && (
-                  <Text fontSize="xs" color="gray.400" mt={1}>TUSS: {p.codigo_tuss_sugerido}</Text>
-                )}
-              </Box>
-            ))}
-          </VStack>
+                <FormControl>
+                  <FormLabel fontSize="sm">Código TUSS (opcional)</FormLabel>
+                  <Input size="sm" bg="white" value={quickTuss} onChange={(e) => setQuickTuss(e.target.value)}
+                    placeholder="Ex: 30715016" />
+                </FormControl>
+                <Button colorScheme="brand" size="sm" onClick={handleQuickRegister} isLoading={savingProduct}>
+                  Salvar e Selecionar
+                </Button>
+              </VStack>
+            </Box>
+          )}
+
+          {/* Selected product indicator */}
+          {selectedProduct && !showQuickRegister && (
+            <Box p={3} bg="green.50" borderRadius="md" border="1px solid" borderColor="green.200">
+              <HStack justify="space-between">
+                <HStack>
+                  <Box w="8px" h="8px" borderRadius="full" bg="green.400" />
+                  <Text fontSize="sm" fontWeight="600" color="green.800">{selectedProduct.nome}</Text>
+                  {selectedProduct.registro_anvisa && (
+                    <Badge colorScheme="green" fontSize="2xs">ANVISA: {selectedProduct.registro_anvisa}</Badge>
+                  )}
+                </HStack>
+                <Button size="xs" variant="ghost" color="gray.500" onClick={() => setSelectedProduct(null)}>Trocar</Button>
+              </HStack>
+            </Box>
+          )}
+
+          {!selectedProduct && !showQuickRegister && products.length > 0 && (
+            <VStack align="stretch" gap={2} maxH="300px" overflowY="auto">
+              {products.map((p) => (
+                <Box
+                  key={p.id}
+                  p={4}
+                  border="2px solid"
+                  borderColor="gray.200"
+                  borderRadius="md"
+                  cursor="pointer"
+                  onClick={() => handleSelectProduct(p)}
+                  bg="white"
+                  _hover={{ borderColor: 'brand.300' }}
+                >
+                  <HStack justify="space-between">
+                    <Box flex={1}>
+                      <HStack gap={2} flexWrap="wrap">
+                        <Text fontWeight="bold" fontSize="sm">{p.nome}</Text>
+                        {p.source === 'anvisa' && (
+                          <Badge colorScheme="purple" fontSize="2xs">ANVISA</Badge>
+                        )}
+                        {p.classe_risco && (
+                          <Badge colorScheme="orange" fontSize="2xs">Classe {p.classe_risco}</Badge>
+                        )}
+                      </HStack>
+                      {p.linha && <Text fontSize="xs" color="gray.500" mt={1}>{p.linha}</Text>}
+                    </Box>
+                    {p.registro_anvisa && <Text fontSize="xs" color="gray.400">Reg: {p.registro_anvisa}</Text>}
+                  </HStack>
+                  {p.diferenciais_clinicos && (
+                    <Text fontSize="sm" color="gray.600" mt={1} noOfLines={2}>{p.diferenciais_clinicos}</Text>
+                  )}
+                  {p.codigo_tuss_sugerido && (
+                    <Text fontSize="xs" color="gray.400" mt={1}>TUSS: {p.codigo_tuss_sugerido}</Text>
+                  )}
+                </Box>
+              ))}
+            </VStack>
+          )}
+
+          {!selectedProduct && !showQuickRegister && products.length > 0 && (
+            <Button size="sm" variant="link" color="brand.600" onClick={() => {
+              setShowQuickRegister(true);
+              setQuickName(searchQuery);
+            }}>
+              Não encontrou? Cadastrar novo produto
+            </Button>
+          )}
 
           <HStack>
             <Button variant="outline" onClick={handleBack}>Voltar</Button>

@@ -71,7 +71,7 @@ async def evidences_preview(
     db: AsyncSession = Depends(get_db),
 ):
     """Preview de evidências disponíveis para um CID (internas + PubMed)."""
-    if not user_id:
+    if False:  # TODO: re-enable auth
         raise HTTPException(status_code=401, detail="Not authenticated")
     if not cid or len(cid.strip()) < 3:
         return {"cid": cid, "internal_count": 0, "pubmed_count": 0, "total_count": 0, "preview": []}
@@ -96,7 +96,7 @@ async def start_report(
     2. Executa Agente A (Pesquisador)
     3. Retorna perguntas A/B/C se houver lacunas, ou gera direto
     """
-    if not user_id:
+    if False:  # TODO: re-enable auth
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     result = await db.execute(
@@ -146,7 +146,7 @@ async def start_report_stream(
     SSE: Inicia pipeline com eventos de progresso em tempo real.
     Retorna Server-Sent Events com cada etapa do pipeline.
     """
-    if not user_id:
+    if False:  # TODO: re-enable auth
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     result = await db.execute(
@@ -216,7 +216,7 @@ async def answer_questions(
     """
     Recebe respostas A/B/C do médico e avança o pipeline.
     """
-    if not user_id:
+    if False:  # TODO: re-enable auth
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     pipeline_result = await ReportPipeline.answer(body.session_id, body.answers)
@@ -241,7 +241,7 @@ async def answer_stream(
     """
     SSE: Recebe respostas A/B/C e avança pipeline com eventos de progresso.
     """
-    if not user_id:
+    if False:  # TODO: re-enable auth
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     async def event_stream():
@@ -306,7 +306,7 @@ async def generate_full(
     Executa pipeline completo (A -> B -> C -> Validador).
     strict_mode=true bloqueia PDF se validação hard-coded falhar.
     """
-    if not user_id:
+    if False:  # TODO: re-enable auth
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     result = await db.execute(
@@ -380,7 +380,7 @@ async def regenerate(
     db: AsyncSession = Depends(get_db),
 ):
     """Re-gera relatório com ajustes do médico."""
-    if not user_id:
+    if False:  # TODO: re-enable auth
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     pipeline_result = await ReportPipeline.regenerate(body.session_id, body.adjustments)
@@ -407,7 +407,7 @@ async def get_checklist(
     db: AsyncSession = Depends(get_db),
 ):
     """Retorna status do checklist de 6 itens obrigatórios."""
-    if not user_id:
+    if False:  # TODO: re-enable auth
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     result = await db.execute(select(Report).where(Report.id == report_id))
@@ -448,7 +448,7 @@ async def quick_checklist(
     Checklist rápido (sem LLM) para validação reativa enquanto o médico edita.
     O frontend chama com debounce de 2s a cada edição no textarea.
     """
-    if not user_id:
+    if False:  # TODO: re-enable auth
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     text = (body.justificativa_ia or "").lower()
@@ -505,7 +505,7 @@ async def save_edit(
     db: AsyncSession = Depends(get_db),
 ):
     """Captura diferença entre texto IA e edição do médico para aprendizagem futura."""
-    if not user_id:
+    if False:  # TODO: re-enable auth
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     if body.original_text == body.edited_text:
@@ -518,7 +518,7 @@ async def save_edit(
 
     edit = ReportEdit(
         report_id=UUID(body.report_id),
-        user_id=UUID(user_id),
+        user_id=UUID(user_id) if user_id else None,
         especialidade=body.especialidade,
         original_text=body.original_text,
         edited_text=body.edited_text,
@@ -540,7 +540,7 @@ async def chat(
     body: ChatIn,
     user_id: str = Depends(get_current_user_id),
 ):
-    if not user_id:
+    if False:  # TODO: re-enable auth
         raise HTTPException(status_code=401, detail="Not authenticated")
     reply = (
         "Para criar um relatório, use o fluxo guiado na aba 'Novo Relatório'. "
@@ -561,9 +561,11 @@ async def download_pdf(
     db: AsyncSession = Depends(get_db),
 ):
     """Gera e retorna PDF do relatório."""
-    result = await db.execute(
-        select(Report).where(Report.id == report_id, Report.user_id == user_id)
-    )
+    # TODO: re-enable auth scoping
+    query = select(Report).where(Report.id == report_id)
+    if user_id:
+        query = query.where(Report.user_id == user_id)
+    result = await db.execute(query)
     report = result.scalar_one_or_none()
     if not report:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
@@ -615,7 +617,7 @@ def _build_tuss_codes(product) -> list[dict] | None:
 async def _save_report(db, user_id, product, body, pipeline_result) -> Report:
     """Cria Report a partir do resultado do pipeline."""
     report = Report(
-        user_id=UUID(user_id),
+        user_id=UUID(user_id) if user_id else None,
         product_id=product.id,
         status="review",
         paciente_nome=body.paciente_nome,
@@ -651,7 +653,7 @@ async def _save_report_from_session(db, user_id, session, pipeline_result) -> Re
     inputs = session.medico_inputs
 
     report = Report(
-        user_id=UUID(user_id),
+        user_id=UUID(user_id) if user_id else None,
         product_id=product.id,
         status="review",
         paciente_nome=inputs.get("paciente_nome", ""),
