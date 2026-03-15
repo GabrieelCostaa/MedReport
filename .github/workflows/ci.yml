@@ -62,11 +62,13 @@ jobs:
 
       - name: Start API server
         working-directory: services/api
-        run: PYTHONPATH=. uvicorn main:app --host 0.0.0.0 --port 8000 &
+        run: |
+          PYTHONPATH=. nohup uvicorn main:app --host 0.0.0.0 --port 8000 > /tmp/uvicorn.log 2>&1 &
+          echo $! > /tmp/uvicorn.pid
 
       - name: Health check
         run: |
-          for i in 1 2 3 4 5; do
+          for i in 1 2 3 4 5 6 7 8 9 10; do
             if curl -sf http://localhost:8000/health | grep -q '"status":"ok"'; then
               echo "API is healthy"
               exit 0
@@ -74,5 +76,6 @@ jobs:
             echo "Attempt $i failed, waiting..."
             sleep 3
           done
-          echo "API failed to start"
+          echo "API failed to start. Uvicorn logs:"
+          cat /tmp/uvicorn.log || true
           exit 1

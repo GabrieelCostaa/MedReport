@@ -18,7 +18,6 @@ import logging
 from typing import Optional
 
 import httpx
-import fitz  # PyMuPDF
 
 from sqlalchemy import text as sql_text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -204,6 +203,7 @@ async def download_pdf(url: str) -> Optional[bytes]:
 def extract_text_from_pdf(pdf_bytes: bytes) -> str:
     """Extract text from a PDF using PyMuPDF."""
     try:
+        import fitz  # PyMuPDF — lazy import
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         pages_text = []
         for page in doc:
