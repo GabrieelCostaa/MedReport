@@ -358,9 +358,9 @@ function Nav() {
     <MotionFlex
       as="nav" position="fixed" top={0} left={0} right={0} zIndex={100}
       py={scrolled ? 3 : 5} px={{ base: 4, md: 8 }}
-      bg={scrolled ? (navTheme === 'dark' ? 'rgba(10,10,10,0.92)' : 'rgba(245,245,240,0.95)') : 'transparent'}
-      backdropFilter={scrolled ? 'blur(24px)' : undefined}
-      borderBottom={scrolled ? `1px solid ${navTheme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` : 'none'}
+      bg="transparent"
+      backdropFilter={undefined}
+      borderBottom="none"
       justify="center"
       initial={{ y: -80 }} animate={{ y: 0 }}
       transition={{ duration: 1, ease: EASE, delay: 0.5 }}
@@ -880,6 +880,11 @@ function HorizontalFeatures() {
 /* ─── COMPLIANCE ─── */
 
 function Compliance() {
+  const specs = [
+    'Ortopedia', 'Neurocirurgia', 'Cardiologia', 'Cirurgia Vascular',
+    'Cirurgia Geral', 'Urologia', 'Ginecologia', 'Oftalmologia',
+    'Otorrinolaringologia', 'Cirurgia Plastica',
+  ];
   const items = [
     { code: 'RN 465/2021', label: 'Rol de Procedimentos', desc: '161 DUTs + 74.000+ TUSS + 96.000+ registros ANVISA' },
     { code: 'RN 452/2020', label: 'Padrao TISS', desc: 'Guias XML conforme padrao obrigatorio da ANS' },
@@ -888,19 +893,14 @@ function Compliance() {
   ];
 
   return (
-    <Box pt={{ base: 20, md: 32 }} pb={{ base: 28, md: 40 }} bg={C.dark} data-nav-theme="dark" position="relative" overflow="hidden">
+    <Box pt={{ base: 20, md: 32 }} pb={{ base: 16, md: 20 }} bg={C.dark} data-nav-theme="dark" position="relative" overflow="hidden">
       <TopoBg opacity={0.05} color={C.accent} />
-      <Box position="absolute" bottom="-100px" right="-100px" opacity={0.03}>
+      {/* Caduceus — centered between both sub-sections */}
+      <Box position="absolute" top="50%" right="-60px" transform="translateY(-50%)" opacity={0.03} pointerEvents="none">
         <Caduceus size={500} color="#fff" />
       </Box>
-      {/* Organic wave transition to Specialties (light) */}
-      <Box position="absolute" bottom={0} left={0} right={0} h="200px"
-        bg={`linear-gradient(to bottom, transparent 0%, ${C.white}40 40%, ${C.white} 100%)`} pointerEvents="none" />
-      <Box position="absolute" bottom={-1} left={0} right={0} pointerEvents="none" zIndex={2}>
-        <svg viewBox="0 0 1440 40" fill="none" preserveAspectRatio="none" style={{ width: '100%', height: '40px', display: 'block' }}>
-          <path d="M0,20 C360,35 720,5 1080,25 C1260,32 1380,15 1440,20 L1440,40 L0,40 Z" fill={C.white} />
-        </svg>
-      </Box>
+
+      {/* Compliance */}
       <Container maxW="7xl" position="relative" zIndex={1}>
         <Reveal>
           <HStack gap={3} mb={4}>
@@ -928,32 +928,19 @@ function Compliance() {
           ))}
         </SimpleGrid>
       </Container>
-    </Box>
-  );
-}
 
-/* ─── SPECIALTIES ─── */
-
-function Specialties() {
-  const specs = [
-    'Ortopedia', 'Neurocirurgia', 'Cardiologia', 'Cirurgia Vascular',
-    'Cirurgia Geral', 'Urologia', 'Ginecologia', 'Oftalmologia',
-    'Otorrinolaringologia', 'Cirurgia Plastica',
-  ];
-
-  return (
-    <Box pt={{ base: 16, md: 24 }} pb={{ base: 24, md: 32 }} bg={C.white} data-nav-theme="light" position="relative">
-      <Container maxW="5xl" position="relative" zIndex={1}>
+      {/* Specialties */}
+      <Container maxW="5xl" position="relative" zIndex={1} mt={{ base: 16, md: 24 }}>
         <Reveal>
           <VStack mb={10} textAlign="center">
             <HStack gap={3} mb={2}>
               <Box w="40px" h="1px" bg={C.accent} />
-              <Text fontSize="xs" fontWeight="700" color={C.accentMuted}
+              <Text fontSize="xs" fontWeight="700" color={C.accent}
                 textTransform="uppercase" letterSpacing="0.15em">Especialidades</Text>
               <Box w="40px" h="1px" bg={C.accent} />
             </HStack>
             <Heading fontFamily={SERIF} fontSize={{ base: '2xl', md: '3xl' }} fontWeight="900"
-              color={C.dark} letterSpacing="-0.03em">
+              color="white" letterSpacing="-0.03em">
               Feito para quem opera e prescreve OPME
             </Heading>
           </VStack>
@@ -962,9 +949,9 @@ function Specialties() {
           <Flex flexWrap="wrap" justify="center" gap={3}>
             {specs.map((s) => (
               <Box key={s} px={6} py={3} borderRadius="full" border="1px solid"
-                borderColor="gray.200" fontSize="sm" fontWeight="500" color={C.grayDark}
-                bg="white" cursor="default"
-                _hover={{ borderColor: C.accent, color: C.dark, bg: `${C.accent}15`,
+                borderColor="whiteAlpha.200" fontSize="sm" fontWeight="500" color={C.grayLight}
+                bg="whiteAlpha.50" cursor="default"
+                _hover={{ borderColor: C.accent, color: "white", bg: `${C.accent}15`,
                   shadow: `0 4px 12px ${C.accent}22` }}
                 transition="all 0.3s">{s}</Box>
             ))}
@@ -1111,7 +1098,6 @@ export default function Landing() {
       <CinematicBreak2 />
       <HorizontalFeatures />
       <Compliance />
-      <Specialties />
       <Testimonial />
       <FinalCTA />
       <Footer />

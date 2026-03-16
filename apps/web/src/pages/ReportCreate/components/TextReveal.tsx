@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Box, HStack, Text, Flex } from '@chakra-ui/react';
 import { cursorBlink, pulse, shimmer, fadeInUp } from '../animations';
 
@@ -7,33 +7,71 @@ interface TextRevealProps {
   onComplete: () => void;
 }
 
+const CIPHER_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*!?<>{}[]=/\\';
+const SCRAMBLE_LENGTH = 30; // how many chars ahead get scrambled
+
+function randomChar() {
+  return CIPHER_CHARS[Math.floor(Math.random() * CIPHER_CHARS.length)];
+}
+
 export default function TextReveal({ text, onComplete }: TextRevealProps) {
-  const words = text.split(/(\s+)/);
-  const [visibleCount, setVisibleCount] = useState(0);
+  const chars = useMemo(() => text.split(''), [text]);
+  const [revealedCount, setRevealedCount] = useState(0);
+  const [scrambleTick, setScrambleTick] = useState(0);
   const doneRef = useRef(false);
 
   useEffect(() => {
-    setVisibleCount(0);
+    setRevealedCount(0);
     doneRef.current = false;
-    const timer = setInterval(() => {
-      setVisibleCount((prev) => {
+
+    // Reveal ~4 chars every 25ms
+    const revealTimer = setInterval(() => {
+      setRevealedCount((prev) => {
         const next = prev + 4;
-        if (next >= words.length) {
-          clearInterval(timer);
+        if (next >= chars.length) {
+          clearInterval(revealTimer);
           if (!doneRef.current) {
             doneRef.current = true;
             setTimeout(onComplete, 400);
           }
-          return words.length;
+          return chars.length;
         }
         return next;
       });
     }, 25);
-    return () => clearInterval(timer);
-  }, [text, words.length, onComplete]);
 
-  const isComplete = visibleCount >= words.length;
-  const progress = Math.min(100, Math.round((visibleCount / words.length) * 100));
+    // Scramble animation ticks faster for fluid randomness
+    const scrambleTimer = setInterval(() => {
+      setScrambleTick((t) => t + 1);
+    }, 40);
+
+    return () => {
+      clearInterval(revealTimer);
+      clearInterval(scrambleTimer);
+    };
+  }, [text, chars.length, onComplete]);
+
+  const isComplete = revealedCount >= chars.length;
+  const progress = Math.min(100, Math.round((revealedCount / chars.length) * 100));
+
+  // Build displayed text: revealed + scrambled zone + hidden
+  const displayedText = useMemo(() => {
+    if (isComplete) return text;
+
+    const revealed = text.slice(0, revealedCount);
+    const scrambleEnd = Math.min(revealedCount + SCRAMBLE_LENGTH, chars.length);
+    let scrambled = '';
+    for (let i = revealedCount; i < scrambleEnd; i++) {
+      // Keep whitespace/newlines as-is for readability
+      if (chars[i] === ' ' || chars[i] === '\n') {
+        scrambled += chars[i];
+      } else {
+        scrambled += randomChar();
+      }
+    }
+    return revealed + scrambled;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealedCount, scrambleTick, isComplete, text, chars]);
 
   return (
     <Flex justify="center" w="100%">
@@ -103,8 +141,17 @@ export default function TextReveal({ text, onComplete }: TextRevealProps) {
             />
           )}
 
-          <Text fontSize="sm" color="text.secondary" whiteSpace="pre-wrap" lineHeight="1.8">
-            {words.slice(0, visibleCount).join('')}
+          <Text fontSize="sm" whiteSpace="pre-wrap" lineHeight="1.8">
+            {/* Revealed text */}
+            <Text as="span" color="text.secondary">
+              {displayedText.slice(0, revealedCount)}
+            </Text>
+            {/* Scrambled zone — slightly different style */}
+            {!isComplete && (
+              <Text as="span" color="brand.text" opacity={0.5} fontFamily="mono">
+                {displayedText.slice(revealedCount)}
+              </Text>
+            )}
             {!isComplete && (
               <Box
                 as="span" display="inline-block" w="2px" h="16px"
