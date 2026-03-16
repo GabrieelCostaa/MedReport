@@ -3,13 +3,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
-  Heading,
   Text,
   VStack,
+  HStack,
+  Flex,
   useToast,
   Badge,
-  HStack,
+  SimpleGrid,
+  Spinner,
+  Icon,
 } from '@chakra-ui/react';
+import { FiArrowLeft, FiDownload, FiFileText, FiEdit3 } from 'react-icons/fi';
 import { reportsApi } from '../api/reports';
 
 type ReportDetail = {
@@ -23,6 +27,9 @@ type ReportDetail = {
   created_at: string;
   inconsistencies?: { field: string; message: string }[];
 };
+
+const buttonTransition = 'all 0.3s cubic-bezier(0.65, 0.05, 0, 1)';
+const buttonHover = { transform: 'translateY(-2px)', shadow: 'lg' };
 
 export default function ReportReview() {
   const { id } = useParams<{ id: string }>();
@@ -41,48 +48,30 @@ export default function ReportReview() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleDownloadPdf = async () => {
+  const handleDownload = async (format: 'pdf' | 'docx' | 'xml') => {
     if (!id) return;
+    const labels = { pdf: 'PDF', docx: 'DOCX', xml: 'XML' };
     try {
-      const blob = await reportsApi.downloadPdf(id);
+      let blob: Blob;
+      let filename: string;
+      if (format === 'pdf') {
+        blob = await reportsApi.downloadPdf(id);
+        filename = `relatorio-${id}.pdf`;
+      } else if (format === 'docx') {
+        blob = await reportsApi.downloadDocx(id);
+        filename = `relatorio-${id}.docx`;
+      } else {
+        blob = await reportsApi.downloadXml(id);
+        filename = `guia-tiss-${id}.xml`;
+      }
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `relatorio-${id}.pdf`;
+      a.download = filename;
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      toast({ title: 'Erro ao baixar PDF', status: 'error' });
-    }
-  };
-
-  const handleDownloadXml = async () => {
-    if (!id) return;
-    try {
-      const blob = await reportsApi.downloadXml(id);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `guia-tiss-${id}.xml`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      toast({ title: 'Erro ao baixar XML', status: 'error' });
-    }
-  };
-
-  const handleDownloadDocx = async () => {
-    if (!id) return;
-    try {
-      const blob = await reportsApi.downloadDocx(id);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `relatorio-${id}.docx`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      toast({ title: 'Erro ao baixar DOCX', status: 'error' });
+      toast({ title: `Erro ao baixar ${labels[format]}`, status: 'error' });
     }
   };
 
@@ -100,98 +89,156 @@ export default function ReportReview() {
     }
   };
 
-  if (loading || !report) {
-    return <Box>Carregando...</Box>;
+  if (loading) {
+    return (
+      <Flex justify="center" align="center" minH="200px">
+        <Spinner size="lg" color="brand.500" />
+      </Flex>
+    );
+  }
+
+  if (!report) {
+    return (
+      <Flex justify="center" align="center" minH="200px">
+        <Text color="text.muted">Relatório não encontrado</Text>
+      </Flex>
+    );
   }
 
   return (
-    <Box>
-      <HStack justify="space-between" mb={6} flexWrap="wrap" gap={3}>
-        <Box>
-          <Heading size="md" fontWeight="700" color="gray.800">
-            Revisao do Relatorio
-          </Heading>
-          <HStack mt={2} gap={3}>
-            <Badge
-              colorScheme={report.status === 'signed' ? 'green' : 'yellow'}
-              fontSize="xs"
-              borderRadius="full"
-              px={2}
-              py={0.5}
-            >
-              {report.status === 'signed' ? 'Assinado' : 'Rascunho'}
-            </Badge>
-            <Text fontSize="xs" color="gray.400">
-              Criado em {new Date(report.created_at).toLocaleDateString('pt-BR', {
-                day: '2-digit', month: 'short', year: 'numeric',
-                hour: '2-digit', minute: '2-digit',
-              })}
+    <Flex justify="center" w="100%">
+      <VStack gap={6} align="stretch" maxW="3xl" w="100%" mx="auto">
+        {/* Header */}
+        <HStack justify="space-between" flexWrap="wrap" gap={3}>
+          <Box>
+            <Text fontSize="xl" fontWeight="700" color="text.primary">
+              Revisão do Relatório
             </Text>
-          </HStack>
-        </Box>
-        <Button variant="ghost" size="sm" color="gray.500" onClick={() => navigate('/dashboard/reports')}>
-          Voltar aos documentos
-        </Button>
-      </HStack>
-
-      <Box p={5} bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" maxW="2xl" mb={6}>
-        <VStack align="stretch" gap={4}>
-          <HStack gap={8} flexWrap="wrap">
-            <Box>
-              <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" letterSpacing="wider">CID</Text>
-              <Text fontSize="sm" fontWeight="500" mt={1}>{report.cid ?? '-'}</Text>
-            </Box>
-            <Box>
-              <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" letterSpacing="wider">Convenio</Text>
-              <Text fontSize="sm" fontWeight="500" mt={1}>{report.health_plan ?? 'Nao informado'}</Text>
-            </Box>
-          </HStack>
-          <Box>
-            <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" letterSpacing="wider">Diagnostico</Text>
-            <Text fontSize="sm" mt={1}>{report.diagnosis ?? '-'}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" letterSpacing="wider">Procedimento</Text>
-            <Text fontSize="sm" mt={1}>{report.surgery_description ?? '-'}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" letterSpacing="wider">Materiais OPME</Text>
-            <Text fontSize="sm" mt={1}>{report.materials ?? '-'}</Text>
-          </Box>
-        </VStack>
-      </Box>
-
-      {report.inconsistencies && report.inconsistencies.length > 0 && (
-        <Box p={4} bg="orange.50" borderRadius="xl" border="1px solid" borderColor="orange.200" mb={6} maxW="2xl">
-          <Text fontWeight="600" fontSize="sm" color="orange.800" mb={2}>
-            Inconsistencias TUSS
-          </Text>
-          <VStack align="stretch" gap={1}>
-            {report.inconsistencies.map((inc, i) => (
-              <Text key={i} fontSize="sm" color="orange.700">
-                {inc.field}: {inc.message}
+            <HStack mt={2} gap={3}>
+              <Badge
+                colorScheme={report.status === 'signed' ? 'green' : 'yellow'}
+                fontSize="xs"
+                borderRadius="full"
+                px={2}
+                py={0.5}
+              >
+                {report.status === 'signed' ? 'Assinado' : 'Rascunho'}
+              </Badge>
+              <Text fontSize="xs" color="text.subtle">
+                Criado em {new Date(report.created_at).toLocaleDateString('pt-BR', {
+                  day: '2-digit', month: 'short', year: 'numeric',
+                  hour: '2-digit', minute: '2-digit',
+                })}
               </Text>
-            ))}
-          </VStack>
-        </Box>
-      )}
-
-      <HStack gap={3} flexWrap="wrap">
-        <Button onClick={handleDownloadPdf} variant="outline" size="sm" borderRadius="lg">
-          Baixar PDF
-        </Button>
-        <Button onClick={handleDownloadDocx} variant="outline" size="sm" borderRadius="lg">
-          Baixar Word
-        </Button>
-        <Button onClick={handleDownloadXml} variant="outline" size="sm" borderRadius="lg">
-          Baixar XML (TISS)
-        </Button>
-        {report.status !== 'signed' && (
-          <Button colorScheme="brand" onClick={handleSign} isLoading={signing} size="sm" borderRadius="lg" fontWeight="600">
-            Assinar digitalmente
+            </HStack>
+          </Box>
+          <Button
+            variant="ghost" size="sm" color="text.muted"
+            leftIcon={<Icon as={FiArrowLeft} />}
+            onClick={() => navigate('/dashboard/reports')}
+          >
+            Voltar aos documentos
           </Button>
+        </HStack>
+
+        {/* Report details card */}
+        <Box bg="surface" borderRadius="xl" border="1px solid" borderColor="border.subtle" p={6} shadow="sm">
+          <SimpleGrid columns={{ base: 1, sm: 2 }} spacingY={4} spacingX={8}>
+            <Box>
+              <Text fontSize="xs" fontWeight="600" color="text.muted" textTransform="uppercase" letterSpacing="wider" mb={1}>
+                CID
+              </Text>
+              <Text fontSize="sm" fontWeight="500" color="text.primary">{report.cid ?? '-'}</Text>
+            </Box>
+            <Box>
+              <Text fontSize="xs" fontWeight="600" color="text.muted" textTransform="uppercase" letterSpacing="wider" mb={1}>
+                Convênio
+              </Text>
+              <Text fontSize="sm" fontWeight="500" color="text.primary">{report.health_plan ?? 'Não informado'}</Text>
+            </Box>
+            <Box>
+              <Text fontSize="xs" fontWeight="600" color="text.muted" textTransform="uppercase" letterSpacing="wider" mb={1}>
+                Diagnóstico
+              </Text>
+              <Text fontSize="sm" color="text.primary">{report.diagnosis ?? '-'}</Text>
+            </Box>
+            <Box>
+              <Text fontSize="xs" fontWeight="600" color="text.muted" textTransform="uppercase" letterSpacing="wider" mb={1}>
+                Procedimento
+              </Text>
+              <Text fontSize="sm" color="text.primary">{report.surgery_description ?? '-'}</Text>
+            </Box>
+            <Box gridColumn={{ sm: 'span 2' }}>
+              <Text fontSize="xs" fontWeight="600" color="text.muted" textTransform="uppercase" letterSpacing="wider" mb={1}>
+                Materiais OPME
+              </Text>
+              <Text fontSize="sm" color="text.primary">{report.materials ?? '-'}</Text>
+            </Box>
+          </SimpleGrid>
+        </Box>
+
+        {/* Inconsistencies */}
+        {report.inconsistencies && report.inconsistencies.length > 0 && (
+          <Box p={4} bg="orange.50" borderRadius="xl" border="1px solid" borderColor="orange.200">
+            <Text fontWeight="600" fontSize="sm" color="orange.800" mb={2}>
+              Inconsistências TUSS
+            </Text>
+            <VStack align="stretch" gap={1}>
+              {report.inconsistencies.map((inc, i) => (
+                <Text key={i} fontSize="sm" color="orange.700">
+                  {inc.field}: {inc.message}
+                </Text>
+              ))}
+            </VStack>
+          </Box>
         )}
-      </HStack>
-    </Box>
+
+        {/* Download actions */}
+        <Box bg="surface" borderRadius="xl" border="1px solid" borderColor="border.subtle" p={6} shadow="sm">
+          <Text fontSize="xs" fontWeight="600" color="text.muted" textTransform="uppercase" letterSpacing="wider" mb={4}>
+            Downloads
+          </Text>
+          <HStack gap={3} flexWrap="wrap">
+            <Button
+              onClick={() => handleDownload('pdf')}
+              variant="outline" size="sm" borderRadius="lg"
+              leftIcon={<Icon as={FiDownload} />}
+              transition={buttonTransition}
+              _hover={buttonHover}
+            >
+              Baixar PDF
+            </Button>
+            <Button
+              onClick={() => handleDownload('docx')}
+              variant="outline" size="sm" borderRadius="lg"
+              leftIcon={<Icon as={FiFileText} />}
+              transition={buttonTransition}
+              _hover={buttonHover}
+            >
+              Baixar Word
+            </Button>
+            <Button
+              onClick={() => handleDownload('xml')}
+              variant="outline" size="sm" borderRadius="lg"
+              leftIcon={<Icon as={FiEdit3} />}
+              transition={buttonTransition}
+              _hover={buttonHover}
+            >
+              Baixar XML (TISS)
+            </Button>
+            {report.status !== 'signed' && (
+              <Button
+                colorScheme="brand" onClick={handleSign} isLoading={signing}
+                size="sm" borderRadius="lg" fontWeight="600"
+                transition={buttonTransition}
+                _hover={buttonHover}
+              >
+                Assinar digitalmente
+              </Button>
+            )}
+          </HStack>
+        </Box>
+      </VStack>
+    </Flex>
   );
 }

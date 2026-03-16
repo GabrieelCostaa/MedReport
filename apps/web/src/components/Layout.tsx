@@ -7,7 +7,6 @@ import {
   HStack,
   Text,
   useColorMode,
-  useColorModeValue,
   Avatar,
   Menu,
   MenuButton,
@@ -23,11 +22,11 @@ function MedReportLogo() {
         w="36px"
         h="36px"
         borderRadius="lg"
-        bg="brand.500"
+        bg="brand.300"
         display="flex"
         alignItems="center"
         justifyContent="center"
-        color="white"
+        color="gray.900"
         fontWeight="bold"
         fontSize="lg"
         flexShrink={0}
@@ -45,7 +44,7 @@ function MedReportLogo() {
         <Text fontSize="md" fontWeight="700" color="medical.500" letterSpacing="-0.02em" lineHeight="1">
           MedReport
         </Text>
-        <Text fontSize="2xs" color="gray.400" fontWeight="500" letterSpacing="0.05em" mt="1px">
+        <Text fontSize="2xs" color="text.subtle" fontWeight="500" letterSpacing="0.05em" mt="1px">
           JUSTIFICATIVAS OPME
         </Text>
       </Box>
@@ -63,9 +62,9 @@ function NavLink({ to, children, isActive }: { to: string; children: React.React
       borderRadius="md"
       fontSize="sm"
       fontWeight="500"
-      color={isActive ? 'brand.700' : 'gray.600'}
+      color={isActive ? 'brand.700' : 'text.secondary'}
       bg={isActive ? 'brand.50' : 'transparent'}
-      _hover={{ bg: isActive ? 'brand.50' : 'gray.50', color: 'brand.700', textDecoration: 'none' }}
+      _hover={{ bg: isActive ? 'brand.50' : 'surface.subtle', color: 'brand.700', textDecoration: 'none' }}
       transition="all 0.15s"
     >
       {children}
@@ -74,7 +73,6 @@ function NavLink({ to, children, isActive }: { to: string; children: React.React
 }
 
 export default function Layout() {
-  const bg = useColorModeValue('white', 'gray.800');
   const { colorMode, toggleColorMode } = useColorMode();
   const navigate = useNavigate();
   const location = useLocation();
@@ -93,14 +91,14 @@ export default function Layout() {
   const isActive = (path: string) => location.pathname.startsWith(path);
 
   return (
-    <Box minH="100vh">
+    <Box minH="100vh" bg="surface.muted">
       <Flex
         as="header"
-        bg={bg}
+        bg="surface"
         px={6}
         py={3}
         borderBottom="1px solid"
-        borderColor="gray.100"
+        borderColor="border.subtle"
         align="center"
         justify="space-between"
         position="sticky"
@@ -172,15 +170,15 @@ export default function Layout() {
                 <Avatar
                   size="sm"
                   name={user.email || 'U'}
-                  bg="brand.500"
-                  color="white"
+                  bg="brand.300"
+                  color="gray.900"
                   fontSize="xs"
                 />
               }
             />
             <MenuList fontSize="sm">
               <MenuItem isDisabled>
-                <Text fontSize="xs" color="gray.500">{user.email || 'usuario'}</Text>
+                <Text fontSize="xs" color="text.muted">{user.email || 'usuario'}</Text>
               </MenuItem>
               <MenuItem onClick={handleLogout} color="red.500">
                 Sair

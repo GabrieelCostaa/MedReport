@@ -62,10 +62,10 @@ export default function ReportList() {
     <Box>
       <HStack justify="space-between" mb={6} flexWrap="wrap" gap={3}>
         <Box>
-          <Heading size="md" fontWeight="700" color="gray.800">
+          <Heading size="md" fontWeight="700" color="text.primary">
             Documentos
           </Heading>
-          <Text fontSize="sm" color="gray.500" mt={1}>
+          <Text fontSize="sm" color="text.muted" mt={1}>
             {total} relatorio{total !== 1 ? 's' : ''} gerado{total !== 1 ? 's' : ''}
           </Text>
         </Box>
@@ -97,7 +97,8 @@ export default function ReportList() {
           placeholder="Buscar por diagnostico..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          bg="white"
+          bg="surface"
+          borderColor="border.subtle"
           borderRadius="lg"
           fontSize="sm"
         />
@@ -106,7 +107,7 @@ export default function ReportList() {
       {loading ? (
         <VStack align="stretch" gap={2}>
           {[1, 2, 3, 4].map(i => (
-            <Box key={i} p={4} bg="white" borderRadius="lg" border="1px solid" borderColor="gray.100">
+            <Box key={i} p={4} bg="surface" borderRadius="lg" border="1px solid" borderColor="border.subtle">
               <HStack justify="space-between" align="start">
                 <Box flex={1}>
                   <Skeleton h="14px" w="55%" mb={2} />
@@ -121,17 +122,17 @@ export default function ReportList() {
           ))}
         </VStack>
       ) : filtered.length === 0 ? (
-        <Box p={12} bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" textAlign="center">
+        <Box p={12} bg="surface" borderRadius="xl" border="1px solid" borderColor="border.subtle" textAlign="center">
           <Text fontSize="3xl" mb={3}>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e0" strokeWidth="1.5" style={{ margin: '0 auto' }}>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ margin: '0 auto', opacity: 0.4 }}>
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
               <line x1="16" y1="13" x2="8" y2="13" />
               <line x1="16" y1="17" x2="8" y2="17" />
             </svg>
           </Text>
-          <Text color="gray.500" fontWeight="500" mb={1}>Nenhum relatorio encontrado</Text>
-          <Text color="gray.400" fontSize="sm" mb={4}>
+          <Text color="text.muted" fontWeight="500" mb={1}>Nenhum relatorio encontrado</Text>
+          <Text color="text.subtle" fontSize="sm" mb={4}>
             {search ? 'Tente outro termo de busca' : 'Crie seu primeiro relatorio com IA'}
           </Text>
           {!search && (
@@ -149,10 +150,10 @@ export default function ReportList() {
                 as={RouterLink}
                 to={`/dashboard/reports/${r.id}/review`}
                 p={4}
-                bg="white"
+                bg="surface"
                 borderRadius="lg"
                 border="1px solid"
-                borderColor="gray.100"
+                borderColor="border.subtle"
                 _hover={{ borderColor: 'brand.200', shadow: 'sm' }}
                 transition="all 0.15s"
                 display="block"
@@ -160,17 +161,17 @@ export default function ReportList() {
               >
                 <HStack justify="space-between" align="start">
                   <Box flex={1}>
-                    <Text fontSize="sm" fontWeight="500" color="gray.800">
+                    <Text fontSize="sm" fontWeight="500" color="text.primary">
                       {r.patient_diagnosis || 'Relatorio #' + r.id.slice(0, 8)}
                     </Text>
                     <HStack mt={2} gap={3}>
-                      <Text fontSize="xs" color="gray.400">
+                      <Text fontSize="xs" color="text.subtle">
                         {new Date(r.created_at).toLocaleDateString('pt-BR', {
                           day: '2-digit', month: 'short', year: 'numeric',
                           hour: '2-digit', minute: '2-digit',
                         })}
                       </Text>
-                      <Text fontSize="xs" color="gray.400">
+                      <Text fontSize="xs" color="text.subtle">
                         ID: {r.id.slice(0, 8)}
                       </Text>
                     </HStack>
@@ -214,7 +215,7 @@ export default function ReportList() {
                 }, [])
                 .map((item, idx) =>
                   item === 'dots' ? (
-                    <Text key={`dots-${idx}`} fontSize="sm" color="gray.400" px={1}>...</Text>
+                    <Text key={`dots-${idx}`} fontSize="sm" color="text.subtle" px={1}>...</Text>
                   ) : (
                     <Button
                       key={item}

@@ -114,6 +114,23 @@ def generate_docx_bytes(
     risco_nao_realizacao: str = "",
     base_legal: str = "",
 ) -> bytes:
+    # Sanitize inputs
+    justificativa = justificativa or ""
+    paciente_nome = paciente_nome or ""
+    cid = cid or ""
+    diagnostico_resumo = diagnostico_resumo or ""
+    produto_nome = produto_nome or ""
+    convenio = convenio or ""
+    especialidade = especialidade or ""
+    codigo_tuss = codigo_tuss or ""
+    referencias = referencias or []
+    checklist = checklist or {}
+    medico_nome = medico_nome or ""
+    medico_crm = medico_crm or ""
+    falha_terapeutica = falha_terapeutica or ""
+    risco_nao_realizacao = risco_nao_realizacao or ""
+    base_legal = base_legal or ""
+
     doc = Document()
 
     # ── Global style ──

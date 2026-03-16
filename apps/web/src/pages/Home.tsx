@@ -15,8 +15,8 @@ import { reportsApi, type Report } from '../api/reports';
 
 function StatCard({ label, value, color }: { label: string; value: string | number; color: string }) {
   return (
-    <Box p={5} bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100">
-      <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" letterSpacing="wider">
+    <Box p={5} bg="surface" borderRadius="xl" border="1px solid" borderColor="border.subtle">
+      <Text fontSize="xs" fontWeight="600" color="text.muted" textTransform="uppercase" letterSpacing="wider">
         {label}
       </Text>
       <Text fontSize="2xl" fontWeight="700" color={color} mt={1}>
@@ -48,10 +48,10 @@ export default function Home() {
     <Box>
       {/* Welcome */}
       <Box mb={8}>
-        <Heading size="lg" fontWeight="700" color="gray.800">
+        <Heading size="lg" fontWeight="700" color="text.primary">
           Bom dia, Dr.
         </Heading>
-        <Text color="gray.500" mt={1}>
+        <Text color="text.muted" mt={1}>
           Crie justificativas tecnicas com inteligencia artificial em minutos.
         </Text>
       </Box>
@@ -60,9 +60,9 @@ export default function Home() {
       <Box
         p={6}
         mb={8}
-        bg="linear-gradient(135deg, #0d9488 0%, #0f766e 100%)"
+        bg="linear-gradient(135deg, #c8e64e 0%, #a3c23a 100%)"
         borderRadius="xl"
-        color="white"
+        color="gray.900"
       >
         <HStack justify="space-between" align="center" flexWrap="wrap" gap={4}>
           <Box>
@@ -78,9 +78,9 @@ export default function Home() {
             to="/dashboard/reports/new"
             size="lg"
             bg="white"
-            color="brand.700"
+            color="gray.900"
             fontWeight="600"
-            _hover={{ bg: 'whiteAlpha.900' }}
+            _hover={{ bg: 'gray.100' }}
             borderRadius="lg"
             leftIcon={
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -98,7 +98,7 @@ export default function Home() {
         {loading ? (
           <>
             {[1, 2, 3].map(i => (
-              <Box key={i} p={5} bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100">
+              <Box key={i} p={5} bg="surface" borderRadius="xl" border="1px solid" borderColor="border.subtle">
                 <Skeleton h="10px" w="80px" mb={3} />
                 <Skeleton h="28px" w="40px" />
               </Box>
@@ -106,7 +106,7 @@ export default function Home() {
           </>
         ) : (
           <>
-            <StatCard label="Total de Relatorios" value={total} color="gray.800" />
+            <StatCard label="Total de Relatorios" value={total} color="text.primary" />
             <StatCard label="Assinados" value={signed} color="green.600" />
             <StatCard label="Rascunhos" value={drafts} color="yellow.600" />
           </>
@@ -116,7 +116,7 @@ export default function Home() {
       {/* Recent Reports */}
       <Box>
         <HStack justify="space-between" mb={4}>
-          <Heading size="sm" fontWeight="600" color="gray.700">
+          <Heading size="sm" fontWeight="600" color="text.secondary">
             Relatorios Recentes
           </Heading>
           <Button as={RouterLink} to="/dashboard/reports" variant="ghost" size="sm" color="brand.600" fontWeight="500">
@@ -127,7 +127,7 @@ export default function Home() {
         {loading ? (
           <VStack align="stretch" gap={2}>
             {[1, 2, 3].map(i => (
-              <Box key={i} p={4} bg="white" borderRadius="lg" border="1px solid" borderColor="gray.100">
+              <Box key={i} p={4} bg="surface" borderRadius="lg" border="1px solid" borderColor="border.subtle">
                 <HStack justify="space-between">
                   <Box flex={1}>
                     <Skeleton h="14px" w="60%" mb={2} />
@@ -139,8 +139,8 @@ export default function Home() {
             ))}
           </VStack>
         ) : recentReports.length === 0 ? (
-          <Box p={8} bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" textAlign="center">
-            <Text color="gray.400" mb={3}>Nenhum relatorio criado ainda</Text>
+          <Box p={8} bg="surface" borderRadius="xl" border="1px solid" borderColor="border.subtle" textAlign="center">
+            <Text color="text.subtle" mb={3}>Nenhum relatorio criado ainda</Text>
             <Button as={RouterLink} to="/dashboard/reports/new" colorScheme="brand" size="sm">
               Criar primeiro relatorio
             </Button>
@@ -153,10 +153,10 @@ export default function Home() {
                 as={RouterLink}
                 to={`/dashboard/reports/${r.id}/review`}
                 p={4}
-                bg="white"
+                bg="surface"
                 borderRadius="lg"
                 border="1px solid"
-                borderColor="gray.100"
+                borderColor="border.subtle"
                 _hover={{ borderColor: 'brand.200', shadow: 'sm' }}
                 transition="all 0.15s"
                 display="block"
@@ -164,10 +164,10 @@ export default function Home() {
               >
                 <HStack justify="space-between">
                   <Box>
-                    <Text fontSize="sm" fontWeight="500" color="gray.800">
+                    <Text fontSize="sm" fontWeight="500" color="text.primary">
                       {r.patient_diagnosis || 'Relatorio #' + r.id.slice(0, 8)}
                     </Text>
-                    <Text fontSize="xs" color="gray.400" mt={1}>
+                    <Text fontSize="xs" color="text.subtle" mt={1}>
                       {new Date(r.created_at).toLocaleDateString('pt-BR', {
                         day: '2-digit', month: 'short', year: 'numeric',
                       })}

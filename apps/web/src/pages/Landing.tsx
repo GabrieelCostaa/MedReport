@@ -73,6 +73,12 @@ const floatSlowAlt = keyframes`
   100% { transform: translate(0, 0) rotate(0deg); }
 `;
 
+const meshMove = keyframes`
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
+
 /* ─── Unsplash (free, no copyright) — full-bleed sizes ─── */
 const IMG = {
   hero: 'https://images.unsplash.com/photo-1551190822-a9ce113d0459?auto=format&fit=crop&w=1920&q=85',
@@ -314,8 +320,8 @@ function Counter({ end, suffix = '' }: { end: number; suffix?: string }) {
   }, [end, inView]);
 
   return (
-    <Text ref={ref} fontFamily={SERIF} fontSize={{ base: '5xl', md: '7xl', lg: '8xl' }}
-      fontWeight="900" color={C.accent} lineHeight="1" letterSpacing="-0.03em">
+    <Text ref={ref} fontFamily={SERIF} fontSize={{ base: '4xl', md: '6xl', lg: '7xl' }}
+      fontWeight="900" color={C.accent} lineHeight="1" letterSpacing="-0.03em" whiteSpace="nowrap">
       {count.toLocaleString('pt-BR')}{suffix}
     </Text>
   );
@@ -461,8 +467,8 @@ function Hero() {
             <MotionBox initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: DURATION, delay: 1.1, ease: EASE }} maxW="xl">
               <Text fontSize={{ base: 'md', md: 'lg' }} color={C.grayLight} lineHeight="1.8" fontWeight="400">
-                Pipeline de IA com 4 agentes. 161 DUTs da ANS. Referencias PubMed
-                verificaveis. De 45 minutos para 3.
+                Pipeline de IA com 4 agentes. 74.000+ codigos TUSS. 96.000+ registros ANVISA.
+                Referencias PubMed verificaveis. De 45 minutos para 3.
               </Text>
             </MotionBox>
 
@@ -494,9 +500,9 @@ function Hero() {
 
 function Marquee() {
   const items = [
-    '161 DUTs mapeadas', '14.000+ codigos CID', '98% de aprovacao',
+    '74.000+ codigos TUSS', '96.000+ registros ANVISA', '161 DUTs mapeadas',
     'Relatorio em 3 min', 'RN 465/2021', 'PubMed em tempo real',
-    'TISS/TUSS automatico', 'Registro ANVISA', 'Conformidade LGPD',
+    'TISS/TUSS automatico', 'CID-10 integrado', 'Conformidade LGPD',
   ];
   const doubled = [...items, ...items];
 
@@ -579,8 +585,8 @@ function Statement() {
           <VStack mt={{ base: 10, md: 14 }} gap={4}>
             <Box w="48px" h="1px" bg={C.accent} />
             <Text fontSize={{ base: 'sm', md: 'md' }} color={C.grayLight} textAlign="center" maxW="lg" lineHeight="1.8">
-              Cada justificativa segue as 161 DUTs da ANS com base legal,
-              referencias PubMed e conformidade TISS. Automaticamente.
+              Cada justificativa cruza 74.000+ codigos TUSS, 96.000+ registros ANVISA,
+              161 DUTs da ANS, referencias PubMed e conformidade TISS. Automaticamente.
             </Text>
           </VStack>
         </Reveal>
@@ -593,22 +599,43 @@ function Statement() {
 
 function Stats() {
   const stats = [
-    { value: 161, suffix: '', label: 'DUTs da ANS', sub: 'Rol completo e atualizado' },
-    { value: 14000, suffix: '+', label: 'Codigos CID', sub: 'CID-10 integrado' },
-    { value: 98, suffix: '%', label: 'Aprovacao', sub: 'Em relatorios gerados' },
+    { value: 74000, suffix: '+', label: 'Codigos TUSS', sub: 'Base completa de materiais' },
+    { value: 161, suffix: '', label: 'DUTs da ANS', sub: 'Criterios de elegibilidade' },
+    { value: 96000, suffix: '+', label: 'Registros ANVISA', sub: 'Validacao regulatoria' },
     { value: 3, suffix: ' min', label: 'Por relatorio', sub: 'Contra 45 min manual' },
   ];
 
   return (
-    <Box py={{ base: 20, md: 32 }} bg={C.white} data-nav-theme="light">
-      <Container maxW="7xl">
+    <Box
+      py={{ base: 20, md: 32 }}
+      position="relative"
+      overflow="hidden"
+      data-nav-theme="dark"
+      bg={`linear-gradient(135deg, ${C.dark} 0%, #1a1a18 25%, #1c1e12 50%, #1a1a18 75%, ${C.dark} 100%)`}
+      backgroundSize="400% 400%"
+      animation={`${meshMove} 12s ease infinite`}
+    >
+      {/* Subtle accent glow orbs */}
+      <Box
+        position="absolute" top="-20%" left="-10%" w="50%" h="140%"
+        bg={`radial-gradient(ellipse, ${C.accent}08 0%, transparent 70%)`}
+        animation={`${floatSlow} 20s ease-in-out infinite`}
+        pointerEvents="none"
+      />
+      <Box
+        position="absolute" bottom="-20%" right="-10%" w="50%" h="140%"
+        bg={`radial-gradient(ellipse, ${C.accent}06 0%, transparent 70%)`}
+        animation={`${floatSlowAlt} 18s ease-in-out infinite`}
+        pointerEvents="none"
+      />
+      <Container maxW="7xl" position="relative" zIndex={1}>
         <SimpleGrid columns={{ base: 2, md: 4 }} gap={{ base: 10, md: 8 }}>
           {stats.map((s, i) => (
             <Reveal key={i} delay={i * 0.1}>
               <VStack gap={2}>
                 <Counter end={s.value} suffix={s.suffix} />
-                <Text fontSize="sm" fontWeight="700" color={C.dark} letterSpacing="-0.01em">{s.label}</Text>
-                <Text fontSize="xs" color={C.gray} textAlign="center">{s.sub}</Text>
+                <Text fontSize="sm" fontWeight="700" color="white" letterSpacing="-0.01em">{s.label}</Text>
+                <Text fontSize="xs" color={C.grayLight} textAlign="center">{s.sub}</Text>
               </VStack>
             </Reveal>
           ))}
@@ -673,7 +700,7 @@ function Gallery() {
           </Reveal>
           <Reveal delay={0.2}>
             <HoverRevealCard image={IMG.team} title="Auditor e Validador"
-              subtitle="Corrige inconsistencias e valida contra 161 DUTs automaticamente" label="Camadas 3 e 4" />
+              subtitle="Valida contra 74.000+ TUSS, 96.000+ ANVISA e 161 DUTs automaticamente" label="Camadas 3 e 4" />
           </Reveal>
         </SimpleGrid>
       </Container>
@@ -706,7 +733,7 @@ function CinematicBreak2() {
             <Text fontSize={{ base: 'md', md: 'lg' }} color={C.grayLight} maxW="md" lineHeight="1.8">
               Quatro agentes de IA trabalham em sequencia para produzir uma justificativa
               tecnica completa, com base legal, evidencias PubMed e conformidade ANS.
-              Tudo validado contra 161 DUTs de forma deterministica.
+              Tudo cruzado com 74.000+ TUSS, 96.000+ ANVISA e 161 DUTs de forma deterministica.
             </Text>
           </Reveal>
         </Flex>
@@ -761,11 +788,16 @@ function HorizontalFeatures() {
       const scrollable = section.offsetHeight - window.innerHeight;
       if (scrollable <= 0) return;
 
-      const p = Math.max(0, Math.min(1, -rect.top / scrollable));
+      // Start movement very early — when section is 80% below viewport
+      const earlyStart = window.innerHeight * 0.8;
+      const rawP = (earlyStart - rect.top) / (scrollable + earlyStart);
+      const p = Math.max(0, Math.min(1, rawP));
       targetProg = p;
 
-      const maxShift = Math.max(0, track.scrollWidth - window.innerWidth + 96);
-      targetTx.current = -p * maxShift;
+      // Start with first card well to the right, then shift left
+      const startOffset = window.innerWidth * 0.5;
+      const maxShift = track.scrollWidth - window.innerWidth + 96 + startOffset;
+      targetTx.current = startOffset - p * maxShift;
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -807,12 +839,17 @@ function HorizontalFeatures() {
               <Box key={f.num} minW={{ base: '300px', md: '560px' }} flexShrink={0}>
                 <Box borderRadius="2xl" overflow="hidden" bg={C.dark}
                   h={{ base: '300px', md: '380px' }} position="relative"
-                  _hover={{ '& > div:first-of-type': { opacity: 0.4, transform: 'scale(1.05)' } }}>
+                  cursor="pointer"
+                  _hover={{
+                    '& > div:first-of-type': { opacity: 0.6, transform: 'scale(1.08)' },
+                    '& > div:nth-of-type(2)': { opacity: 0.5 },
+                  }}>
                   <Box position="absolute" inset={0} bgImage={`url(${f.image})`}
                     bgSize="cover" bgPosition="center" opacity={0.25}
                     transition="all 0.6s cubic-bezier(0.65, 0.05, 0, 1)" />
-                  <Box position="absolute" inset={0}
-                    bg={`linear-gradient(160deg, ${C.dark}cc 0%, ${C.dark}99 100%)`} />
+                  <Box position="absolute" inset={0} opacity={1}
+                    bg={`linear-gradient(160deg, ${C.dark}cc 0%, ${C.dark}99 100%)`}
+                    transition="opacity 0.6s cubic-bezier(0.65, 0.05, 0, 1)" />
                   <VStack position="relative" zIndex={1} p={{ base: 6, md: 8 }}
                     align="start" justify="end" h="full">
                     <Text fontFamily={SERIF} fontSize="7xl" fontWeight="900" color={C.accent}
@@ -844,17 +881,25 @@ function HorizontalFeatures() {
 
 function Compliance() {
   const items = [
-    { code: 'RN 465/2021', label: 'Rol de Procedimentos', desc: '161 DUTs com criterios de elegibilidade automaticos' },
+    { code: 'RN 465/2021', label: 'Rol de Procedimentos', desc: '161 DUTs + 74.000+ TUSS + 96.000+ registros ANVISA' },
     { code: 'RN 452/2020', label: 'Padrao TISS', desc: 'Guias XML conforme padrao obrigatorio da ANS' },
     { code: 'Lei 13.709', label: 'LGPD', desc: 'Tratamento de dados sensiveis em conformidade' },
     { code: 'ANVISA', label: 'Registro de Produtos', desc: 'Validacao automatica do registro de cada OPME' },
   ];
 
   return (
-    <Box py={{ base: 20, md: 32 }} bg={C.dark} data-nav-theme="dark" position="relative" overflow="hidden">
+    <Box pt={{ base: 20, md: 32 }} pb={{ base: 28, md: 40 }} bg={C.dark} data-nav-theme="dark" position="relative" overflow="hidden">
       <TopoBg opacity={0.05} color={C.accent} />
       <Box position="absolute" bottom="-100px" right="-100px" opacity={0.03}>
         <Caduceus size={500} color="#fff" />
+      </Box>
+      {/* Organic wave transition to Specialties (light) */}
+      <Box position="absolute" bottom={0} left={0} right={0} h="200px"
+        bg={`linear-gradient(to bottom, transparent 0%, ${C.white}40 40%, ${C.white} 100%)`} pointerEvents="none" />
+      <Box position="absolute" bottom={-1} left={0} right={0} pointerEvents="none" zIndex={2}>
+        <svg viewBox="0 0 1440 40" fill="none" preserveAspectRatio="none" style={{ width: '100%', height: '40px', display: 'block' }}>
+          <path d="M0,20 C360,35 720,5 1080,25 C1260,32 1380,15 1440,20 L1440,40 L0,40 Z" fill={C.white} />
+        </svg>
       </Box>
       <Container maxW="7xl" position="relative" zIndex={1}>
         <Reveal>
@@ -897,8 +942,8 @@ function Specialties() {
   ];
 
   return (
-    <Box py={{ base: 16, md: 24 }} bg={C.white} data-nav-theme="light">
-      <Container maxW="5xl">
+    <Box pt={{ base: 16, md: 24 }} pb={{ base: 24, md: 32 }} bg={C.white} data-nav-theme="light" position="relative">
+      <Container maxW="5xl" position="relative" zIndex={1}>
         <Reveal>
           <VStack mb={10} textAlign="center">
             <HStack gap={3} mb={2}>
@@ -930,94 +975,107 @@ function Specialties() {
   );
 }
 
-/* ─── TESTIMONIAL (cinematic full-bleed) ─── */
+/* ─── TESTIMONIAL + FINAL CTA (sticky image, text scrolls over) ─── */
 
 function Testimonial() {
   return (
-    <CinematicSection image={IMG.team} overlayOpacity={0.7} minH="80vh">
-      <Container maxW="4xl">
-        <Reveal>
-          <VStack textAlign="center" gap={8}>
-            <Box w="60px" h="1px" bg={C.accent} />
-            <Heading fontFamily={SERIF} fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }}
-              fontWeight="400" fontStyle="italic" color="white" lineHeight="1.7" maxW="3xl">
-              "Eu gastava 40 minutos por justificativa e ainda recebia negativa.
-              Com o MedReport, faco em 3 minutos e a taxa de aprovacao
-              subiu para praticamente 100%."
-            </Heading>
-            <VStack gap={1}>
-              <Text fontSize="sm" fontWeight="700" color="white">Dr. R. Oliveira</Text>
-              <Text fontSize="xs" color={C.grayLight}>Ortopedista — Sao Paulo, SP</Text>
-            </VStack>
-          </VStack>
-        </Reveal>
-      </Container>
-    </CinematicSection>
-  );
-}
+    <Box position="relative" data-nav-theme="dark">
+      {/* Sticky image that stays fixed, extends behind navbar */}
+      <Box
+        position="sticky"
+        top={0}
+        h="100vh"
+        overflow="hidden"
+        zIndex={0}
+      >
+        <Box position="absolute" inset={0} bgImage={`url(${IMG.team})`}
+          bgSize="cover" bgPosition="center" />
+        <Box position="absolute" inset={0} bg="rgba(0,0,0,0.65)" />
+      </Box>
 
-/* ─── FINAL CTA ─── */
-
-function FinalCTA() {
-  return (
-    <CinematicSection image={IMG.doctor} overlayOpacity={0.75}>
-      <Container maxW="4xl">
-        <Reveal>
-          <VStack textAlign="center" gap={8}>
-            <ClipReveal>
-              <Heading fontFamily={SERIF} fontSize={{ base: '2.5rem', md: '4rem', lg: '5rem' }}
-                fontWeight="900" color="white" lineHeight="1.1" letterSpacing="-0.03em">
-                Pronto para <Text as="span" color={C.accent}>eliminar negativas</Text> da sua rotina?
-              </Heading>
-            </ClipReveal>
-            <Text fontSize={{ base: 'md', md: 'lg' }} color={C.grayLight} maxW="lg" lineHeight="1.7">
-              Junte-se aos medicos que ja economizam horas por semana com justificativas
-              geradas por IA e validadas contra a legislacao.
-            </Text>
-            <RollButton to="/login" icon={<ArrowRight />}>
-              Comecar agora — e gratis
-            </RollButton>
-            <Text fontSize="xs" color="whiteAlpha.400">
-              Sem cartao de credito. Primeiros 5 relatorios gratuitos.
-            </Text>
-          </VStack>
-        </Reveal>
-      </Container>
-    </CinematicSection>
-  );
-}
-
-/* ─── FOOTER ─── */
-
-function Footer() {
-  return (
-    <Box py={10} bg={C.dark} borderTop="1px solid" borderColor="whiteAlpha.100" data-nav-theme="dark">
-      <Container maxW="7xl">
-        <Flex justify="space-between" align={{ base: 'start', md: 'center' }}
-          direction={{ base: 'column', md: 'row' }} gap={6}>
-          <HStack gap={2.5}>
-            <Box w="28px" h="28px" borderRadius="md" bg={C.accent}
-              display="flex" alignItems="center" justifyContent="center" color={C.dark}>
-              <LogoIcon size={14} />
-            </Box>
-            <Box>
-              <Text fontWeight="700" color="white" fontSize="sm">MedReport</Text>
-              <Text fontSize="2xs" color="whiteAlpha.400">Justificativas OPME inteligentes</Text>
-            </Box>
-          </HStack>
-          <VStack align={{ base: 'start', md: 'end' }} gap={1}>
-            <Text fontSize="xs" color="whiteAlpha.400">
-              ANS (RN 465) | TISS (RN 452) | LGPD (Lei 13.709) | ANVISA
-            </Text>
-            <Text fontSize="xs" color="whiteAlpha.300">
-              {new Date().getFullYear()} MedReport. Todos os direitos reservados.
-            </Text>
-          </VStack>
+      {/* Text content that scrolls over the sticky image */}
+      <Box position="relative" zIndex={1} mt="-100vh">
+        {/* Testimonial */}
+        <Flex minH="100vh" align="center" justify="center">
+          <Container maxW="4xl">
+            <Reveal>
+              <VStack textAlign="center" gap={8}>
+                <Box w="60px" h="1px" bg={C.accent} />
+                <Heading fontFamily={SERIF} fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }}
+                  fontWeight="400" fontStyle="italic" color="white" lineHeight="1.7" maxW="3xl">
+                  "Eu gastava 40 minutos por justificativa e ainda recebia negativa.
+                  Com o MedReport, faco em 3 minutos e a taxa de aprovacao
+                  subiu para praticamente 100%."
+                </Heading>
+                <VStack gap={1}>
+                  <Text fontSize="sm" fontWeight="700" color="white">Dr. R. Oliveira</Text>
+                  <Text fontSize="xs" color={C.grayLight}>Ortopedista — Sao Paulo, SP</Text>
+                </VStack>
+              </VStack>
+            </Reveal>
+          </Container>
         </Flex>
-      </Container>
+
+        {/* CTA + Footer — scrolls up naturally after testimonial */}
+        <Flex minH="100vh" align="center" justify="center" direction="column">
+          <Container maxW="4xl" flex={1} display="flex" alignItems="center">
+            <Reveal>
+              <VStack textAlign="center" gap={8} w="full">
+                <ClipReveal>
+                  <Heading fontFamily={SERIF} fontSize={{ base: '2.5rem', md: '4rem', lg: '5rem' }}
+                    fontWeight="900" color="white" lineHeight="1.1" letterSpacing="-0.03em">
+                    Pronto para <Text as="span" color={C.accent}>eliminar negativas</Text> da sua rotina?
+                  </Heading>
+                </ClipReveal>
+                <Text fontSize={{ base: 'md', md: 'lg' }} color={C.grayLight} maxW="lg" lineHeight="1.7">
+                  Junte-se aos medicos que ja economizam horas por semana com justificativas
+                  geradas por IA e validadas contra a legislacao.
+                </Text>
+                <RollButton to="/login" icon={<ArrowRight />}>
+                  Comecar agora — e gratis
+                </RollButton>
+                <Text fontSize="xs" color="whiteAlpha.400">
+                  Sem cartao de credito. Primeiros 5 relatorios gratuitos.
+                </Text>
+              </VStack>
+            </Reveal>
+          </Container>
+
+          {/* Footer inline */}
+          <Container maxW="7xl" w="full" py={8}>
+            <Flex justify="space-between" align={{ base: 'start', md: 'center' }}
+              direction={{ base: 'column', md: 'row' }} gap={6}>
+              <HStack gap={2.5}>
+                <Box w="28px" h="28px" borderRadius="md" bg={C.accent}
+                  display="flex" alignItems="center" justifyContent="center" color={C.dark}>
+                  <LogoIcon size={14} />
+                </Box>
+                <Box>
+                  <Text fontWeight="700" color="white" fontSize="sm">MedReport</Text>
+                  <Text fontSize="2xs" color="whiteAlpha.400">Justificativas OPME inteligentes</Text>
+                </Box>
+              </HStack>
+              <VStack align={{ base: 'start', md: 'end' }} gap={1}>
+                <Text fontSize="xs" color="white">
+                  ANS (RN 465) | TISS (RN 452) | LGPD (Lei 13.709) | ANVISA
+                </Text>
+                <Text fontSize="xs" color="whiteAlpha.700">
+                  {new Date().getFullYear()} MedReport. Todos os direitos reservados.
+                </Text>
+              </VStack>
+            </Flex>
+          </Container>
+        </Flex>
+      </Box>
     </Box>
   );
 }
+
+function FinalCTA() { return null; }
+
+/* ─── FOOTER ─── */
+
+function Footer() { return null; }
 
 /* ═══════════════════════════════════════════════
    PAGE

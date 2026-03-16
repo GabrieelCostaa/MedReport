@@ -66,6 +66,23 @@ def generate_pdf_bytes(
     base_legal: str = "",
 ) -> bytes:
     """Gera PDF em bytes. Tenta WeasyPrint, fallback para ReportLab."""
+    # Sanitize inputs
+    justificativa = justificativa or ""
+    paciente_nome = paciente_nome or ""
+    cid = cid or ""
+    diagnostico_resumo = diagnostico_resumo or ""
+    produto_nome = produto_nome or ""
+    convenio = convenio or ""
+    especialidade = especialidade or ""
+    codigo_tuss = codigo_tuss or ""
+    referencias = referencias or []
+    checklist = checklist or {}
+    medico_nome = medico_nome or ""
+    medico_crm = medico_crm or ""
+    falha_terapeutica = falha_terapeutica or ""
+    risco_nao_realizacao = risco_nao_realizacao or ""
+    base_legal = base_legal or ""
+
     kwargs = dict(
         justificativa=justificativa,
         paciente_nome=paciente_nome,
