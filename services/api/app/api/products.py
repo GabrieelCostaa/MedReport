@@ -193,13 +193,8 @@ async def create_from_anvisa(
     existing = await db.execute(
         select(Product).where(Product.registro_anvisa == registro)
     )
-    if existing.scalar_one_or_none():
-        p = existing.scalar_one_or_none()
-        # Already done above, re-query
-        result = await db.execute(
-            select(Product).where(Product.registro_anvisa == registro)
-        )
-        p = result.scalar_one_or_none()
+    p = existing.scalar_one_or_none()
+    if p:
         return {
             "id": str(p.id),
             "nome": p.nome,
