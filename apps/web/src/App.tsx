@@ -2,7 +2,9 @@ import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Box, Spinner, Flex } from '@chakra-ui/react';
 import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import LegalBasis from './pages/LegalBasis';
 import Landing from './pages/Landing';
 
@@ -26,8 +28,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/legal-basis" element={<LegalBasis />} />
-        <Route path="/dashboard" element={<Layout />}>
+        <Route path="/dashboard" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={<Suspense fallback={<PageLoader />}><Home /></Suspense>} />
           <Route path="reports" element={<Suspense fallback={<PageLoader />}><ReportList /></Suspense>} />
           <Route path="reports/new" element={<Suspense fallback={<PageLoader />}><ReportCreate /></Suspense>} />

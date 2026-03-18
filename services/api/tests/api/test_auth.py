@@ -10,6 +10,49 @@ from app.db.models import User
 from tests.api.conftest import TEST_PASSWORD
 
 
+# ─── POST /api/auth/register ───
+
+
+@pytest.mark.asyncio
+async def test_registro_deve_criar_usuario_e_retornar_token(client: AsyncClient):
+    resp = await client.post(
+        "/api/auth/register",
+        json={"email": "novo@medreport.com", "password": "senha123"},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert "access_token" in body
+    assert body["user"]["email"] == "novo@medreport.com"
+    assert body["user"]["role"] == "medico"
+
+    # Token retornado deve funcionar
+    me_resp = await client.get(
+        "/api/auth/me",
+        headers={"Authorization": f"Bearer {body['access_token']}"},
+    )
+    assert me_resp.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_registro_email_duplicado_deve_retornar_409(
+    client: AsyncClient, test_user: User
+):
+    resp = await client.post(
+        "/api/auth/register",
+        json={"email": test_user.email, "password": "outra_senha"},
+    )
+    assert resp.status_code == 409
+
+
+@pytest.mark.asyncio
+async def test_registro_sem_email_deve_retornar_422(client: AsyncClient):
+    resp = await client.post(
+        "/api/auth/register",
+        json={"password": "senha123"},
+    )
+    assert resp.status_code == 422
+
+
 # ─── POST /auth/token ───
 
 

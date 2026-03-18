@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -12,33 +12,40 @@ import {
   HStack,
   Link,
 } from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
 import { authApi } from '../api/auth';
 
-export default function Login() {
+export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      toast({ title: 'As senhas não coincidem', status: 'error' });
+      return;
+    }
+    if (password.length < 6) {
+      toast({ title: 'A senha deve ter pelo menos 6 caracteres', status: 'error' });
+      return;
+    }
     setLoading(true);
     try {
-      const res = await authApi.login(email, password);
+      const res = await authApi.register(email, password);
       localStorage.setItem('token', res.access_token);
       localStorage.setItem('user', JSON.stringify(res.user));
-      const nome = res.user.email?.split('@')[0] || '';
       toast({
-        title: nome ? `Bem-vindo, Dr. ${nome}` : 'Login realizado',
+        title: 'Conta criada com sucesso!',
         status: 'success',
         duration: 3000,
       });
-      navigate(res.user.legal_basis_acknowledged ? '/dashboard' : '/legal-basis');
+      navigate('/legal-basis');
     } catch (err: unknown) {
       toast({
-        title: 'Erro no login',
+        title: 'Erro no cadastro',
         description: (err as { message?: string })?.message ?? 'Tente novamente.',
         status: 'error',
       });
@@ -86,10 +93,10 @@ export default function Login() {
         {/* Form */}
         <Box p={8} bg="white" borderRadius="xl" border="1px solid" borderColor="gray.100" shadow="sm">
           <Text fontSize="lg" fontWeight="600" mb={1} color="gray.800">
-            Bem-vindo de volta
+            Criar conta
           </Text>
           <Text fontSize="sm" color="gray.500" mb={6}>
-            Entre com suas credenciais para continuar
+            Cadastre-se para gerar seus relatorios
           </Text>
 
           <form onSubmit={handleSubmit}>
@@ -112,6 +119,18 @@ export default function Login() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Minimo 6 caracteres"
+                  size="lg"
+                  fontSize="sm"
+                  borderRadius="lg"
+                />
+              </FormControl>
+              <FormControl isRequired>
+                <FormLabel fontSize="sm" fontWeight="500" color="gray.700">Confirmar senha</FormLabel>
+                <Input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   size="lg"
                   fontSize="sm"
                   borderRadius="lg"
@@ -128,16 +147,16 @@ export default function Login() {
                 borderRadius="lg"
                 mt={2}
               >
-                Entrar
+                Criar conta
               </Button>
             </VStack>
           </form>
         </Box>
 
         <Text fontSize="sm" color="gray.500" textAlign="center" mt={6}>
-          Nao tem conta?{' '}
-          <Link as={RouterLink} to="/register" color="brand.600" fontWeight="600">
-            Criar conta
+          Ja tem conta?{' '}
+          <Link as={RouterLink} to="/login" color="brand.600" fontWeight="600">
+            Entrar
           </Link>
         </Text>
       </Box>

@@ -33,6 +33,13 @@ export const authApi = {
     });
   },
 
+  register(email: string, password: string) {
+    return apiRequest<LoginResponse>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+  },
+
   acknowledgeLegalBasis() {
     return apiRequest<void>('/auth/legal-basis', { method: 'POST' });
   },

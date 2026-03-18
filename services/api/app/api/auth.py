@@ -32,6 +32,57 @@ class UserOut(BaseModel):
         from_attributes = True
 
 
+class RegisterIn(BaseModel):
+    email: str
+    password: str
+    role: str = "medico"
+
+
+@router.post("/register")
+async def register(
+    body: RegisterIn,
+    db: AsyncSession = Depends(get_db),
+):
+    """Cadastro de novo usuário."""
+    # Verifica se e-mail já existe
+    existing = await db.execute(select(User).where(User.email == body.email))
+    if existing.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="E-mail já cadastrado",
+        )
+    # Valida role
+    valid_roles = {r.value for r in UserRole}
+    if body.role not in valid_roles:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Role inválido. Use: {', '.join(valid_roles)}",
+        )
+    user = User(
+        email=body.email,
+        hashed_password=get_password_hash(body.password),
+        role=body.role,
+    )
+    db.add(user)
+    await db.flush()
+    await db.refresh(user)
+    # Gera token automaticamente (login após registro)
+    access_token = create_access_token(
+        data={"sub": str(user.id)},
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": UserOut(
+            id=str(user.id),
+            email=user.email,
+            role=user.role.value if hasattr(user.role, 'value') else user.role,
+            legal_basis_acknowledged=False,
+        ),
+    }
+
+
 @token_router.post("/token")
 async def login(
     form: OAuth2PasswordRequestForm = Depends(),
