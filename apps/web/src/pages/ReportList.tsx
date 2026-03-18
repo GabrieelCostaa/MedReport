@@ -66,7 +66,7 @@ export default function ReportList() {
             Documentos
           </Heading>
           <Text fontSize="sm" color="text.muted" mt={1}>
-            {total} relatorio{total !== 1 ? 's' : ''} gerado{total !== 1 ? 's' : ''}
+            {total} relatório{total !== 1 ? 's' : ''} gerado{total !== 1 ? 's' : ''}
           </Text>
         </Box>
         <Button
@@ -94,7 +94,7 @@ export default function ReportList() {
           </svg>
         </InputLeftElement>
         <Input
-          placeholder="Buscar por diagnostico..."
+          placeholder="Buscar por diagnóstico..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           bg="surface"
@@ -131,13 +131,13 @@ export default function ReportList() {
               <line x1="16" y1="17" x2="8" y2="17" />
             </svg>
           </Text>
-          <Text color="text.muted" fontWeight="500" mb={1}>Nenhum relatorio encontrado</Text>
+          <Text color="text.muted" fontWeight="500" mb={1}>Nenhum relatório encontrado</Text>
           <Text color="text.subtle" fontSize="sm" mb={4}>
-            {search ? 'Tente outro termo de busca' : 'Crie seu primeiro relatorio com IA'}
+            {search ? 'Tente outro termo de busca' : 'Crie seu primeiro relatório com IA'}
           </Text>
           {!search && (
             <Button as={RouterLink} to="/dashboard/reports/new" colorScheme="brand" size="sm">
-              Criar Relatorio
+              Criar Relatório
             </Button>
           )}
         </Box>
@@ -231,7 +231,7 @@ export default function ReportList() {
                   )
                 )}
               <IconButton
-                aria-label="Proxima pagina"
+                aria-label="Próxima página"
                 variant="outline"
                 size="sm"
                 borderRadius="lg"

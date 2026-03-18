@@ -96,7 +96,7 @@ export default function Register() {
             Criar conta
           </Text>
           <Text fontSize="sm" color="gray.500" mb={6}>
-            Cadastre-se para gerar seus relatorios
+            Cadastre-se para gerar seus relatórios
           </Text>
 
           <form onSubmit={handleSubmit}>
@@ -154,7 +154,7 @@ export default function Register() {
         </Box>
 
         <Text fontSize="sm" color="gray.500" textAlign="center" mt={6}>
-          Ja tem conta?{' '}
+          Já tem conta?{' '}
           <Link as={RouterLink} to="/login" color="brand.600" fontWeight="600">
             Entrar
           </Link>

@@ -26,7 +26,7 @@ export async function apiRequest<T>(
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
   if (res.status === 401) {
     handleUnauthorized();
-    throw new Error('Sessao expirada. Faca login novamente.');
+    throw new Error('Sessão expirada. Faça login novamente.');
   }
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));
@@ -43,7 +43,7 @@ export async function apiBlob(path: string): Promise<Blob> {
   const res = await fetch(`${API_BASE}${path}`, { headers });
   if (res.status === 401) {
     handleUnauthorized();
-    throw new Error('Sessao expirada. Faca login novamente.');
+    throw new Error('Sessão expirada. Faça login novamente.');
   }
   if (!res.ok) throw new Error('Download failed');
   return res.blob();

@@ -37,7 +37,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             Algo deu errado
           </Text>
           <Text fontSize="sm" color="gray.500">
-            Ocorreu um erro inesperado. Tente recarregar a pagina ou voltar ao inicio.
+            Ocorreu um erro inesperado. Tente recarregar a página ou voltar ao início.
           </Text>
           {this.state.error && (
             <Box
@@ -54,7 +54,7 @@ export default class ErrorBoundary extends Component<Props, State> {
               Tentar novamente
             </Button>
             <Button size="sm" colorScheme="brand" onClick={this.handleGoHome}>
-              Voltar ao inicio
+              Voltar ao início
             </Button>
           </Box>
         </VStack>

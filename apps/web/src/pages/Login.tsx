@@ -135,7 +135,7 @@ export default function Login() {
         </Box>
 
         <Text fontSize="sm" color="gray.500" textAlign="center" mt={6}>
-          Nao tem conta?{' '}
+          Não tem conta?{' '}
           <Link as={RouterLink} to="/register" color="brand.600" fontWeight="600">
             Criar conta
           </Link>

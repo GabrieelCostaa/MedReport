@@ -52,7 +52,7 @@ export default function Home() {
           Bom dia, Dr.
         </Heading>
         <Text color="text.muted" mt={1}>
-          Crie justificativas tecnicas com inteligencia artificial em minutos.
+          Crie justificativas técnicas com inteligência artificial em minutos.
         </Text>
       </Box>
 
@@ -67,10 +67,10 @@ export default function Home() {
         <HStack justify="space-between" align="center" flexWrap="wrap" gap={4}>
           <Box>
             <Text fontSize="lg" fontWeight="600">
-              Novo Relatorio OPME
+              Novo Relatório OPME
             </Text>
             <Text fontSize="sm" opacity={0.85} mt={1}>
-              Gere uma justificativa tecnica completa com IA, referencias PubMed e conformidade ANS.
+              Gere uma justificativa técnica completa com IA, referências PubMed e conformidade ANS.
             </Text>
           </Box>
           <Button
@@ -88,7 +88,7 @@ export default function Home() {
               </svg>
             }
           >
-            Criar Relatorio
+            Criar Relatório
           </Button>
         </HStack>
       </Box>
@@ -106,7 +106,7 @@ export default function Home() {
           </>
         ) : (
           <>
-            <StatCard label="Total de Relatorios" value={total} color="text.primary" />
+            <StatCard label="Total de Relatórios" value={total} color="text.primary" />
             <StatCard label="Assinados" value={signed} color="green.600" />
             <StatCard label="Rascunhos" value={drafts} color="yellow.600" />
           </>
@@ -117,7 +117,7 @@ export default function Home() {
       <Box>
         <HStack justify="space-between" mb={4}>
           <Heading size="sm" fontWeight="600" color="text.secondary">
-            Relatorios Recentes
+            Relatórios Recentes
           </Heading>
           <Button as={RouterLink} to="/dashboard/reports" variant="ghost" size="sm" color="brand.600" fontWeight="500">
             Ver todos
@@ -140,9 +140,9 @@ export default function Home() {
           </VStack>
         ) : recentReports.length === 0 ? (
           <Box p={8} bg="surface" borderRadius="xl" border="1px solid" borderColor="border.subtle" textAlign="center">
-            <Text color="text.subtle" mb={3}>Nenhum relatorio criado ainda</Text>
+            <Text color="text.subtle" mb={3}>Nenhum relatório criado ainda</Text>
             <Button as={RouterLink} to="/dashboard/reports/new" colorScheme="brand" size="sm">
-              Criar primeiro relatorio
+              Criar primeiro relatório
             </Button>
           </Box>
         ) : (
@@ -165,7 +165,7 @@ export default function Home() {
                 <HStack justify="space-between">
                   <Box>
                     <Text fontSize="sm" fontWeight="500" color="text.primary">
-                      {r.patient_diagnosis || 'Relatorio #' + r.id.slice(0, 8)}
+                      {r.patient_diagnosis || 'Relatório #' + r.id.slice(0, 8)}
                     </Text>
                     <Text fontSize="xs" color="text.subtle" mt={1}>
                       {new Date(r.created_at).toLocaleDateString('pt-BR', {

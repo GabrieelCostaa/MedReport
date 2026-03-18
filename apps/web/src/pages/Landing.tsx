@@ -467,8 +467,8 @@ function Hero() {
             <MotionBox initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: DURATION, delay: 1.1, ease: EASE }} maxW="xl">
               <Text fontSize={{ base: 'md', md: 'lg' }} color={C.grayLight} lineHeight="1.8" fontWeight="400">
-                Pipeline de IA com 4 agentes. 74.000+ codigos TUSS. 96.000+ registros ANVISA.
-                Referencias PubMed verificaveis. De 45 minutos para 3.
+                Pipeline de IA com 4 agentes. 74.000+ códigos TUSS. 96.000+ registros ANVISA.
+                Referências PubMed verificáveis. De 45 minutos para 3.
               </Text>
             </MotionBox>
 
@@ -500,9 +500,9 @@ function Hero() {
 
 function Marquee() {
   const items = [
-    '74.000+ codigos TUSS', '96.000+ registros ANVISA', '161 DUTs mapeadas',
-    'Relatorio em 3 min', 'RN 465/2021', 'PubMed em tempo real',
-    'TISS/TUSS automatico', 'CID-10 integrado', 'Conformidade LGPD',
+    '74.000+ códigos TUSS', '96.000+ registros ANVISA', '161 DUTs mapeadas',
+    'Relatório em 3 min', 'RN 465/2021', 'PubMed em tempo real',
+    'TISS/TUSS automático', 'CID-10 integrado', 'Conformidade LGPD',
   ];
   const doubled = [...items, ...items];
 
@@ -585,8 +585,8 @@ function Statement() {
           <VStack mt={{ base: 10, md: 14 }} gap={4}>
             <Box w="48px" h="1px" bg={C.accent} />
             <Text fontSize={{ base: 'sm', md: 'md' }} color={C.grayLight} textAlign="center" maxW="lg" lineHeight="1.8">
-              Cada justificativa cruza 74.000+ codigos TUSS, 96.000+ registros ANVISA,
-              161 DUTs da ANS, referencias PubMed e conformidade TISS. Automaticamente.
+              Cada justificativa cruza 74.000+ códigos TUSS, 96.000+ registros ANVISA,
+              161 DUTs da ANS, referências PubMed e conformidade TISS. Automaticamente.
             </Text>
           </VStack>
         </Reveal>
@@ -599,10 +599,10 @@ function Statement() {
 
 function Stats() {
   const stats = [
-    { value: 74000, suffix: '+', label: 'Codigos TUSS', sub: 'Base completa de materiais' },
-    { value: 161, suffix: '', label: 'DUTs da ANS', sub: 'Criterios de elegibilidade' },
-    { value: 96000, suffix: '+', label: 'Registros ANVISA', sub: 'Validacao regulatoria' },
-    { value: 3, suffix: ' min', label: 'Por relatorio', sub: 'Contra 45 min manual' },
+    { value: 74000, suffix: '+', label: 'Códigos TUSS', sub: 'Base completa de materiais' },
+    { value: 161, suffix: '', label: 'DUTs da ANS', sub: 'Critérios de elegibilidade' },
+    { value: 96000, suffix: '+', label: 'Registros ANVISA', sub: 'Validação regulatória' },
+    { value: 3, suffix: ' min', label: 'Por relatório', sub: 'Contra 45 min manual' },
   ];
 
   return (
@@ -692,15 +692,16 @@ function Gallery() {
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={5}>
           <Reveal delay={0}>
             <HoverRevealCard image={IMG.surgeons} title="Pesquisador IA"
-              subtitle="Busca automatica de evidencias no PubMed com DOI verificavel" label="Camada 1" />
+              subtitle="Busca automática de evidências no PubMed com DOI verificável" label="Camada 1" />
           </Reveal>
           <Reveal delay={0.1}>
             <HoverRevealCard image={IMG.tablet} title="Redator IA"
-              subtitle="Gera a justificativa tecnica completa seguindo padrao ANS" label="Camada 2" />
+              subtitle="Gera a justificativa técnica completa seguindo padrão ANS" label="Camada 2" />
           </Reveal>
           <Reveal delay={0.2}>
             <HoverRevealCard image={IMG.team} title="Auditor e Validador"
               subtitle="Valida contra 74.000+ TUSS, 96.000+ ANVISA e 161 DUTs automaticamente" label="Camadas 3 e 4" />
+
           </Reveal>
         </SimpleGrid>
       </Container>
@@ -731,9 +732,9 @@ function CinematicBreak2() {
           </Box>
           <Reveal delay={0.3}>
             <Text fontSize={{ base: 'md', md: 'lg' }} color={C.grayLight} maxW="md" lineHeight="1.8">
-              Quatro agentes de IA trabalham em sequencia para produzir uma justificativa
-              tecnica completa, com base legal, evidencias PubMed e conformidade ANS.
-              Tudo cruzado com 74.000+ TUSS, 96.000+ ANVISA e 161 DUTs de forma deterministica.
+              Quatro agentes de IA trabalham em sequência para produzir uma justificativa
+              técnica completa, com base legal, evidências PubMed e conformidade ANS.
+              Tudo cruzado com 74.000+ TUSS, 96.000+ ANVISA e 161 DUTs de forma determinística.
             </Text>
           </Reveal>
         </Flex>
@@ -745,10 +746,10 @@ function CinematicBreak2() {
 /* ─── HORIZONTAL SCROLL FEATURES ─── */
 
 const PIPELINE_FEATURES = [
-  { num: '01', title: 'Pesquisador', desc: 'Busca evidencias cientificas no PubMed em tempo real. Encontra artigos com DOI verificavel e nivel de evidencia classificado.', image: IMG.doctor },
-  { num: '02', title: 'Redator', desc: 'Escreve a justificativa tecnica completa seguindo o padrao ANS. Inclui base legal, falha terapeutica e risco de nao realizacao.', image: IMG.xray },
-  { num: '03', title: 'Auditor', desc: 'Revisa o texto, corrige inconsistencias, verifica codigos TUSS e garante que todas as entidades tecnicas estao presentes.', image: IMG.surgeons },
-  { num: '04', title: 'Validador', desc: 'Checklist deterministico de 6 itens. Detecta off-label, contraindicacoes, conflitos de CID e diagnosticos vagos. Zero IA — pura logica.', image: IMG.operating },
+  { num: '01', title: 'Pesquisador', desc: 'Busca evidências científicas no PubMed em tempo real. Encontra artigos com DOI verificável e nível de evidência classificado.', image: IMG.doctor },
+  { num: '02', title: 'Redator', desc: 'Escreve a justificativa técnica completa seguindo o padrão ANS. Inclui base legal, falha terapêutica e risco de não realização.', image: IMG.xray },
+  { num: '03', title: 'Auditor', desc: 'Revisa o texto, corrige inconsistências, verifica códigos TUSS e garante que todas as entidades técnicas estão presentes.', image: IMG.surgeons },
+  { num: '04', title: 'Validador', desc: 'Checklist determinístico de 6 itens. Detecta off-label, contraindicações, conflitos de CID e diagnósticos vagos. Zero IA — pura lógica.', image: IMG.operating },
 ];
 
 function HorizontalFeatures() {
@@ -1015,14 +1016,14 @@ function Testimonial() {
                   </Heading>
                 </ClipReveal>
                 <Text fontSize={{ base: 'md', md: 'lg' }} color={C.grayLight} maxW="lg" lineHeight="1.7">
-                  Junte-se aos medicos que ja economizam horas por semana com justificativas
-                  geradas por IA e validadas contra a legislacao.
+                  Junte-se aos médicos que já economizam horas por semana com justificativas
+                  geradas por IA e validadas contra a legislação.
                 </Text>
                 <RollButton to="/login" icon={<ArrowRight />}>
-                  Comecar agora — e gratis
+                  Começar agora — é grátis
                 </RollButton>
                 <Text fontSize="xs" color="whiteAlpha.400">
-                  Sem cartao de credito. Primeiros 5 relatorios gratuitos.
+                  Sem cartão de crédito. Primeiros 5 relatórios gratuitos.
                 </Text>
               </VStack>
             </Reveal>
