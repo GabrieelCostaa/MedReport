@@ -1,3 +1,5 @@
+import hashlib
+from datetime import datetime
 from uuid import UUID
 from io import BytesIO
 from typing import Optional
@@ -9,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
 from app.db.session import get_db
-from app.db.models import Report, Product
+from app.db.models import Report, Product, User
 from app.core.security import get_current_user_id
 from app.services.tiss import build_guia_solicitacao_xml
 
@@ -140,23 +142,77 @@ async def sign_report(
     user_id: str = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
-    # TODO: re-enable auth when ready
-    if user_id:
-        result = await db.execute(
-            select(Report).where(Report.id == report_id, Report.user_id == UUID(user_id))
+    """Assina eletronicamente o relatório gerando hash SHA-256 do DOCX."""
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    # Busca relatório
+    result = await db.execute(select(Report).where(Report.id == report_id))
+    report = result.scalar_one_or_none()
+    if not report:
+        raise HTTPException(status_code=404, detail="Relatório não encontrado")
+
+    # Verifica propriedade
+    if str(report.user_id) != user_id:
+        raise HTTPException(status_code=403, detail="Acesso negado")
+
+    # Verifica se já assinado
+    if report.status == "signed":
+        raise HTTPException(status_code=409, detail="Relatório já assinado")
+
+    # Busca dados do médico
+    user_result = await db.execute(select(User).where(User.id == UUID(str(user_id))))
+    user = user_result.scalar_one_or_none()
+    if not user or not user.crm:
+        raise HTTPException(
+            status_code=422,
+            detail="Complete seu perfil com CRM antes de assinar.",
         )
-    else:
-        result = await db.execute(
-            select(Report).where(Report.id == report_id)
+
+    # Gera DOCX em memória com dados do médico
+    from app.services.docx_generator import generate_docx_bytes
+    try:
+        docx_bytes = generate_docx_bytes(
+            justificativa=report.justificativa_ia or "",
+            paciente_nome=report.paciente_nome or "",
+            cid=report.cid or "",
+            diagnostico_resumo=report.diagnosis or "",
+            produto_nome=report.materials or "",
+            convenio=report.health_plan or "",
+            especialidade=getattr(report, "especialidade", "") or "",
+            codigo_tuss="",
+            referencias=[],
+            checklist=None,
+            aprovado=False,
+            falha_terapeutica=getattr(report, "falha_terapeutica", "") or "",
+            risco_nao_realizacao=getattr(report, "risco_nao_realizacao", "") or "",
+            base_legal=getattr(report, "base_legal_ans", "") or "",
+            medico_nome=user.nome or "",
+            medico_crm=f"CRM/{user.crm_uf} {user.crm}" if user.crm_uf else user.crm,
         )
-    r = result.scalar_one_or_none()
-    if not r:
-        raise HTTPException(status_code=404, detail="Report not found")
-    from datetime import datetime
-    r.status = "signed"
-    r.signed_at = datetime.utcnow()
-    await db.flush()
-    return {}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao gerar documento: {str(e)}")
+
+    # Calcula SHA-256
+    signature_hash = hashlib.sha256(docx_bytes).hexdigest()
+    signed_at = datetime.utcnow()
+
+    # Persiste em transação única
+    report.signed_at = signed_at
+    report.status = "signed"
+    report.medico_nome = user.nome
+    report.medico_crm = user.crm
+    report.medico_crm_uf = user.crm_uf
+    report.signature_hash = signature_hash
+    await db.commit()
+
+    return {
+        "signed_at": signed_at.isoformat() + "Z",
+        "signature_hash": signature_hash,
+        "medico_nome": user.nome,
+        "medico_crm": user.crm,
+        "medico_crm_uf": user.crm_uf,
+    }
 
 
 @router.post("/review/upload")
@@ -263,6 +319,12 @@ async def download_report(
         falha_terapeutica=getattr(r, "falha_terapeutica", "") or "",
         risco_nao_realizacao=getattr(r, "risco_nao_realizacao", "") or "",
         base_legal=getattr(r, "base_legal_ans", "") or "",
+        medico_nome=getattr(r, "medico_nome", "") or "",
+        medico_crm=(
+            f"CRM/{r.medico_crm_uf} {r.medico_crm}"
+            if getattr(r, "medico_crm", None) and getattr(r, "medico_crm_uf", None)
+            else (getattr(r, "medico_crm", "") or "")
+        ),
     )
 
     if format == "docx":
