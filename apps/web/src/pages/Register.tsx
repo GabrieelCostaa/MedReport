@@ -11,10 +11,20 @@ import {
   useToast,
   HStack,
   Link,
+  Select,
 } from '@chakra-ui/react';
 import { authApi } from '../api/auth';
 
+const UFS_BRASIL = [
+  'AC','AL','AP','AM','BA','CE','DF','ES','GO',
+  'MA','MT','MS','MG','PA','PB','PR','PE','PI',
+  'RJ','RN','RS','RO','RR','SC','SP','SE','TO',
+];
+
 export default function Register() {
+  const [nome, setNome] = useState('');
+  const [crm, setCrm] = useState('');
+  const [crmUf, setCrmUf] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -32,9 +42,21 @@ export default function Register() {
       toast({ title: 'A senha deve ter pelo menos 6 caracteres', status: 'error' });
       return;
     }
+    if (!nome.trim()) {
+      toast({ title: 'Nome completo é obrigatório', status: 'error' });
+      return;
+    }
+    if (!/^\d{4,8}$/.test(crm)) {
+      toast({ title: 'CRM inválido. Use apenas dígitos (4-8 caracteres)', status: 'error' });
+      return;
+    }
+    if (!crmUf) {
+      toast({ title: 'Selecione a UF do CRM', status: 'error' });
+      return;
+    }
     setLoading(true);
     try {
-      const res = await authApi.register(email, password);
+      const res = await authApi.register(email, password, nome, crm, crmUf);
       localStorage.setItem('token', res.access_token);
       localStorage.setItem('user', JSON.stringify(res.user));
       toast({
@@ -56,7 +78,7 @@ export default function Register() {
 
   return (
     <Box minH="100vh" bg="#f8fafc" display="flex" alignItems="center" justifyContent="center">
-      <Box w="full" maxW="400px" mx={4}>
+      <Box w="full" maxW="400px" mx={4} py={8}>
         {/* Logo */}
         <VStack mb={8}>
           <HStack gap={2}>
@@ -101,6 +123,53 @@ export default function Register() {
 
           <form onSubmit={handleSubmit}>
             <VStack gap={4} align="stretch">
+              {/* Nome */}
+              <FormControl isRequired>
+                <FormLabel fontSize="sm" fontWeight="500" color="gray.700">Nome completo</FormLabel>
+                <Input
+                  type="text"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  placeholder="Dr. João da Silva"
+                  size="lg"
+                  fontSize="sm"
+                  borderRadius="lg"
+                />
+              </FormControl>
+
+              {/* CRM + UF */}
+              <HStack gap={3} align="flex-end">
+                <FormControl isRequired flex={1}>
+                  <FormLabel fontSize="sm" fontWeight="500" color="gray.700">CRM</FormLabel>
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    value={crm}
+                    onChange={(e) => setCrm(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                    placeholder="123456"
+                    size="lg"
+                    fontSize="sm"
+                    borderRadius="lg"
+                  />
+                </FormControl>
+                <FormControl isRequired w="110px">
+                  <FormLabel fontSize="sm" fontWeight="500" color="gray.700">UF</FormLabel>
+                  <Select
+                    value={crmUf}
+                    onChange={(e) => setCrmUf(e.target.value)}
+                    size="lg"
+                    fontSize="sm"
+                    borderRadius="lg"
+                    placeholder="UF"
+                  >
+                    {UFS_BRASIL.map((uf) => (
+                      <option key={uf} value={uf}>{uf}</option>
+                    ))}
+                  </Select>
+                </FormControl>
+              </HStack>
+
+              {/* Email */}
               <FormControl isRequired>
                 <FormLabel fontSize="sm" fontWeight="500" color="gray.700">E-mail</FormLabel>
                 <Input
@@ -113,13 +182,15 @@ export default function Register() {
                   borderRadius="lg"
                 />
               </FormControl>
+
+              {/* Senha */}
               <FormControl isRequired>
                 <FormLabel fontSize="sm" fontWeight="500" color="gray.700">Senha</FormLabel>
                 <Input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Minimo 6 caracteres"
+                  placeholder="Mínimo 6 caracteres"
                   size="lg"
                   fontSize="sm"
                   borderRadius="lg"
@@ -136,6 +207,7 @@ export default function Register() {
                   borderRadius="lg"
                 />
               </FormControl>
+
               <Button
                 type="submit"
                 colorScheme="brand"
