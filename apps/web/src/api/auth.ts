@@ -4,6 +4,9 @@ export type User = {
   id: string;
   email: string;
   role: 'medico' | 'distribuidor' | 'admin';
+  nome?: string;
+  crm?: string;
+  crm_uf?: string;
   legal_basis_acknowledged: boolean;
 };
 
@@ -33,10 +36,17 @@ export const authApi = {
     });
   },
 
-  register(email: string, password: string) {
+  register(email: string, password: string, nome: string, crm: string, crm_uf: string) {
     return apiRequest<LoginResponse>('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, nome, crm, crm_uf }),
+    });
+  },
+
+  updateProfile(data: { nome?: string; crm?: string; crm_uf?: string }) {
+    return apiRequest<User>('/auth/me', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
     });
   },
 

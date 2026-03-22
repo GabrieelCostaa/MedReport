@@ -57,7 +57,13 @@ export const reportsApi = {
   },
 
   sign(id: string) {
-    return apiRequest<void>(`/reports/${id}/sign`, { method: 'POST' });
+    return apiRequest<{
+      signed_at: string;
+      signature_hash: string;
+      medico_nome: string;
+      medico_crm: string;
+      medico_crm_uf: string;
+    }>(`/reports/${id}/sign`, { method: 'POST' });
   },
 
   downloadPdf(id: string) {
