@@ -19,6 +19,16 @@ REPORT_NEW_COLUMNS = [
     ("approval_score", "FLOAT"),
     ("approval_score_details", "JSON"),
     ("compliance_mode", "VARCHAR(50)"),
+    ("medico_nome", "VARCHAR(255)"),
+    ("medico_crm", "VARCHAR(50)"),
+    ("medico_crm_uf", "VARCHAR(2)"),
+    ("signature_hash", "VARCHAR(64)"),
+]
+
+USER_NEW_COLUMNS = [
+    ("nome", "VARCHAR(255)"),
+    ("crm", "VARCHAR(50)"),
+    ("crm_uf", "VARCHAR(2)"),
 ]
 
 CLINICAL_EVIDENCE_NEW_COLUMNS = [
@@ -47,6 +57,16 @@ async def create_tables():
                     f"ALTER TABLE clinical_evidences ADD COLUMN {col_name} {col_type}"
                 ))
                 logger.info("Added column clinical_evidences.%s", col_name)
+            except Exception:
+                pass
+
+    async with engine.begin() as conn:
+        for col_name, col_type in USER_NEW_COLUMNS:
+            try:
+                await conn.execute(text(
+                    f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"
+                ))
+                logger.info("Added column users.%s", col_name)
             except Exception:
                 pass
 
