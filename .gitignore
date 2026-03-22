@@ -21,3 +21,4 @@ es_data/
 
 # Large data files (TISS/TUSS ZIPs)
 services/api/data/ans/tiss/
+.worktrees/
