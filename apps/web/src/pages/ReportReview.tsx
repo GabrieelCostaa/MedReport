@@ -12,8 +12,16 @@ import {
   SimpleGrid,
   Spinner,
   Icon,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  useDisclosure,
 } from '@chakra-ui/react';
-import { FiArrowLeft, FiDownload, FiFileText, FiEdit3 } from 'react-icons/fi';
+import { FiArrowLeft, FiDownload, FiFileText, FiEdit3, FiShield, FiCheckCircle } from 'react-icons/fi';
 import { reportsApi } from '../api/reports';
 
 type ReportDetail = {
@@ -26,6 +34,10 @@ type ReportDetail = {
   health_plan?: string;
   created_at: string;
   inconsistencies?: { field: string; message: string }[];
+  signature_hash?: string;
+  medico_nome?: string;
+  medico_crm?: string;
+  medico_crm_uf?: string;
 };
 
 const buttonTransition = 'all 0.3s cubic-bezier(0.65, 0.05, 0, 1)';
@@ -36,8 +48,17 @@ export default function ReportReview() {
   const [report, setReport] = useState<ReportDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [signing, setSigning] = useState(false);
+  const [signResult, setSignResult] = useState<{
+    signed_at: string;
+    signature_hash: string;
+    medico_nome: string;
+    medico_crm: string;
+    medico_crm_uf: string;
+  } | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const toast = useToast();
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   useEffect(() => {
     if (!id) return;
@@ -79,11 +100,30 @@ export default function ReportReview() {
     if (!id) return;
     setSigning(true);
     try {
-      await reportsApi.sign(id);
-      toast({ title: 'Relatório assinado', status: 'success' });
+      const result = await reportsApi.sign(id);
+      setSignResult(result);
       setReport((p) => (p ? { ...p, status: 'signed' } : null));
-    } catch {
-      toast({ title: 'Erro ao assinar (integre ICP-Brasil)', status: 'error' });
+      onClose();
+      toast({
+        title: 'Relatório assinado com sucesso',
+        description: `Hash: ${result.signature_hash.slice(0, 16)}...`,
+        status: 'success',
+        duration: 5000,
+      });
+    } catch (err: unknown) {
+      const httpStatus = (err as { status?: number })?.status;
+      if (httpStatus === 422) {
+        toast({
+          title: 'Perfil incompleto',
+          description: 'Complete seu CRM no perfil antes de assinar.',
+          status: 'warning',
+          duration: 5000,
+        });
+        onClose();
+        navigate('/profile');
+      } else {
+        toast({ title: 'Erro ao assinar relatório', status: 'error' });
+      }
     } finally {
       setSigning(false);
     }
@@ -114,7 +154,7 @@ export default function ReportReview() {
             <Text fontSize="xl" fontWeight="700" color="text.primary">
               Revisão do Relatório
             </Text>
-            <HStack mt={2} gap={3}>
+            <HStack mt={2} gap={3} flexWrap="wrap">
               <Badge
                 colorScheme={report.status === 'signed' ? 'green' : 'yellow'}
                 fontSize="xs"
@@ -131,6 +171,30 @@ export default function ReportReview() {
                 })}
               </Text>
             </HStack>
+
+            {/* Badge de assinatura eletrônica */}
+            {report.status === 'signed' && (signResult?.signature_hash || report.signature_hash) && (
+              <HStack
+                gap={2}
+                bg="green.50"
+                border="1px solid"
+                borderColor="green.200"
+                borderRadius="lg"
+                px={3}
+                py={2}
+                mt={3}
+              >
+                <Icon as={FiCheckCircle} color="green.500" boxSize={4} />
+                <Box>
+                  <Text fontSize="xs" color="green.700" fontWeight="600">
+                    Assinatura eletrônica registrada
+                  </Text>
+                  <Text fontSize="xs" color="green.600" fontFamily="mono">
+                    SHA-256: {(signResult?.signature_hash || report.signature_hash || '').slice(0, 16)}...
+                  </Text>
+                </Box>
+              </HStack>
+            )}
           </Box>
           <Button
             variant="ghost" size="sm" color="text.muted"
@@ -193,10 +257,10 @@ export default function ReportReview() {
           </Box>
         )}
 
-        {/* Download actions */}
+        {/* Download + Assinatura */}
         <Box bg="surface" borderRadius="xl" border="1px solid" borderColor="border.subtle" p={6} shadow="sm">
           <Text fontSize="xs" fontWeight="600" color="text.muted" textTransform="uppercase" letterSpacing="wider" mb={4}>
-            Downloads
+            Downloads e Assinatura
           </Text>
           <HStack gap={3} flexWrap="wrap">
             <Button
@@ -226,19 +290,107 @@ export default function ReportReview() {
             >
               Baixar XML (TISS)
             </Button>
-            {report.status !== 'signed' && (
+
+            {['review', 'approved'].includes(report.status) ? (
               <Button
-                colorScheme="brand" onClick={handleSign} isLoading={signing}
-                size="sm" borderRadius="lg" fontWeight="600"
+                colorScheme="brand"
+                onClick={onOpen}
+                leftIcon={<Icon as={FiShield} />}
+                size="sm"
+                borderRadius="lg"
+                fontWeight="600"
                 transition={buttonTransition}
                 _hover={buttonHover}
               >
-                Assinar digitalmente
+                Assinar Relatório
               </Button>
-            )}
+            ) : report.status === 'signed' ? (
+              <Button
+                colorScheme="green"
+                onClick={() => handleDownload('pdf')}
+                leftIcon={<Icon as={FiCheckCircle} />}
+                size="sm"
+                borderRadius="lg"
+                fontWeight="600"
+                transition={buttonTransition}
+                _hover={buttonHover}
+              >
+                Baixar Relatório Assinado
+              </Button>
+            ) : null}
           </HStack>
         </Box>
       </VStack>
+
+      {/* Modal de Assinatura */}
+      <Modal isOpen={isOpen} onClose={onClose} isCentered size="md">
+        <ModalOverlay bg="blackAlpha.300" backdropFilter="blur(4px)" />
+        <ModalContent borderRadius="xl" mx={4}>
+          <ModalHeader pb={2}>
+            <HStack gap={3}>
+              <Box
+                w="36px"
+                h="36px"
+                borderRadius="lg"
+                bg="brand.50"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Icon as={FiShield} color="brand.600" boxSize={5} />
+              </Box>
+              <Text fontSize="lg" fontWeight="600" color="gray.800">
+                Assinar Relatório
+              </Text>
+            </HStack>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={4}>
+            <VStack gap={4} align="stretch">
+              <Box bg="gray.50" borderRadius="lg" p={4}>
+                <Text fontSize="xs" color="gray.500" fontWeight="500" mb={1} textTransform="uppercase" letterSpacing="wider">
+                  Médico Responsável
+                </Text>
+                <Text fontSize="sm" fontWeight="600" color="gray.800">
+                  {user.nome || '—'}
+                </Text>
+                <Text fontSize="sm" color="gray.600">
+                  CRM/{user.crm_uf} {user.crm}
+                </Text>
+              </Box>
+              <Box
+                bg="orange.50"
+                border="1px solid"
+                borderColor="orange.200"
+                borderRadius="lg"
+                p={3}
+              >
+                <Text fontSize="xs" color="orange.700" lineHeight="tall">
+                  Esta assinatura eletrônica simples registra sua autoria e garante a
+                  integridade do documento via hash SHA-256.{' '}
+                  <Text as="strong">Não possui validade de certificado digital ICP-Brasil.</Text>
+                </Text>
+              </Box>
+            </VStack>
+          </ModalBody>
+          <ModalFooter gap={3}>
+            <Button variant="ghost" onClick={onClose} size="sm" color="gray.600">
+              Cancelar
+            </Button>
+            <Button
+              colorScheme="brand"
+              onClick={handleSign}
+              isLoading={signing}
+              loadingText="Assinando..."
+              size="sm"
+              leftIcon={<Icon as={FiShield} />}
+              borderRadius="lg"
+            >
+              Confirmar Assinatura
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 }
