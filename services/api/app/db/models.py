@@ -69,6 +69,10 @@ class User(Base):
     # Campos legados mantidos para migração (deprecated)
     consent_accepted = Column(Boolean, default=False)
     consent_at = Column(DateTime(timezone=True), nullable=True)
+    # Dados profissionais do médico
+    nome = Column(String(255), nullable=True)
+    crm = Column(String(50), nullable=True)
+    crm_uf = Column(String(2), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -168,6 +172,11 @@ class Report(Base):
     compliance_mode = Column(String(50), nullable=True)  # rol_dut | fora_do_rol | cobertura_direta
     # Assinatura
     signed_at = Column(DateTime(timezone=True), nullable=True)
+    # Snapshot dos dados do médico no momento da assinatura
+    medico_nome = Column(String(255), nullable=True)
+    medico_crm = Column(String(50), nullable=True)
+    medico_crm_uf = Column(String(2), nullable=True)
+    signature_hash = Column(String(64), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 

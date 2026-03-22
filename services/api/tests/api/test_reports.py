@@ -4,10 +4,12 @@ Testa O QUE os endpoints fazem, não COMO fazem internamente.
 """
 import uuid
 import pytest
+import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import User, Report, TussTerm
+from app.core.security import get_password_hash, create_access_token
 from tests.api.conftest import TEST_PASSWORD
 
 
@@ -140,16 +142,16 @@ async def test_obter_relatorio_inexistente_deve_retornar_404(
 
 @pytest.mark.asyncio
 async def test_assinar_relatorio_deve_mudar_status_para_signed(
-    client: AsyncClient, auth_headers: dict
+    client: AsyncClient, auth_headers_crm: dict
 ):
-    create_resp = await client.post("/api/reports", json=REPORT_PAYLOAD, headers=auth_headers)
+    create_resp = await client.post("/api/reports", json=REPORT_PAYLOAD, headers=auth_headers_crm)
     report_id = create_resp.json()["id"]
 
-    sign_resp = await client.post(f"/api/reports/{report_id}/sign", headers=auth_headers)
+    sign_resp = await client.post(f"/api/reports/{report_id}/sign", headers=auth_headers_crm)
     assert sign_resp.status_code == 200
 
     # Verifica que o status mudou
-    get_resp = await client.get(f"/api/reports/{report_id}", headers=auth_headers)
+    get_resp = await client.get(f"/api/reports/{report_id}", headers=auth_headers_crm)
     assert get_resp.json()["status"] == "signed"
 
 
@@ -205,3 +207,100 @@ async def test_review_texto_vazio_deve_apontar_inconsistencia_de_conteudo(
     assert resp.status_code == 200
     incons = resp.json()["inconsistencies"]
     assert any(i["field"] == "conteudo" for i in incons)
+
+
+# ─── POST /api/reports/{id}/sign ───
+
+@pytest_asyncio.fixture
+async def test_user_with_crm(db: AsyncSession) -> User:
+    """Usuário médico com CRM preenchido para testes de assinatura."""
+    user = User(
+        id=uuid.uuid4(),
+        email="dr.assinador@medreport.com",
+        hashed_password=get_password_hash(TEST_PASSWORD),
+        role="medico",
+        nome="Dr. Carlos Assinador",
+        crm="123456",
+        crm_uf="SP",
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
+@pytest_asyncio.fixture
+async def auth_headers_crm(test_user_with_crm: User) -> dict:
+    token = create_access_token(data={"sub": str(test_user_with_crm.id)})
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest_asyncio.fixture
+async def report_in_review(client: AsyncClient, auth_headers_crm: dict) -> dict:
+    """Cria um relatório para testes de assinatura."""
+    resp = await client.post("/api/reports", json=REPORT_PAYLOAD, headers=auth_headers_crm)
+    assert resp.status_code == 200
+    return resp.json()
+
+
+@pytest.mark.asyncio
+async def test_assinar_relatorio_deve_retornar_hash(
+    client: AsyncClient, auth_headers_crm: dict, report_in_review: dict
+):
+    report_id = report_in_review["id"]
+    resp = await client.post(f"/api/reports/{report_id}/sign", headers=auth_headers_crm)
+    assert resp.status_code == 200
+    body = resp.json()
+    assert "signature_hash" in body
+    assert len(body["signature_hash"]) == 64
+    assert "signed_at" in body
+    assert body["medico_nome"] == "Dr. Carlos Assinador"
+    assert body["medico_crm"] == "123456"
+    assert body["medico_crm_uf"] == "SP"
+
+
+@pytest.mark.asyncio
+async def test_assinar_relatorio_ja_assinado_deve_retornar_409(
+    client: AsyncClient, auth_headers_crm: dict, report_in_review: dict
+):
+    report_id = report_in_review["id"]
+    await client.post(f"/api/reports/{report_id}/sign", headers=auth_headers_crm)
+    resp = await client.post(f"/api/reports/{report_id}/sign", headers=auth_headers_crm)
+    assert resp.status_code == 409
+
+
+@pytest.mark.asyncio
+async def test_assinar_relatorio_de_outro_usuario_deve_retornar_403(
+    client: AsyncClient, auth_headers: dict, report_in_review: dict
+):
+    """auth_headers pertence ao test_user (sem CRM), não ao dono do relatório."""
+    report_id = report_in_review["id"]
+    resp = await client.post(f"/api/reports/{report_id}/sign", headers=auth_headers)
+    assert resp.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_assinar_relatorio_sem_crm_deve_retornar_422(
+    client: AsyncClient, auth_headers: dict
+):
+    """Usuário sem CRM não pode assinar."""
+    resp_create = await client.post("/api/reports", json=REPORT_PAYLOAD, headers=auth_headers)
+    report_id = resp_create.json()["id"]
+    resp = await client.post(f"/api/reports/{report_id}/sign", headers=auth_headers)
+    assert resp.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_assinar_relatorio_inexistente_deve_retornar_404(
+    client: AsyncClient, auth_headers_crm: dict
+):
+    resp = await client.post(
+        f"/api/reports/{uuid.uuid4()}/sign", headers=auth_headers_crm
+    )
+    assert resp.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_assinar_sem_auth_deve_retornar_401(client: AsyncClient, report_in_review: dict):
+    resp = await client.post(f"/api/reports/{report_in_review['id']}/sign")
+    assert resp.status_code == 401
