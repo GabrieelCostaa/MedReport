@@ -165,3 +165,103 @@ async def test_legal_basis_deve_registrar_ciencia_lgpd(
 async def test_legal_basis_sem_auth_deve_retornar_401(client: AsyncClient):
     resp = await client.post("/api/auth/legal-basis")
     assert resp.status_code == 401
+
+
+# ─── CRM/nome no registro ───
+
+@pytest.mark.asyncio
+async def test_registro_com_nome_crm_deve_retornar_dados_completos(client: AsyncClient):
+    resp = await client.post(
+        "/api/auth/register",
+        json={
+            "email": "dr.crm@medreport.com",
+            "password": "senha123",
+            "nome": "Dr. Ana Lima",
+            "crm": "654321",
+            "crm_uf": "RJ",
+        },
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["user"]["nome"] == "Dr. Ana Lima"
+    assert body["user"]["crm"] == "654321"
+    assert body["user"]["crm_uf"] == "RJ"
+
+
+@pytest.mark.asyncio
+async def test_registro_com_crm_invalido_deve_retornar_422(client: AsyncClient):
+    resp = await client.post(
+        "/api/auth/register",
+        json={
+            "email": "dr.invalido@medreport.com",
+            "password": "senha123",
+            "nome": "Dr. X",
+            "crm": "abc123",
+            "crm_uf": "SP",
+        },
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_registro_com_uf_invalida_deve_retornar_422(client: AsyncClient):
+    resp = await client.post(
+        "/api/auth/register",
+        json={
+            "email": "dr.uf@medreport.com",
+            "password": "senha123",
+            "nome": "Dr. Y",
+            "crm": "123456",
+            "crm_uf": "XX",
+        },
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_me_deve_retornar_nome_e_crm(
+    client: AsyncClient, auth_headers: dict, test_user: User
+):
+    resp = await client.get("/api/auth/me", headers=auth_headers)
+    assert resp.status_code == 200
+    body = resp.json()
+    assert "nome" in body
+    assert "crm" in body
+    assert "crm_uf" in body
+
+
+@pytest.mark.asyncio
+async def test_patch_me_deve_atualizar_nome_e_crm(
+    client: AsyncClient, auth_headers: dict
+):
+    resp = await client.patch(
+        "/api/auth/me",
+        json={"nome": "Dr. Novo Nome", "crm": "999999", "crm_uf": "MG"},
+        headers=auth_headers,
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["nome"] == "Dr. Novo Nome"
+    assert body["crm"] == "999999"
+    assert body["crm_uf"] == "MG"
+
+
+@pytest.mark.asyncio
+async def test_patch_me_nao_deve_alterar_role_ou_email(
+    client: AsyncClient, auth_headers: dict, test_user: User
+):
+    resp = await client.patch(
+        "/api/auth/me",
+        json={"nome": "Dr. X", "crm": "111111", "crm_uf": "SP", "role": "admin", "email": "hacker@x.com"},
+        headers=auth_headers,
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["email"] == test_user.email
+    assert body["role"] == "medico"
+
+
+@pytest.mark.asyncio
+async def test_patch_me_sem_auth_deve_retornar_401(client: AsyncClient):
+    resp = await client.patch("/api/auth/me", json={"nome": "Dr. X"})
+    assert resp.status_code == 401
