@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import (
     Column, String, Boolean, DateTime, Text, ForeignKey,
-    Enum as SQLEnum, TypeDecorator, JSON, Float, Integer, Index,
+    Enum as SQLEnum, TypeDecorator, JSON, Float, Integer, Index, LargeBinary,
 )
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 import uuid
@@ -177,6 +177,8 @@ class Report(Base):
     medico_crm = Column(String(50), nullable=True)
     medico_crm_uf = Column(String(2), nullable=True)
     signature_hash = Column(String(64), nullable=True)
+    # PDF selado gerado no momento da assinatura (imutável)
+    pdf_signed_bytes = Column(LargeBinary, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 

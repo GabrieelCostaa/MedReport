@@ -23,6 +23,7 @@ REPORT_NEW_COLUMNS = [
     ("medico_crm", "VARCHAR(50)"),
     ("medico_crm_uf", "VARCHAR(2)"),
     ("signature_hash", "VARCHAR(64)"),
+    ("pdf_signed_bytes", "BYTEA"),
 ]
 
 USER_NEW_COLUMNS = [

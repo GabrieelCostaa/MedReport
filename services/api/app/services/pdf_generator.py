@@ -34,6 +34,18 @@ def _split_paragraphs(text: str) -> list[str]:
     return paragraphs
 
 
+def _generate_qr_png(url: str) -> bytes:
+    """Gera QR Code como PNG em bytes."""
+    import qrcode
+    qr = qrcode.QRCode(version=1, box_size=4, border=2)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()
+
+
 def _format_ref(ref) -> str:
     if isinstance(ref, dict):
         text = ref.get("texto") or ref.get("text") or str(ref)
@@ -64,6 +76,9 @@ def generate_pdf_bytes(
     falha_terapeutica: str = "",
     risco_nao_realizacao: str = "",
     base_legal: str = "",
+    signed_at_str: str = "",
+    signature_hash: str = "",
+    verification_url: str = "",
 ) -> bytes:
     """Gera PDF em bytes. Tenta WeasyPrint, fallback para ReportLab."""
     # Sanitize inputs
@@ -82,6 +97,9 @@ def generate_pdf_bytes(
     falha_terapeutica = falha_terapeutica or ""
     risco_nao_realizacao = risco_nao_realizacao or ""
     base_legal = base_legal or ""
+    signed_at_str = signed_at_str or ""
+    signature_hash = signature_hash or ""
+    verification_url = verification_url or ""
 
     kwargs = dict(
         justificativa=justificativa,
@@ -100,6 +118,9 @@ def generate_pdf_bytes(
         falha_terapeutica=falha_terapeutica,
         risco_nao_realizacao=risco_nao_realizacao,
         base_legal=base_legal,
+        signed_at_str=signed_at_str,
+        signature_hash=signature_hash,
+        verification_url=verification_url,
     )
 
     try:
@@ -121,6 +142,13 @@ def _generate_weasyprint(**kwargs) -> bytes:
     for ref in (kwargs.get("referencias") or []):
         refs.append(ref if isinstance(ref, dict) else str(ref))
 
+    # QR Code base64 para verificação (só se assinado)
+    verification_url = kwargs.get("verification_url") or ""
+    qr_b64 = ""
+    if verification_url:
+        import base64
+        qr_b64 = base64.b64encode(_generate_qr_png(verification_url)).decode()
+
     html_content = template.render(
         paciente_nome=kwargs.get("paciente_nome") or "Não informado",
         cid=kwargs.get("cid") or "",
@@ -140,6 +168,10 @@ def _generate_weasyprint(**kwargs) -> bytes:
         data_emissao=datetime.now().strftime("%d/%m/%Y"),
         protocolo=protocolo,
         watermark=watermark,
+        signed_at_str=kwargs.get("signed_at_str") or "",
+        signature_hash=kwargs.get("signature_hash") or "",
+        qr_b64=qr_b64,
+        verification_url=verification_url,
     )
 
     pdf_bytes = weasyprint.HTML(string=html_content).write_pdf()
@@ -324,13 +356,62 @@ def _generate_reportlab(**kwargs) -> bytes:
             story.append(ck_table)
 
     # ── ASSINATURA ──
-    story.append(Spacer(1, 30))
-    story.append(HRFlowable(width="35%", thickness=0.8, color=HexColor("#444444"), hAlign="CENTER"))
-    story.append(Spacer(1, 4))
+    from reportlab.platypus import Image as RLImage
+    story.append(Spacer(1, 24))
     nome = kwargs.get("medico_nome") or "[Nome do Médico Responsável]"
     crm = kwargs.get("medico_crm") or "CRM: __________"
-    story.append(Paragraph(nome, s_center_bold))
-    story.append(Paragraph(crm, s_center_sm))
+    signed_at_str = kwargs.get("signed_at_str") or ""
+    sig_hash = kwargs.get("signature_hash") or ""
+    verification_url = kwargs.get("verification_url") or ""
+
+    if signed_at_str:
+        # Bloco visual de assinatura eletrônica com QR Code
+        short_hash = f"{sig_hash[:16]}...{sig_hash[-8:]}" if len(sig_hash) >= 24 else sig_hash
+        s_sig_name = ParagraphStyle("SigName", fontName="Helvetica-Bold", fontSize=10, textColor=DARK)
+        s_sig_crm = ParagraphStyle("SigCrm", fontName="Helvetica", fontSize=8, textColor=GRAY)
+        s_sig_label = ParagraphStyle("SigLabel", fontName="Helvetica", fontSize=7, textColor=GRAY)
+        s_sig_date = ParagraphStyle("SigDate", fontName="Helvetica-Bold", fontSize=9, textColor=NAVY)
+        s_sig_hash = ParagraphStyle("SigHash", fontName="Courier", fontSize=6.5, textColor=LIGHT_GRAY)
+        s_sig_scan = ParagraphStyle("SigScan", fontName="Helvetica", fontSize=6, textColor=GRAY, alignment=1)
+
+        sig_left = (
+            f"<b>{nome}</b><br/>"
+            f'<font color="#888888" size="8">{crm}</font><br/><br/>'
+            f'<font color="#888888" size="7">Assinado eletronicamente em</font><br/>'
+            f'<font color="#1a3c6e"><b>{signed_at_str}</b></font>'
+        )
+        if short_hash:
+            sig_left += f'<br/><font color="#aaaaaa" size="6.5">SHA-256: {short_hash}</font>'
+
+        s_sig_combined = ParagraphStyle("SigCombined", fontName="Helvetica", fontSize=9,
+                                        textColor=DARK, leading=13)
+        left_cell = Paragraph(sig_left, s_sig_combined)
+
+        if verification_url:
+            qr_bytes = _generate_qr_png(verification_url)
+            qr_img = RLImage(io.BytesIO(qr_bytes), width=2.3*cm, height=2.3*cm)
+            right_cell = [qr_img, Paragraph("Verificar autenticidade", s_sig_scan)]
+        else:
+            right_cell = Paragraph("", s_sig_scan)
+
+        sig_table = Table([[left_cell, right_cell]], colWidths=[13.2*cm, 3.3*cm])
+        sig_table.setStyle(TableStyle([
+            ("BOX", (0, 0), (-1, -1), 0.8, NAVY),
+            ("BACKGROUND", (0, 0), (-1, -1), HexColor("#f4f7ff")),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("ALIGN", (1, 0), (1, 0), "CENTER"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 12),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 12),
+            ("TOPPADDING", (0, 0), (-1, -1), 10),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+        ]))
+        story.append(sig_table)
+    else:
+        # Bloco simples para documentos não assinados
+        story.append(HRFlowable(width="35%", thickness=0.8, color=HexColor("#444444"), hAlign="CENTER"))
+        story.append(Spacer(1, 4))
+        story.append(Paragraph(nome, s_center_bold))
+        story.append(Paragraph(crm, s_center_sm))
 
     # ── WATERMARK (draft) ──
     if not kwargs.get("aprovado", True):

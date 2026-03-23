@@ -142,7 +142,7 @@ async def sign_report(
     user_id: str = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
-    """Assina eletronicamente o relatório gerando hash SHA-256 do DOCX."""
+    """Assina eletronicamente o relatório: gera PDF selado com QR Code e hash SHA-256."""
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
@@ -169,33 +169,62 @@ async def sign_report(
             detail="Complete seu perfil com CRM antes de assinar.",
         )
 
-    # Gera DOCX em memória com dados do médico
-    from app.services.docx_generator import generate_docx_bytes
+    # Resolve produto
+    product_name = ""
+    codigo_tuss = ""
+    if getattr(report, "product_id", None):
+        prod_result = await db.execute(select(Product).where(Product.id == report.product_id))
+        product = prod_result.scalar_one_or_none()
+        if product:
+            product_name = product.nome or ""
+            codigo_tuss = product.codigo_tuss_sugerido or ""
+
+    tuss_codes = getattr(report, "tuss_codes", None) or []
+    if tuss_codes and isinstance(tuss_codes, list):
+        codes = [t.get("code", "") if isinstance(t, dict) else str(t) for t in tuss_codes]
+        codigo_tuss = ", ".join(c for c in codes if c) or codigo_tuss
+
+    checklist = report.checklist_status if isinstance(getattr(report, "checklist_status", None), dict) else None
+    refs = report.referencias_bib if isinstance(getattr(report, "referencias_bib", None), list) else []
+    aprovado = all(checklist.values()) if checklist else True
+
+    signed_at = datetime.utcnow()
+    signed_at_str = signed_at.strftime("%d/%m/%Y às %H:%M:%S UTC")
+    medico_crm_fmt = f"CRM/{user.crm_uf} {user.crm}" if user.crm_uf else f"CRM {user.crm}"
+
+    from app.core.config import settings
+    verification_url = f"{settings.API_BASE_URL}/api/reports/{report_id}/verify"
+
+    # Gera PDF com bloco de assinatura e QR Code
+    from app.services.pdf_generator import generate_pdf_bytes
     try:
-        docx_bytes = generate_docx_bytes(
+        pdf_bytes = generate_pdf_bytes(
             justificativa=report.justificativa_ia or "",
             paciente_nome=report.paciente_nome or "",
             cid=report.cid or "",
             diagnostico_resumo=report.diagnosis or "",
-            produto_nome=report.materials or "",
+            produto_nome=product_name or report.materials or "",
             convenio=report.health_plan or "",
             especialidade=getattr(report, "especialidade", "") or "",
-            codigo_tuss="",
-            referencias=[],
-            checklist=None,
-            aprovado=False,
+            codigo_tuss=codigo_tuss,
+            referencias=refs,
+            checklist=checklist,
+            aprovado=aprovado,
             falha_terapeutica=getattr(report, "falha_terapeutica", "") or "",
             risco_nao_realizacao=getattr(report, "risco_nao_realizacao", "") or "",
             base_legal=getattr(report, "base_legal_ans", "") or "",
             medico_nome=user.nome or "",
-            medico_crm=f"CRM/{user.crm_uf} {user.crm}" if user.crm_uf else user.crm,
+            medico_crm=medico_crm_fmt,
+            signed_at_str=signed_at_str,
+            # hash ainda não existe — será calculado após gerar o PDF
+            signature_hash="",
+            verification_url=verification_url,
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao gerar documento: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erro ao gerar PDF: {str(e)}")
 
-    # Calcula SHA-256
-    signature_hash = hashlib.sha256(docx_bytes).hexdigest()
-    signed_at = datetime.utcnow()
+    # Calcula SHA-256 do PDF gerado
+    signature_hash = hashlib.sha256(pdf_bytes).hexdigest()
 
     # Persiste em transação única
     report.signed_at = signed_at
@@ -204,6 +233,7 @@ async def sign_report(
     report.medico_crm = user.crm
     report.medico_crm_uf = user.crm_uf
     report.signature_hash = signature_hash
+    report.pdf_signed_bytes = pdf_bytes
     await db.commit()
 
     return {
@@ -212,6 +242,37 @@ async def sign_report(
         "medico_nome": user.nome,
         "medico_crm": user.crm,
         "medico_crm_uf": user.crm_uf,
+        "verification_url": verification_url,
+    }
+
+
+@router.get("/{report_id}/verify")
+async def verify_report(
+    report_id: UUID,
+    db: AsyncSession = Depends(get_db),
+):
+    """Verifica autenticidade de um relatório assinado. Endpoint público (sem autenticação)."""
+    result = await db.execute(select(Report).where(Report.id == report_id))
+    report = result.scalar_one_or_none()
+    if not report:
+        raise HTTPException(status_code=404, detail="Relatório não encontrado")
+
+    if report.status != "signed" or not report.signature_hash:
+        return {
+            "autêntico": False,
+            "status": "não assinado",
+            "documento_id": str(report_id),
+        }
+
+    return {
+        "autêntico": True,
+        "status": "assinado",
+        "documento_id": str(report_id),
+        "medico_nome": report.medico_nome,
+        "medico_crm": report.medico_crm,
+        "medico_crm_uf": report.medico_crm_uf,
+        "assinado_em": report.signed_at.isoformat() + "Z" if report.signed_at else None,
+        "sha256": report.signature_hash,
     }
 
 
@@ -275,6 +336,15 @@ async def download_report(
     r = result.scalar_one_or_none()
     if not r:
         raise HTTPException(status_code=404, detail="Report not found")
+
+    # PDF assinado: serve o arquivo selado salvo no momento da assinatura
+    if format == "pdf" and r.status == "signed" and getattr(r, "pdf_signed_bytes", None):
+        return Response(
+            content=r.pdf_signed_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=relatorio-{report_id}-assinado.pdf"},
+        )
+
     if format == "xml":
         xml_str = build_guia_solicitacao_xml(r)
         return Response(

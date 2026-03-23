@@ -207,6 +207,78 @@
     font-size: 8.5pt;
   }
 
+  /* ── ASSINATURA ELETRÔNICA ── */
+  .sig-block {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #1a3c6e;
+    border-radius: 6px;
+    padding: 14px 18px;
+    background: #f4f7ff;
+    gap: 16px;
+  }
+
+  .sig-content { flex: 1; }
+
+  .sig-line-short {
+    width: 160px;
+    border-top: 1px solid #444;
+    margin-bottom: 8px;
+  }
+
+  .sig-name {
+    font-weight: 700;
+    font-size: 10.5pt;
+    color: #2d2d2d;
+  }
+
+  .sig-crm {
+    color: #888;
+    font-size: 8pt;
+    margin-bottom: 8px;
+  }
+
+  .sig-label {
+    font-size: 7pt;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 2px;
+  }
+
+  .sig-date {
+    font-size: 9pt;
+    color: #1a3c6e;
+    font-weight: 700;
+  }
+
+  .sig-hash {
+    font-size: 6.5pt;
+    color: #aaa;
+    font-family: 'Courier New', Courier, monospace;
+    margin-top: 5px;
+    word-break: break-all;
+  }
+
+  .sig-qr {
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .sig-qr img {
+    display: block;
+    width: 78px;
+    height: 78px;
+  }
+
+  .sig-scan {
+    font-size: 6pt;
+    color: #888;
+    margin-top: 3px;
+  }
+
   /* ── FOOTER ── */
   .doc-footer {
     margin-top: 20px;
@@ -358,11 +430,32 @@
 {% endif %}
 
 <!-- ASSINATURA -->
+{% if signed_at_str %}
+<div class="sig-block">
+  <div class="sig-content">
+    <div class="sig-line-short"></div>
+    <div class="sig-name">{{ medico_nome | default('[Nome do Médico Responsável]') }}</div>
+    <div class="sig-crm">{{ medico_crm | default('CRM: __________') }}</div>
+    <div class="sig-label">Assinado eletronicamente em</div>
+    <div class="sig-date">{{ signed_at_str }}</div>
+    {% if signature_hash %}
+    <div class="sig-hash">SHA-256: {{ signature_hash[:16] }}...{{ signature_hash[-8:] }}</div>
+    {% endif %}
+  </div>
+  {% if qr_b64 %}
+  <div class="sig-qr">
+    <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Verificação">
+    <div class="sig-scan">Verificar autenticidade</div>
+  </div>
+  {% endif %}
+</div>
+{% else %}
 <div class="closing">
   <div class="line"></div>
   <div class="doctor-name">{{ medico_nome | default('[Nome do Médico Responsável]') }}</div>
   <div class="crm">{{ medico_crm | default('CRM: __________') }}</div>
 </div>
+{% endif %}
 
 <div class="doc-footer">
   Documento gerado em {{ data_emissao }} • Protocolo {{ protocolo }} • Informações médicas confidenciais

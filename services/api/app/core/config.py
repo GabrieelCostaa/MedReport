@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
     OPENAI_API_KEY: str = ""
     INGEST_API_KEY: str = ""  # Token para RPA/robôs enviarem cotações (opcional)
+    API_BASE_URL: str = "http://localhost:8000"  # URL base para links de verificação (override em produção)
 
     # PubMed E-utilities
     PUBMED_API_KEY: str = ""
