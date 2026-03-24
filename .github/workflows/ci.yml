@@ -36,7 +36,7 @@ jobs:
           --health-retries 5
     env:
       DATABASE_URL: postgresql+asyncpg://opme:opme_test@localhost:5432/opme
-      SECRET_KEY: test-secret
+      SECRET_KEY: "ci-test-secret-key-placeholder-not-for-production-use"
       OPENAI_API_KEY: ""
       PUBMED_ENABLED: "false"
     steps:
