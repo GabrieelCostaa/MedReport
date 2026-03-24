@@ -12,7 +12,7 @@ from sqlalchemy import text as sql_text
 
 from app.db.session import get_db, AsyncSessionLocal
 from app.db.models import Product, AnvisaProduct, ProductTussMapping, TussMaterial
-from app.core.security import get_current_user_id
+from app.core.security import get_current_user_id, require_current_user_id
 from app.services.ifu_enrichment import enrich_product_from_ifu
 
 logger = logging.getLogger(__name__)
@@ -30,11 +30,10 @@ class QuickProductIn(BaseModel):
 @router.get("")
 async def list_products(
     q: Optional[str] = Query(None, description="Busca por nome ou linha"),
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Lista produtos: primeiro catálogo interno, depois base ANVISA."""
-    # TODO: re-enable auth when ready
 
     # 1) Busca no catálogo interno (products)
     query = select(Product)
@@ -103,11 +102,10 @@ async def list_products(
 @router.post("")
 async def create_product_quick(
     body: QuickProductIn,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Cadastro rápido de produto OPME (campos mínimos)."""
-    # TODO: re-enable auth when ready
     product = Product(
         nome=body.nome,
         linha=body.fabricante,
@@ -183,11 +181,10 @@ async def _background_ifu_enrich(product_id: str):
 async def create_from_anvisa(
     registro: str,
     background_tasks: BackgroundTasks,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Cria produto no catálogo a partir de um registro ANVISA existente."""
-    # TODO: re-enable auth when ready
 
     # Verifica se já existe no catálogo
     existing = await db.execute(
@@ -303,17 +300,15 @@ async def enrich_product_endpoint(
 @router.get("/{product_id}")
 async def get_product(
     product_id: UUID,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Detalhes completos de um produto (verdades absolutas)."""
-    # TODO: re-enable auth when ready
     result = await db.execute(select(Product).where(Product.id == product_id))
     p = result.scalar_one_or_none()
     if not p:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    # Busca mapeamentos TUSS do produto
     tuss_result = await db.execute(
         select(ProductTussMapping).where(ProductTussMapping.product_id == p.id)
     )

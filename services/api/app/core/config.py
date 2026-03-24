@@ -1,14 +1,18 @@
+import sys
+from urllib.parse import urlparse
 from pydantic_settings import BaseSettings
 from typing import List
+
+_WEAK_KEYS = {"dev-secret-change-in-production", "secret", "changeme", ""}
 
 
 class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://opme:opme_dev_secret@localhost:5432/opme"
     REDIS_URL: str = "redis://localhost:6379/0"
     ELASTICSEARCH_URL: str = "http://localhost:9200"
-    SECRET_KEY: str = "dev-secret-change-in-production"
+    SECRET_KEY: str  # Obrigatório — defina via variável de ambiente ou .env
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 1 dia — reduzir para 30 min ao implementar refresh token
     CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
     OPENAI_API_KEY: str = ""
     INGEST_API_KEY: str = ""  # Token para RPA/robôs enviarem cotações (opcional)
@@ -32,3 +36,20 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+_parsed_base = urlparse(settings.API_BASE_URL)
+if not _parsed_base.scheme or not _parsed_base.netloc:
+    print(
+        f"\n[SEGURANÇA] API_BASE_URL inválida: '{settings.API_BASE_URL}'\n"
+        "Defina uma URL completa, ex.: http://localhost:8000 ou https://api.dominio.com\n",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
+if settings.SECRET_KEY in _WEAK_KEYS or len(settings.SECRET_KEY) < 32:
+    print(
+        "\n[SEGURANÇA] SECRET_KEY ausente, vazia ou fraca (< 32 caracteres).\n"
+        "Defina uma chave forte em .env: SECRET_KEY=<string aleatória de 64+ chars>\n",
+        file=sys.stderr,
+    )
+    sys.exit(1)

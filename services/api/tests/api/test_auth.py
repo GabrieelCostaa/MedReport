@@ -17,7 +17,7 @@ from tests.api.conftest import TEST_PASSWORD
 async def test_registro_deve_criar_usuario_e_retornar_token(client: AsyncClient):
     resp = await client.post(
         "/api/auth/register",
-        json={"email": "novo@medreport.com", "password": "senha123"},
+        json={"email": "novo@medreport.com", "password": "Senha123"},
     )
     assert resp.status_code == 200
     body = resp.json()
@@ -39,7 +39,7 @@ async def test_registro_email_duplicado_deve_retornar_409(
 ):
     resp = await client.post(
         "/api/auth/register",
-        json={"email": test_user.email, "password": "outra_senha"},
+        json={"email": test_user.email, "password": "OutraSenha1"},
     )
     assert resp.status_code == 409
 
@@ -48,9 +48,26 @@ async def test_registro_email_duplicado_deve_retornar_409(
 async def test_registro_sem_email_deve_retornar_422(client: AsyncClient):
     resp = await client.post(
         "/api/auth/register",
-        json={"password": "senha123"},
+        json={"password": "Senha123"},
     )
     assert resp.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_registro_senha_fraca_deve_retornar_422(client: AsyncClient):
+    """Senha sem maiúscula, sem dígito ou menor que 8 chars deve ser rejeitada pelo backend."""
+    casos = [
+        "semaiuscula1",      # sem maiúscula
+        "SEMNUMERO",        # sem número e sem minúscula
+        "Curta1",           # < 8 chars
+        "semdigito",        # sem dígito e sem maiúscula
+    ]
+    for senha in casos:
+        resp = await client.post(
+            "/api/auth/register",
+            json={"email": f"teste_{senha}@x.com", "password": senha},
+        )
+        assert resp.status_code == 422, f"Esperava 422 para senha '{senha}', got {resp.status_code}"
 
 
 # ─── POST /auth/token ───
@@ -81,7 +98,7 @@ async def test_login_deve_retornar_401_quando_senha_errada(
         data={"username": test_user.email, "password": "senha_errada"},
     )
     assert resp.status_code == 401
-    assert "Incorrect" in resp.json()["detail"]
+    assert "Credenciais" in resp.json()["detail"]
 
 
 @pytest.mark.asyncio
@@ -175,7 +192,7 @@ async def test_registro_com_nome_crm_deve_retornar_dados_completos(client: Async
         "/api/auth/register",
         json={
             "email": "dr.crm@medreport.com",
-            "password": "senha123",
+            "password": "Senha123",
             "nome": "Dr. Ana Lima",
             "crm": "654321",
             "crm_uf": "RJ",
@@ -194,7 +211,7 @@ async def test_registro_com_crm_invalido_deve_retornar_422(client: AsyncClient):
         "/api/auth/register",
         json={
             "email": "dr.invalido@medreport.com",
-            "password": "senha123",
+            "password": "Senha123",
             "nome": "Dr. X",
             "crm": "abc123",
             "crm_uf": "SP",
@@ -209,7 +226,7 @@ async def test_registro_com_uf_invalida_deve_retornar_422(client: AsyncClient):
         "/api/auth/register",
         json={
             "email": "dr.uf@medreport.com",
-            "password": "senha123",
+            "password": "Senha123",
             "nome": "Dr. Y",
             "crm": "123456",
             "crm_uf": "XX",

@@ -1,4 +1,5 @@
 """Fixtures compartilhados para todos os testes."""
+import os
 import uuid
 from dataclasses import dataclass
 from typing import Optional
@@ -7,6 +8,10 @@ import pytest
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Garante SECRET_KEY válida para testes (evita sys.exit no startup check)
+if not os.environ.get("SECRET_KEY") or len(os.environ.get("SECRET_KEY", "")) < 32:
+    os.environ["SECRET_KEY"] = "chave-de-teste-para-pytest-nao-usar-em-producao-64chars!!"
 
 
 @dataclass

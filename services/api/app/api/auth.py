@@ -1,13 +1,18 @@
+import logging
 import re
 from datetime import timedelta
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi import status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+logger = logging.getLogger(__name__)
 
 from app.db.session import get_db
 from app.db.models import User, UserRole
@@ -16,11 +21,15 @@ from app.core.security import (
     get_password_hash,
     create_access_token,
     get_current_user_id,
+    get_raw_token,
+    revoke_token,
 )
+from jose import jwt as jose_jwt
 from app.core.config import settings
 
 router = APIRouter()
 token_router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
 
 VALID_UFS = {
     "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO",
@@ -51,19 +60,36 @@ class RegisterIn(BaseModel):
     crm: str | None = None
     crm_uf: str | None = None
 
+    @field_validator("password")
+    @classmethod
+    def validate_password_strength(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("Senha deve ter ao menos 8 caracteres")
+        if not any(c.isupper() for c in v):
+            raise ValueError("Senha deve conter ao menos uma letra maiúscula")
+        if not any(c.islower() for c in v):
+            raise ValueError("Senha deve conter ao menos uma letra minúscula")
+        if not any(c.isdigit() for c in v):
+            raise ValueError("Senha deve conter ao menos um número")
+        return v
+
 
 @router.post("/register")
+@limiter.limit("5/hour")
 async def register(
+    request: Request,
     body: RegisterIn,
     db: AsyncSession = Depends(get_db),
 ):
     """Cadastro de novo usuário."""
-    # Verifica se e-mail já existe
+    ip = request.client.host if request.client else "unknown"
+    # Verifica se e-mail já existe — mensagem genérica para não confirmar existência
     existing = await db.execute(select(User).where(User.email == body.email))
     if existing.scalar_one_or_none():
+        logger.warning("auth.register.duplicate email_hash=%s ip=%s", hash(body.email), ip)
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="E-mail já cadastrado",
+            detail="Não foi possível criar a conta. Verifique os dados e tente novamente.",
         )
     # Valida role
     valid_roles = {r.value for r in UserRole}
@@ -100,6 +126,7 @@ async def register(
     db.add(user)
     await db.flush()
     await db.refresh(user)
+    logger.info("auth.register.success user_id=%s role=%s ip=%s", user.id, user.role, ip)
     # Gera token automaticamente (login após registro)
     access_token = create_access_token(
         data={"sub": str(user.id)},
@@ -121,17 +148,23 @@ async def register(
 
 
 @token_router.post("/token")
+@limiter.limit("10/minute")
 async def login(
+    request: Request,
     form: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db),
 ):
+    ip = request.client.host if request.client else "unknown"
     result = await db.execute(select(User).where(User.email == form.username))
     user = result.scalar_one_or_none()
     if not user or not verify_password(form.password, user.hashed_password):
+        logger.warning("auth.login.failed email=%s ip=%s", form.username, ip)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+            detail="Credenciais inválidas",
+            headers={"WWW-Authenticate": "Bearer"},
         )
+    logger.info("auth.login.success user_id=%s ip=%s", user.id, ip)
     access_token = create_access_token(
         data={"sub": str(user.id)},
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
@@ -157,11 +190,11 @@ async def me(
     db: AsyncSession = Depends(get_db),
 ):
     if not user_id:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        raise HTTPException(status_code=401, detail="Autenticação necessária")
     result = await db.execute(select(User).where(User.id == UUID(user_id)))
     user = result.scalar_one_or_none()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return UserOut(
         id=str(user.id),
         email=user.email,
@@ -186,7 +219,7 @@ async def update_me(
     db: AsyncSession = Depends(get_db),
 ):
     if not user_id:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        raise HTTPException(status_code=401, detail="Autenticação necessária")
     if body.crm and not CRM_REGEX.match(body.crm):
         raise HTTPException(status_code=422, detail="CRM inválido. Use apenas dígitos (4-8 caracteres).")
     if body.crm_uf and body.crm_uf.upper() not in VALID_UFS:
@@ -195,7 +228,7 @@ async def update_me(
     result = await db.execute(select(User).where(User.id == UUID(user_id)))
     user = result.scalar_one_or_none()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
     if body.nome is not None:
         user.nome = body.nome
@@ -217,6 +250,27 @@ async def update_me(
     )
 
 
+@token_router.post("/logout")
+async def logout(
+    request: Request,
+    token: str = Depends(get_raw_token),
+):
+    """Invalida o token atual adicionando seu jti à blacklist."""
+    if token:
+        try:
+            payload = jose_jwt.decode(
+                token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+            )
+            jti = payload.get("jti")
+            if jti:
+                revoke_token(jti)
+                ip = request.client.host if request.client else "unknown"
+                logger.info("auth.logout.success jti=%s ip=%s", jti, ip)
+        except Exception:
+            pass  # Token já expirado ou inválido — logout é idempotente
+    return {"detail": "Logout realizado com sucesso"}
+
+
 @router.post("/legal-basis")
 async def acknowledge_legal_basis(
     user_id: str = Depends(get_current_user_id),
@@ -227,12 +281,12 @@ async def acknowledge_legal_basis(
     Não é apenas consentimento - inclui obrigação legal (TISS), tutela da saúde, etc.
     """
     if not user_id:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        raise HTTPException(status_code=401, detail="Autenticação necessária")
     from datetime import datetime
     result = await db.execute(select(User).where(User.id == UUID(user_id)))
     user = result.scalar_one_or_none()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
     user.legal_basis_acknowledged = True
     user.legal_basis_at = datetime.utcnow()
     await db.commit()

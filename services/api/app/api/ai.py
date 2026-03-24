@@ -9,20 +9,23 @@ from datetime import datetime
 import asyncio
 import json as json_mod
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response, StreamingResponse
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
 from app.db.session import get_db
 from app.db.models import Product, Report, ReportTemplate
-from app.core.security import get_current_user_id
+from app.core.security import get_current_user_id, require_current_user_id
 from app.services.agents.pipeline import ReportPipeline
 from app.services.agents.checklist import ReportChecklist
 from app.services.pdf_generator import generate_pdf_bytes
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
 
 
 # ============================================================================
@@ -67,12 +70,10 @@ class ChatOut(BaseModel):
 async def evidences_preview(
     cid: str,
     product_name: str = "",
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Preview de evidências disponíveis para um CID (internas + PubMed)."""
-    if False:  # TODO: re-enable auth
-        raise HTTPException(status_code=401, detail="Not authenticated")
     if not cid or len(cid.strip()) < 3:
         return {"cid": cid, "internal_count": 0, "pubmed_count": 0, "total_count": 0, "preview": []}
 
@@ -85,9 +86,11 @@ async def evidences_preview(
 # ============================================================================
 
 @router.post("/start-report")
+@limiter.limit("20/hour")
 async def start_report(
+    request: Request,
     body: StartReportIn,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -96,8 +99,6 @@ async def start_report(
     2. Executa Agente A (Pesquisador)
     3. Retorna perguntas A/B/C se houver lacunas, ou gera direto
     """
-    if False:  # TODO: re-enable auth
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     result = await db.execute(
         select(Product).where(Product.id == UUID(body.product_id))
@@ -137,17 +138,17 @@ async def start_report(
 
 
 @router.post("/start-report-stream")
+@limiter.limit("20/hour")
 async def start_report_stream(
+    request: Request,
     body: StartReportIn,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """
     SSE: Inicia pipeline com eventos de progresso em tempo real.
     Retorna Server-Sent Events com cada etapa do pipeline.
     """
-    if False:  # TODO: re-enable auth
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     result = await db.execute(
         select(Product).where(Product.id == UUID(body.product_id))
@@ -210,14 +211,12 @@ async def start_report_stream(
 @router.post("/answer")
 async def answer_questions(
     body: AnswerIn,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """
     Recebe respostas A/B/C do médico e avança o pipeline.
     """
-    if False:  # TODO: re-enable auth
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     pipeline_result = await ReportPipeline.answer(body.session_id, body.answers)
 
@@ -235,14 +234,12 @@ async def answer_questions(
 @router.post("/answer-stream")
 async def answer_stream(
     body: AnswerIn,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """
     SSE: Recebe respostas A/B/C e avança pipeline com eventos de progresso.
     """
-    if False:  # TODO: re-enable auth
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     async def event_stream():
         progress_queue: asyncio.Queue = asyncio.Queue()
@@ -297,17 +294,17 @@ class GenerateIn(BaseModel):
 
 
 @router.post("/generate")
+@limiter.limit("20/hour")
 async def generate_full(
+    request: Request,
     body: GenerateIn,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """
     Executa pipeline completo (A -> B -> C -> Validador).
     strict_mode=true bloqueia PDF se validação hard-coded falhar.
     """
-    if False:  # TODO: re-enable auth
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     result = await db.execute(
         select(Product).where(Product.id == UUID(body.product_id))
@@ -376,12 +373,10 @@ async def generate_full(
 @router.post("/regenerate")
 async def regenerate(
     body: RegenerateIn,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Re-gera relatório com ajustes do médico."""
-    if False:  # TODO: re-enable auth
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     pipeline_result = await ReportPipeline.regenerate(body.session_id, body.adjustments)
 
@@ -403,12 +398,10 @@ async def regenerate(
 @router.get("/checklist/{report_id}")
 async def get_checklist(
     report_id: UUID,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Retorna status do checklist de 6 itens obrigatórios."""
-    if False:  # TODO: re-enable auth
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     result = await db.execute(select(Report).where(Report.id == report_id))
     report = result.scalar_one_or_none()
@@ -442,14 +435,12 @@ class QuickCheckIn(BaseModel):
 @router.post("/quick-check")
 async def quick_checklist(
     body: QuickCheckIn,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
 ):
     """
     Checklist rápido (sem LLM) para validação reativa enquanto o médico edita.
     O frontend chama com debounce de 2s a cada edição no textarea.
     """
-    if False:  # TODO: re-enable auth
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     text = (body.justificativa_ia or "").lower()
     checklist = {
@@ -501,12 +492,10 @@ class SaveEditIn(BaseModel):
 @router.post("/save-edit")
 async def save_edit(
     body: SaveEditIn,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Captura diferença entre texto IA e edição do médico para aprendizagem futura."""
-    if False:  # TODO: re-enable auth
-        raise HTTPException(status_code=401, detail="Not authenticated")
 
     if body.original_text == body.edited_text:
         return {"saved": False, "reason": "no_changes"}
@@ -538,10 +527,8 @@ async def save_edit(
 @router.post("/chat")
 async def chat(
     body: ChatIn,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
 ):
-    if False:  # TODO: re-enable auth
-        raise HTTPException(status_code=401, detail="Not authenticated")
     reply = (
         "Para criar um relatório, use o fluxo guiado na aba 'Novo Relatório'. "
         "Selecione o material OPME e preencha os dados do paciente. "
@@ -557,14 +544,11 @@ async def chat(
 @router.get("/download-pdf/{report_id}")
 async def download_pdf(
     report_id: str,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Gera e retorna PDF do relatório."""
-    # TODO: re-enable auth scoping
-    query = select(Report).where(Report.id == report_id)
-    if user_id:
-        query = query.where(Report.user_id == user_id)
+    query = select(Report).where(Report.id == report_id, Report.user_id == user_id)
     result = await db.execute(query)
     report = result.scalar_one_or_none()
     if not report:

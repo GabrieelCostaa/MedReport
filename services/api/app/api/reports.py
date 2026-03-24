@@ -1,4 +1,5 @@
 import hashlib
+import logging
 from datetime import datetime
 from uuid import UUID
 from io import BytesIO
@@ -10,12 +11,21 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
+logger = logging.getLogger(__name__)
+
 from app.db.session import get_db
 from app.db.models import Report, Product, User
-from app.core.security import get_current_user_id
+from app.core.security import get_current_user_id, require_current_user_id
 from app.services.tiss import build_guia_solicitacao_xml
 
 router = APIRouter()
+
+_MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
+_ALLOWED_MIME_TYPES = {
+    "text/plain",
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+}
 
 
 class ReportCreate(BaseModel):
@@ -44,16 +54,12 @@ class ReportOut(BaseModel):
 
 @router.get("")
 async def list_reports(
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(20, ge=1, le=1000, description="Items per page"),
 ):
-    # TODO: re-enable auth when ready
-    if user_id:
-        base = select(Report).where(Report.user_id == UUID(user_id))
-    else:
-        base = select(Report)
+    base = select(Report).where(Report.user_id == UUID(user_id))
 
     # Total count
     count_result = await db.execute(select(func.count()).select_from(base.subquery()))
@@ -86,18 +92,12 @@ async def list_reports(
 @router.get("/{report_id}")
 async def get_report(
     report_id: UUID,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
-    # TODO: re-enable auth when ready
-    if user_id:
-        result = await db.execute(
-            select(Report).where(Report.id == report_id, Report.user_id == UUID(user_id))
-        )
-    else:
-        result = await db.execute(
-            select(Report).where(Report.id == report_id)
-        )
+    result = await db.execute(
+        select(Report).where(Report.id == report_id, Report.user_id == UUID(user_id))
+    )
     r = result.scalar_one_or_none()
     if not r:
         raise HTTPException(status_code=404, detail="Report not found")
@@ -117,12 +117,11 @@ async def get_report(
 @router.post("")
 async def create_report(
     body: ReportCreate,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
-    # TODO: re-enable auth when ready
     report = Report(
-        user_id=UUID(user_id) if user_id else None,
+        user_id=UUID(user_id),
         status="draft",
         cid=body.cid,
         diagnosis=body.diagnosis,
@@ -235,6 +234,10 @@ async def sign_report(
     report.signature_hash = signature_hash
     report.pdf_signed_bytes = pdf_bytes
     await db.commit()
+    logger.info(
+        "report.signed report_id=%s user_id=%s sha256=%s",
+        report_id, user_id, signature_hash[:16],
+    )
 
     return {
         "signed_at": signed_at.isoformat() + "Z",
@@ -279,11 +282,19 @@ async def verify_report(
 @router.post("/review/upload")
 async def review_upload(
     file: UploadFile = File(...),
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Upload de arquivo para revisão: extrai texto, compara com TUSS e retorna inconsistências."""
-    content = (await file.read()).decode("utf-8", errors="ignore")
+    raw = await file.read()
+    if len(raw) > _MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="Arquivo muito grande. Limite: 10 MB.")
+    if file.content_type and file.content_type.split(";")[0].strip() not in _ALLOWED_MIME_TYPES:
+        raise HTTPException(
+            status_code=415,
+            detail="Tipo de arquivo não suportado. Use PDF, DOCX ou TXT.",
+        )
+    content = raw.decode("utf-8", errors="ignore")
     inconsistencies = await _review_text(db, content)
     return {"inconsistencies": inconsistencies}
 
@@ -291,7 +302,7 @@ async def review_upload(
 @router.post("/review/text")
 async def review_text(
     body: dict,
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Revisão por texto colado: compara com TUSS e retorna inconsistências."""
@@ -321,18 +332,12 @@ async def _review_text(db: AsyncSession, text: str) -> list[dict]:
 async def download_report(
     report_id: UUID,
     format: str = Query("pdf", regex="^(pdf|xml|docx)$"),
-    user_id: str = Depends(get_current_user_id),
+    user_id: str = Depends(require_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
-    # TODO: re-enable auth when ready
-    if user_id:
-        result = await db.execute(
-            select(Report).where(Report.id == report_id, Report.user_id == UUID(user_id))
-        )
-    else:
-        result = await db.execute(
-            select(Report).where(Report.id == report_id)
-        )
+    result = await db.execute(
+        select(Report).where(Report.id == report_id, Report.user_id == UUID(user_id))
+    )
     r = result.scalar_one_or_none()
     if not r:
         raise HTTPException(status_code=404, detail="Report not found")

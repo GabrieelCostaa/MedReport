@@ -68,7 +68,7 @@ async def client():
 
 # ── Dados de teste ──
 
-TEST_PASSWORD = "senha_segura_123"
+TEST_PASSWORD = "Senha_Segura_123"
 
 
 @pytest_asyncio.fixture
