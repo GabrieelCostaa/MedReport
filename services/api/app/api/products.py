@@ -177,6 +177,52 @@ async def _background_ifu_enrich(product_id: str):
         logger.warning("Background IFU enrichment falhou: %s", e)
 
 
+# ============================================================================
+# ANVISA API Gateway — Consulta e Validação em tempo real
+# ============================================================================
+
+@router.get("/anvisa/consulta/{registro}")
+async def consultar_anvisa(
+    registro: str,
+    user_id: str = Depends(require_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Consulta registro ANVISA via API Gateway (OAuth2) com fallback para banco local.
+    Retorna dados do produto, status e fonte da informação.
+    """
+    from app.services.anvisa_service import consultar_registro
+    result = await consultar_registro(db, registro)
+    await db.commit()
+    return {
+        "registro": result.registro,
+        "nome_comercial": result.nome_comercial,
+        "nome_tecnico": result.nome_tecnico,
+        "fabricante": result.fabricante,
+        "classe_risco": result.classe_risco,
+        "status": result.status,
+        "data_validade": result.data_validade.isoformat() if result.data_validade else None,
+        "fonte": result.fonte,
+        "sucesso": result.sucesso,
+    }
+
+
+@router.get("/anvisa/validar/{registro}")
+async def validar_anvisa(
+    registro: str,
+    user_id: str = Depends(require_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Valida se registro ANVISA está ativo (STF Critério 5 - ADI 7.265).
+    Retorna status de validade e motivo se inválido.
+    """
+    from app.services.anvisa_service import validar_registro_ativo
+    result = await validar_registro_ativo(db, registro)
+    await db.commit()
+    return result
+
+
 @router.post("/from-anvisa/{registro}")
 async def create_from_anvisa(
     registro: str,

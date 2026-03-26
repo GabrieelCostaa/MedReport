@@ -2,6 +2,7 @@
 API do Assistente Multi-Agente de Relatórios OPME.
 Pipeline: Pesquisador (A) -> Redator (B) -> Auditor (C).
 """
+import uuid as uuid_mod
 from uuid import UUID
 from typing import Optional
 from datetime import datetime
@@ -18,11 +19,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
 from app.db.session import get_db
-from app.db.models import Product, Report, ReportTemplate
+from app.db.models import Product, Report, ReportTemplate, AuditAction
 from app.core.security import get_current_user_id, require_current_user_id
 from app.services.agents.pipeline import ReportPipeline
 from app.services.agents.checklist import ReportChecklist
 from app.services.pdf_generator import generate_pdf_bytes
+from app.services.audit_service import audit_log
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
@@ -128,7 +130,11 @@ async def start_report(
         cid=body.cid,
         medico_inputs=medico_inputs,
         db=db,
+        user_id=user_id,
     )
+
+    if pipeline_result.get("error"):
+        raise HTTPException(status_code=400, detail=pipeline_result["error"])
 
     if pipeline_result.get("step") == "done":
         report = await _save_report(db, user_id, product, body, pipeline_result)
@@ -186,6 +192,7 @@ async def start_report_stream(
                 medico_inputs=medico_inputs,
                 db=db,
                 on_progress=on_progress,
+                user_id=user_id,
             )
             if pipeline_result.get("step") == "done":
                 report = await _save_report(db, user_id, product, body, pipeline_result)
@@ -218,7 +225,7 @@ async def answer_questions(
     Recebe respostas A/B/C do médico e avança o pipeline.
     """
 
-    pipeline_result = await ReportPipeline.answer(body.session_id, body.answers)
+    pipeline_result = await ReportPipeline.answer(body.session_id, body.answers, user_id=user_id)
 
     if pipeline_result.get("error"):
         raise HTTPException(status_code=404, detail=pipeline_result["error"])
@@ -249,7 +256,7 @@ async def answer_stream(
 
         async def run_pipeline():
             pipeline_result = await ReportPipeline.answer(
-                body.session_id, body.answers, on_progress=on_progress,
+                body.session_id, body.answers, on_progress=on_progress, user_id=user_id,
             )
             if pipeline_result.get("error"):
                 await progress_queue.put({"event": "error", "data": pipeline_result})
@@ -293,6 +300,139 @@ class GenerateIn(BaseModel):
     use_search: bool = True
 
 
+# ============================================================================
+# Batch Generation
+# ============================================================================
+
+class BatchItemIn(BaseModel):
+    product_id: str
+    paciente_nome: str
+    cid: str
+    diagnostico: str
+    surgery_description: Optional[str] = None
+    health_plan: Optional[str] = None
+    especialidade: Optional[str] = None
+
+
+class BatchGenerateIn(BaseModel):
+    items: list[BatchItemIn]
+    max_concurrency: int = 3
+
+
+# In-memory batch jobs (use Redis in production)
+_BATCH_JOBS: dict[str, dict] = {}
+
+
+@router.post("/generate-batch")
+async def generate_batch(
+    body: BatchGenerateIn,
+    user_id: str = Depends(require_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Batch generation: processes multiple reports concurrently with bounded concurrency.
+    Returns a job_id for polling progress via /batch-status/{job_id}.
+    """
+    import asyncio as _asyncio
+
+    job_id = str(uuid_mod.uuid4())
+    job = {
+        "job_id": job_id,
+        "status": "processing",
+        "total": len(body.items),
+        "completed": 0,
+        "failed": 0,
+        "results": [],
+    }
+    _BATCH_JOBS[job_id] = job
+
+    async def process_items():
+        semaphore = _asyncio.Semaphore(body.max_concurrency)
+
+        async def process_one(item: BatchItemIn, index: int):
+            async with semaphore:
+                try:
+                    result_db = await db.execute(
+                        select(Product).where(Product.id == UUID(item.product_id))
+                    )
+                    product = result_db.scalar_one_or_none()
+                    if not product:
+                        job["results"].append({"index": index, "error": "Produto não encontrado"})
+                        job["failed"] += 1
+                        return
+
+                    template_result = await db.execute(
+                        select(ReportTemplate).where(ReportTemplate.produto_id == product.id).limit(1)
+                    )
+                    template = template_result.scalar_one_or_none()
+
+                    medico_inputs = {
+                        "paciente_nome": item.paciente_nome,
+                        "cid": item.cid,
+                        "diagnostico": item.diagnostico,
+                        "surgery_description": item.surgery_description or "",
+                        "health_plan": item.health_plan or "",
+                        "especialidade": item.especialidade or "",
+                    }
+
+                    pipeline_result = await ReportPipeline.start(
+                        product=product,
+                        template=template,
+                        diagnostico=item.diagnostico,
+                        cid=item.cid,
+                        medico_inputs=medico_inputs,
+                        db=db,
+                        user_id=user_id,
+                    )
+
+                    if pipeline_result.get("step") == "done":
+                        report = await _save_report(db, user_id, product, item, pipeline_result)
+                        job["results"].append({
+                            "index": index,
+                            "report_id": str(report.id),
+                            "aprovado": pipeline_result.get("aprovado", False),
+                        })
+                        job["completed"] += 1
+                    else:
+                        job["results"].append({"index": index, "status": pipeline_result.get("step")})
+                        job["completed"] += 1
+
+                except Exception as e:
+                    job["results"].append({"index": index, "error": str(e)})
+                    job["failed"] += 1
+
+        await _asyncio.gather(
+            *[process_one(item, i) for i, item in enumerate(body.items)],
+            return_exceptions=True,
+        )
+        job["status"] = "completed"
+
+    # Run in background
+    import asyncio
+    asyncio.create_task(process_items())
+
+    return {"job_id": job_id, "total": len(body.items), "status": "accepted"}
+
+
+@router.get("/batch-status/{job_id}")
+async def batch_status(
+    job_id: str,
+    user_id: str = Depends(require_current_user_id),
+):
+    """Poll batch job progress."""
+    job = _BATCH_JOBS.get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job não encontrado")
+    return {
+        "job_id": job["job_id"],
+        "status": job["status"],
+        "progress": f"{job['completed'] + job['failed']}/{job['total']}",
+        "completed": job["completed"],
+        "failed": job["failed"],
+        "results": job["results"] if job["status"] == "completed" else [],
+    }
+
+
 @router.post("/generate")
 @limiter.limit("20/hour")
 async def generate_full(
@@ -334,7 +474,11 @@ async def generate_full(
         cid=body.cid,
         medico_inputs=medico_inputs,
         db=db,
+        user_id=user_id,
     )
+
+    if pipeline_result.get("error"):
+        raise HTTPException(status_code=400, detail=pipeline_result["error"])
 
     if pipeline_result.get("step") == "done":
         audit_summary = pipeline_result.get("audit_summary", {})
@@ -591,6 +735,15 @@ async def download_pdf(
         base_legal=getattr(report, "base_legal_ans", "") or "",
     )
 
+    # LGPD audit: log PDF export
+    await audit_log(
+        db, AuditAction.EXPORT, "report",
+        resource_id=str(report.id),
+        user_id=user_id,
+        justification="Exportação de relatório em PDF (obrigação legal TISS, LGPD Art. 11)",
+    )
+    await db.commit()
+
     safe_name = (report.paciente_nome or "relatorio").replace(" ", "_")
     filename = f"relatorio_opme_{safe_name}_{report.cid or 'sem_cid'}.pdf"
 
@@ -613,7 +766,7 @@ def _build_tuss_codes(product) -> list[dict] | None:
     return None
 
 
-async def _save_report(db, user_id, product, body, pipeline_result) -> Report:
+async def _save_report(db, user_id, product, body, pipeline_result, request: Request = None) -> Report:
     """Cria Report a partir do resultado do pipeline."""
     report = Report(
         user_id=UUID(user_id) if user_id else None,
@@ -642,6 +795,16 @@ async def _save_report(db, user_id, product, body, pipeline_result) -> Report:
     db.add(report)
     await db.flush()
     await db.refresh(report)
+
+    # LGPD audit: log report generation
+    await audit_log(
+        db, AuditAction.GENERATE, "report",
+        resource_id=str(report.id),
+        user_id=user_id,
+        justification="Geração de relatório OPME via pipeline multi-agente (tutela da saúde, LGPD Art. 11)",
+        metadata={"product_id": str(product.id), "cid": body.cid},
+    )
+
     await db.commit()
     return report
 

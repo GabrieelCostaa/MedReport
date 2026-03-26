@@ -222,7 +222,19 @@ async def sign_report(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao gerar PDF: {str(e)}")
 
-    # Calcula SHA-256 do PDF gerado
+    # PAdES digital signature (embedded in PDF)
+    try:
+        from app.services.pdf_signer import sign_pdf_pades
+        pdf_bytes = sign_pdf_pades(
+            pdf_bytes,
+            medico_nome=user.nome or "",
+            medico_crm=medico_crm_fmt,
+            reason="Assinatura eletrônica de relatório OPME",
+        )
+    except Exception as e:
+        logger.warning("PAdES signing failed (continuing with unsigned PDF): %s", e)
+
+    # Calcula SHA-256 do PDF (assinado ou não)
     signature_hash = hashlib.sha256(pdf_bytes).hexdigest()
 
     # Persiste em transação única

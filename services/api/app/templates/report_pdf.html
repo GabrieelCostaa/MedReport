@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" role="document">
 <head>
 <meta charset="UTF-8">
+<title>Relatório OPME - {{ paciente_nome }} - {{ cid }}</title>
 <style>
   @page {
     size: A4;
@@ -444,7 +445,7 @@
   </div>
   {% if qr_b64 %}
   <div class="sig-qr">
-    <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Verificação">
+    <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code para verificação de autenticidade do relatório OPME" role="img" aria-label="Escaneie para verificar autenticidade">
     <div class="sig-scan">Verificar autenticidade</div>
   </div>
   {% endif %}

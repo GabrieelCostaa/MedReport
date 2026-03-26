@@ -1,6 +1,9 @@
 """
 Agente C: O Auditor (The Verifier - "Double Check").
 Confronta rascunho com dados oficiais do produto e valida checklist.
+
+Usa Instructor (structured outputs) com Chain-of-Thought para explicar
+POR QUE cada correção foi feita antes de dar o resultado final.
 """
 import json
 import re
@@ -12,6 +15,14 @@ from app.core.config import settings
 from .prompts import AUDITOR_SYSTEM
 from .writer import DraftReport
 from .token_tracker import TokenUsage, extract_usage
+from .schemas import AuditorOutput
+
+try:
+    import instructor
+    INSTRUCTOR_AVAILABLE = True
+except ImportError:
+    instructor = None
+    INSTRUCTOR_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -158,49 +169,97 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None, pu
 
     try:
         import openai
-        client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
-        response = await client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message},
-            ],
-            response_format={"type": "json_object"},
-            temperature=0.1,
-            max_tokens=5000,
-        )
+        usage = None  # Instructor path doesn't track usage separately
 
-        raw = response.choices[0].message.content
-        usage = extract_usage(response, "Auditor")
-        data = json.loads(raw)
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
+        ]
 
-        checklist = data.get("checklist", {})
-        aprovado = data.get("aprovado", False)
+        if INSTRUCTOR_AVAILABLE:
+            async_client = instructor.from_openai(
+                openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+            )
+            result = await async_client.chat.completions.create(
+                model="gpt-4o",
+                response_model=AuditorOutput,
+                messages=messages,
+                temperature=0.1,
+                max_tokens=5000,
+                max_retries=2,
+            )
+            # Log Chain-of-Thought for debugging/audit
+            if result.chain_of_thought:
+                logger.info("Auditor CoT: %s", result.chain_of_thought[:500])
 
-        audit_log_entries = []
-        for entry in data.get("audit_log", []):
-            if entry.get("tipo") == "remocao" and "referencia" in entry.get("campo", "").lower():
-                original = entry.get("original", "")
-                if any(a.lower() in original.lower() for a in known_authors_set if len(a) > 2):
-                    audit_log_entries.append(AuditEntry(
-                        tipo="validacao",
-                        campo=entry.get("campo", ""),
-                        original=original,
-                        corrigido=original,
-                        motivo=f"Referência preservada: autor encontrado na lista de autores conhecidos.",
-                    ))
-                    continue
-            audit_log_entries.append(AuditEntry(
-                tipo=entry.get("tipo", "validacao"),
-                campo=entry.get("campo", ""),
-                original=entry.get("original", ""),
-                corrigido=entry.get("corrigido", ""),
-                motivo=entry.get("motivo", ""),
-            ))
+            checklist = result.checklist.model_dump()
+            aprovado = result.aprovado
+            raw = result.model_dump_json()
 
-        texto_corrigido = data.get("texto_corrigido", draft.justificativa_completa)
-        refs_validadas = data.get("referencias_validadas", [])
+            audit_log_entries = []
+            for entry in result.audit_log:
+                e_dict = entry.model_dump()
+                if e_dict.get("tipo") == "remocao" and "referencia" in e_dict.get("campo", "").lower():
+                    original = e_dict.get("original", "")
+                    if any(a.lower() in original.lower() for a in known_authors_set if len(a) > 2):
+                        audit_log_entries.append(AuditEntry(
+                            tipo="validacao", campo=e_dict.get("campo", ""),
+                            original=original, corrigido=original,
+                            motivo="Referência preservada: autor encontrado na lista de autores conhecidos.",
+                        ))
+                        continue
+                audit_log_entries.append(AuditEntry(
+                    tipo=e_dict.get("tipo", "validacao"),
+                    campo=e_dict.get("campo", ""),
+                    original=e_dict.get("original", ""),
+                    corrigido=e_dict.get("corrigido", ""),
+                    motivo=e_dict.get("motivo", ""),
+                ))
+
+            texto_corrigido = result.texto_corrigido
+            refs_validadas = result.referencias_validadas
+
+        else:
+            # Fallback: raw JSON mode
+            client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+            response = await client.chat.completions.create(
+                model="gpt-4o",
+                messages=messages,
+                response_format={"type": "json_object"},
+                temperature=0.1,
+                max_tokens=5000,
+            )
+            raw = response.choices[0].message.content
+            usage = extract_usage(response, "Auditor")
+            data = json.loads(raw)
+
+            checklist = data.get("checklist", {})
+            aprovado = data.get("aprovado", False)
+
+            audit_log_entries = []
+            for entry in data.get("audit_log", []):
+                if entry.get("tipo") == "remocao" and "referencia" in entry.get("campo", "").lower():
+                    original = entry.get("original", "")
+                    if any(a.lower() in original.lower() for a in known_authors_set if len(a) > 2):
+                        audit_log_entries.append(AuditEntry(
+                            tipo="validacao",
+                            campo=entry.get("campo", ""),
+                            original=original,
+                            corrigido=original,
+                            motivo="Referência preservada: autor encontrado na lista de autores conhecidos.",
+                        ))
+                        continue
+                audit_log_entries.append(AuditEntry(
+                    tipo=entry.get("tipo", "validacao"),
+                    campo=entry.get("campo", ""),
+                    original=entry.get("original", ""),
+                    corrigido=entry.get("corrigido", ""),
+                    motivo=entry.get("motivo", ""),
+                ))
+
+            texto_corrigido = data.get("texto_corrigido", draft.justificativa_completa)
+            refs_validadas = data.get("referencias_validadas", [])
 
         # Fix: base_legal in separate field should satisfy checklist item 5
         if not checklist.get("base_legal_ans", False) and draft.base_legal:
@@ -326,6 +385,7 @@ def _strip_fabricated_costs(text: str, evidences: list) -> tuple[str, list[Audit
 
     # 2. Detectar argumentos qualitativos de custo sem referência
     # Frases com palavras de custo que NÃO contêm citação "(Autor, Ano)"
+    # TOLERÂNCIA: frases com citação bibliográfica são MANTIDAS (custo-efetividade com evidência é válido)
     cost_words = re.compile(
         r"(?:custos?\s+(?:significativ|maior|menor|elevad|reduzid)|"
         r"custo.{0,20}(?:efetiv|benefício)|"
@@ -339,7 +399,16 @@ def _strip_fabricated_costs(text: str, evidences: list) -> tuple[str, list[Audit
     for match in cost_words.finditer(text):
         sentence = _extract_sentence(text, match.start(), match.end())
         if sentence and sentence not in fabricated_sentences:
-            if not citation_pattern.search(sentence):
+            if citation_pattern.search(sentence):
+                # Has bibliographic reference — KEEP (cost-effectiveness with evidence is valid)
+                entries.append(AuditEntry(
+                    tipo="validacao",
+                    campo="custo",
+                    original=sentence,
+                    corrigido=sentence,
+                    motivo="Argumento de custo mantido: possui referência bibliográfica.",
+                ))
+            else:
                 fabricated_sentences.add(sentence)
                 entries.append(AuditEntry(
                     tipo="remocao",

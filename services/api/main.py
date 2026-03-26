@@ -1,5 +1,4 @@
 import logging
-import logging.config
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,22 +7,9 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-logging.config.dictConfig({
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "default": {
-            "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "default",
-        },
-    },
-    "root": {"level": "INFO", "handlers": ["console"]},
-})
+# Structured logging with structlog + OpenTelemetry trace IDs
+from app.core.logging_config import setup_logging, setup_opentelemetry
+setup_logging()
 
 from app.api import auth, reports, tuss, quotes, ai, erp_mock, notifications, products
 from app.core.config import settings
@@ -48,6 +34,9 @@ app = FastAPI(
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# OpenTelemetry instrumentation (auto-traces all endpoints)
+setup_opentelemetry(app)
 
 app.add_middleware(
     CORSMiddleware,
@@ -81,3 +70,55 @@ app.include_router(notifications.router)
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+# Knowledge Graph endpoints
+@app.get("/api/graph/query")
+async def graph_query(
+    cid: str,
+    product_id: str = "",
+    max_depth: int = 3,
+):
+    """Query the medical knowledge graph for a CID + product."""
+    from app.services.knowledge_graph import query_knowledge_graph, format_graph_context_for_llm
+    from app.db.session import AsyncSessionLocal
+    async with AsyncSessionLocal() as db:
+        ctx = await query_knowledge_graph(db, cid, product_id, max_depth)
+    return {
+        "cid": cid,
+        "product_id": product_id,
+        "stats": ctx.graph_stats,
+        "procedures": ctx.procedures,
+        "evidences": len(ctx.clinical_evidences),
+        "articles": len(ctx.pubmed_articles),
+        "regulatory": ctx.regulatory,
+        "umls": ctx.umls_concepts,
+        "snomed": ctx.snomed_concepts,
+        "path": ctx.cid_product_path,
+        "llm_context": format_graph_context_for_llm(ctx),
+    }
+
+
+@app.get("/api/graph/stats")
+async def graph_stats():
+    """Return knowledge graph statistics."""
+    from app.services.knowledge_graph import get_graph
+    G = get_graph()
+    if G is None:
+        return {"loaded": False, "nodes": 0, "edges": 0}
+    return {
+        "loaded": True,
+        "nodes": G.number_of_nodes(),
+        "edges": G.number_of_edges(),
+        "node_types": dict(
+            sorted(
+                {t: 0 for t in set(nx.get_node_attributes(G, "semantic_type").values())}.items()
+            )
+        ) if G.number_of_nodes() > 0 else {},
+    }
+
+
+try:
+    import networkx as nx
+except ImportError:
+    pass

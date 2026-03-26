@@ -15,6 +15,7 @@ from .auditor import audit, AuditResult
 from .checklist import ReportChecklist
 from .validator import validate_technical_data, ValidationResult
 from .token_tracker import PipelineUsage
+from app.services.observability import create_pipeline_trace
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +130,10 @@ class ReportPipeline:
     3. answer() -> recebe respostas do médico
     4. generate() -> redação + auditoria
     5. Resultado: texto auditado + checklist
+
+    Sessions are stored in Redis (with TTL + user_id auth) or in-memory fallback.
+    The in-process _sessions dict is kept as a local cache for the current request
+    lifecycle only. Persistent state goes to Redis via session_store.
     """
 
     _sessions: dict[str, PipelineSession] = {}
@@ -136,6 +141,11 @@ class ReportPipeline:
     @classmethod
     def get_session(cls, session_id: str) -> Optional[PipelineSession]:
         return cls._sessions.get(session_id)
+
+    @classmethod
+    def _cleanup_session(cls, session_id: str):
+        """Remove session from in-process cache after completion."""
+        cls._sessions.pop(session_id, None)
 
     @classmethod
     async def start(
@@ -147,11 +157,16 @@ class ReportPipeline:
         medico_inputs: dict,
         db: Optional[AsyncSession] = None,
         on_progress=None,
+        user_id: Optional[str] = None,
     ) -> dict:
         """
         Inicia pipeline: executa Agente A (Pesquisador).
         Retorna session_id e perguntas A/B/C se houver lacunas.
         """
+        # Validate CID format
+        if not cid or not re.match(r"^[A-Z]\d{2}(\.\d{1,2})?$", cid.strip().upper()):
+            return {"error": f"CID inválido: '{cid}'. Formato esperado: A00, A00.0 ou A00.00"}
+
         session_id = str(uuid.uuid4())
         session = PipelineSession(
             session_id=session_id,
@@ -162,9 +177,37 @@ class ReportPipeline:
         session.step = "researching"
         cls._sessions[session_id] = session
 
+        # Persist to Redis with user_id auth
+        if user_id:
+            from .session_store import create_session as store_create
+            await store_create(user_id, {
+                "session_id": session_id,
+                "product_id": str(product.id),
+                "step": "researching",
+            })
+
         async def _emit(step, label):
             if on_progress:
                 await on_progress(step, label)
+
+        # Guard inputs against prompt injection
+        try:
+            from app.services.guardrails import guard_pipeline_input
+            medico_inputs = guard_pipeline_input(medico_inputs)
+            session.medico_inputs = medico_inputs
+            if medico_inputs.get("_injection_detected"):
+                logger.warning("Prompt injection detected in session %s — inputs sanitized", session_id)
+        except Exception as e:
+            logger.debug("Guardrails check skipped: %s", e)
+
+        # Create observability trace for this pipeline run
+        trace = create_pipeline_trace(
+            session_id=session_id,
+            user_id=user_id or "",
+            product_name=product.nome,
+            cid=cid,
+        )
+        session.medico_inputs["_trace"] = trace
 
         logger.info("Pipeline iniciado: session=%s, product=%s", session_id, product.nome)
 
@@ -267,12 +310,18 @@ class ReportPipeline:
         return await cls._generate(session, on_progress=on_progress)
 
     @classmethod
-    async def answer(cls, session_id: str, answers: dict, on_progress=None) -> dict:
+    async def answer(cls, session_id: str, answers: dict, on_progress=None, user_id: Optional[str] = None) -> dict:
         """
         Recebe respostas A/B/C do médico e avança o pipeline.
         """
         session = cls._sessions.get(session_id)
         if not session:
+            # Try to verify session exists in Redis (even if not in local cache)
+            if user_id:
+                from .session_store import get_session as store_get
+                stored = await store_get(session_id, user_id)
+                if stored is None:
+                    return {"error": "Sessão não encontrada ou não autorizada"}
             return {"error": "Sessão não encontrada"}
 
         session.answered_questions.update(answers)
@@ -305,12 +354,19 @@ class ReportPipeline:
             if on_progress:
                 await on_progress(step, label)
 
+        trace = session.medico_inputs.get("_trace")
+
         session.step = "writing"
         n_ev = len(session.clinical_evidences) + len(session.pubmed_evidences)
         await _emit("writing", f"Redigindo justificativa técnica para {session.product.nome}...")
         if n_ev > 0:
             await _emit("writing", f"Fundamentando com {n_ev} evidências científicas...")
         logger.info("Pipeline redação: session=%s", session.session_id)
+
+        # Trace: Writer agent
+        gen_ctx = trace.generation("writer", model="gpt-4o", input_data={"cid": session.medico_inputs.get("cid")}) if trace else None
+        if gen_ctx:
+            gen_ctx.__enter__()
 
         draft = await write_justification(
             research=session.research_result,
@@ -324,12 +380,63 @@ class ReportPipeline:
         if draft.token_usage:
             session.usage.add(draft.token_usage)
 
+        if gen_ctx:
+            gen_ctx.update(
+                output={"length": len(draft.justificativa_completa or "")},
+                usage={"input": draft.token_usage.prompt_tokens, "output": draft.token_usage.completion_tokens} if draft.token_usage else None,
+            )
+            gen_ctx.__exit__(None, None, None)
+
+        # Self-consistency: generate additional drafts and merge confirmed claims
+        try:
+            from .self_consistency import vote_on_claims, merge_drafts, extract_claims
+
+            if draft.justificativa_completa and len(draft.justificativa_completa) > 500:
+                await _emit("writing", "Validando consistência das afirmações médicas...")
+
+                # Generate 2 additional drafts with higher temperatures
+                extra_drafts = [draft.justificativa_completa]
+                for temp in [0.3, 0.5]:
+                    try:
+                        extra = await write_justification(
+                            research=session.research_result,
+                            product=session.product,
+                            template=session.template,
+                            medico_inputs=session.medico_inputs,
+                            clinical_evidences=session.clinical_evidences,
+                            pubmed_evidences=session.pubmed_evidences,
+                        )
+                        if extra.justificativa_completa:
+                            extra_drafts.append(extra.justificativa_completa)
+                            if extra.token_usage:
+                                session.usage.add(extra.token_usage)
+                    except Exception:
+                        pass
+
+                if len(extra_drafts) >= 2:
+                    consistency = vote_on_claims(extra_drafts)
+                    if consistency.disputed_claims:
+                        merged = merge_drafts(extra_drafts, consistency, base_draft_index=0)
+                        draft.justificativa_completa = merged
+                        await _emit("writing",
+                            f"Consistência: {len(consistency.confirmed_claims)} claims confirmados, "
+                            f"{len(consistency.disputed_claims)} removidos (score: {consistency.consistency_score:.0%})"
+                        )
+                    else:
+                        await _emit("writing", "Todas as afirmações consistentes entre gerações")
+        except Exception as e:
+            logger.debug("Self-consistency skipped: %s", e)
+
         word_count = len((draft.justificativa_completa or "").split())
         await _emit("writing", f"Redação concluída — {word_count} palavras geradas")
 
         session.step = "auditing"
         await _emit("auditing", f"Confrontando dados técnicos de {session.product.nome} com base oficial...")
         logger.info("Pipeline auditoria: session=%s", session.session_id)
+
+        audit_gen = trace.generation("auditor", model="gpt-4o") if trace else None
+        if audit_gen:
+            audit_gen.__enter__()
 
         audit_result = await audit(
             draft, session.product,
@@ -339,6 +446,13 @@ class ReportPipeline:
         session.audit_result = audit_result
         if audit_result.token_usage:
             session.usage.add(audit_result.token_usage)
+
+        if audit_gen:
+            audit_gen.update(
+                output={"aprovado": audit_result.aprovado, "corrections": len(audit_result.audit_log)},
+                usage={"input": audit_result.token_usage.prompt_tokens, "output": audit_result.token_usage.completion_tokens} if audit_result.token_usage else None,
+            )
+            audit_gen.__exit__(None, None, None)
 
         corrections = sum(1 for a in audit_result.audit_log if a.tipo == "correcao")
         if corrections > 0:
@@ -350,11 +464,23 @@ class ReportPipeline:
         await _emit("validating", "Executando validação determinística de conformidade...")
         logger.info("Pipeline validação hard-coded: session=%s", session.session_id)
 
+        val_span = trace.span("hard-validator") if trace else None
+        if val_span:
+            val_span.__enter__()
+
         validation = validate_technical_data(
             audit_result.texto_corrigido,
             session.product,
             medico_inputs=session.medico_inputs,
         )
+
+        if val_span:
+            val_span.update(output={
+                "aprovado": validation.aprovado,
+                "issues": len(validation.issues),
+                "entities": len(validation.entities_found),
+            })
+            val_span.__exit__(None, None, None)
 
         audit_log = [
             {"tipo": a.tipo, "campo": a.campo, "original": a.original,
@@ -398,6 +524,23 @@ class ReportPipeline:
                         f"O valor '{issue.valor_no_texto}' foi identificado como {issue.campo} incorreto. "
                         f"O valor oficial é '{issue.valor_oficial}'."
                     )
+
+        # ── Contamination detection ────────────────────────────────────
+        try:
+            from app.services.contamination_detector import check_contamination
+            contamination = check_contamination(
+                audit_result.texto_corrigido,
+                session.product,
+            )
+            if contamination.has_blocking:
+                for issue in contamination.issues:
+                    if issue.severidade == "bloqueante":
+                        motivos_bloqueio.append(
+                            f"Contaminação ({issue.tipo}): {issue.descricao}"
+                        )
+                final_approved = False
+        except Exception as e:
+            logger.warning("Contamination check failed (non-blocking): %s", e)
 
         logger.info(
             "Pipeline concluído: session=%s, aprovado=%s, hard_validation=%s",
@@ -450,6 +593,15 @@ class ReportPipeline:
                 logger.warning("Compliance score failed: %s", e)
 
         await _emit("done", "Relatório finalizado")
+
+        # Trace: final scores
+        if trace:
+            trace.score("approved", 1.0 if final_approved else 0.0, f"checklist={audit_result.checklist}")
+            trace.score("hard_validation", 1.0 if validation.aprovado else 0.0, f"{len(validation.issues)} issues")
+            trace.flush()
+
+        # Cleanup: remove session from in-process cache (data is saved to DB)
+        cls._cleanup_session(session.session_id)
 
         result = {
             "session_id": session.session_id,

@@ -136,6 +136,18 @@ async def research(product, diagnostico: str, cid: str, template=None, db: Optio
     db_evidences = await _fetch_clinical_evidences(db, cid, product.id)
     pubmed_evidences = await _fetch_pubmed_evidences(db, cid, product.nome, diagnostico)
 
+    # Knowledge Graph context (Tier 1-3)
+    graph_context = ""
+    try:
+        from app.services.knowledge_graph import query_knowledge_graph, format_graph_context_for_llm
+        if db:
+            ctx = await query_knowledge_graph(db, cid, str(product.id), max_depth=3)
+            graph_context = format_graph_context_for_llm(ctx)
+            if graph_context:
+                logger.info("Graph context injected: %d chars", len(graph_context))
+    except Exception as e:
+        logger.debug("Knowledge graph context skipped: %s", e)
+
     system_prompt = RESEARCHER_SYSTEM.format(product_context=product_context)
 
     user_message = (
@@ -143,6 +155,9 @@ async def research(product, diagnostico: str, cid: str, template=None, db: Optio
         f"CID: {cid}\n"
         f"Material OPME solicitado: {product.nome}\n"
     )
+
+    if graph_context:
+        user_message += f"\n{graph_context}\n"
 
     if db_evidences:
         user_message += "\n--- EVIDÊNCIAS INTERNAS PRÉ-VALIDADAS (VERIFICADAS) ---\n"

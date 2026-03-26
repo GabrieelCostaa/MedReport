@@ -631,3 +631,90 @@ class QuoteBudget(Base):
     erp_reference = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+# ---------------------------------------------------------------------------
+# LGPD Audit Trail
+# ---------------------------------------------------------------------------
+
+class AuditAction(str, enum.Enum):
+    CREATE = "CREATE"
+    READ = "READ"
+    UPDATE = "UPDATE"
+    DELETE = "DELETE"
+    EXPORT = "EXPORT"       # data portability (LGPD Art. 18)
+    SIGN = "SIGN"           # electronic signature
+    GENERATE = "GENERATE"   # AI report generation
+
+
+class AuditLog(Base):
+    """
+    LGPD audit trail: tracks WHO accessed/modified WHAT data WHEN.
+    Required for compliance with LGPD Art. 37 (controller must demonstrate compliance).
+    Retention: 5 years (logs), 20 years (reports).
+    """
+    __tablename__ = "audit_log"
+
+    id = Column(UUID, primary_key=True, default=uuid.uuid4)
+    timestamp = Column(DateTime(timezone=True), default=datetime.utcnow, index=True)
+
+    # WHO
+    user_id = Column(UUID, ForeignKey("users.id"), nullable=True, index=True)
+    user_crm = Column(String(20), nullable=True)
+    user_ip = Column(String(45), nullable=True)
+
+    # WHAT
+    action = Column(SQLEnum(AuditAction), nullable=False)
+    resource_type = Column(String(100), nullable=False, index=True)  # "report", "patient"
+    resource_id = Column(String(255), nullable=True, index=True)
+
+    # DETAILS
+    changes = Column(JSON, nullable=True)  # {"field": {"old": x, "new": y}}
+    justification = Column(Text, nullable=True)  # LGPD: legal basis for access
+    metadata_ = Column("metadata", JSON, nullable=True)
+
+    __table_args__ = (
+        Index("ix_audit_resource", "resource_type", "resource_id"),
+        Index("ix_audit_user_time", "user_id", "timestamp"),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Medical Knowledge Graph
+# ---------------------------------------------------------------------------
+
+class MedicalConcept(Base):
+    """Node in the medical knowledge graph (3-tiered: domain → literature → ontology)."""
+    __tablename__ = "medical_concepts"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    code = Column(String(50), nullable=False, index=True)
+    code_system = Column(String(30), nullable=False, index=True)  # ICD10, UMLS, SNOMED, TUSS, MESH, PRODUCT, ANVISA, EVIDENCE, PUBMED, DUT
+    name = Column(String(500), nullable=False)
+    name_en = Column(String(500), nullable=True)
+    semantic_type = Column(String(100), nullable=True)  # Disease, Procedure, Device, Evidence, Literature, Regulatory, Substance
+    metadata_ = Column("metadata", JSON, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+    __table_args__ = (
+        Index("ix_concept_code_system", "code", "code_system", unique=True),
+    )
+
+
+class ConceptRelation(Base):
+    """Edge in the medical knowledge graph (adjacency list)."""
+    __tablename__ = "concept_relations"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    source_id = Column(UUID(), ForeignKey("medical_concepts.id"), nullable=False, index=True)
+    target_id = Column(UUID(), ForeignKey("medical_concepts.id"), nullable=False, index=True)
+    relation_type = Column(String(50), nullable=False, index=True)  # is_a, treats, indicated_for, has_procedure, has_evidence, maps_to, requires_dut, supported_by
+    source_system = Column(String(30), nullable=True)
+    confidence = Column(Float, default=1.0)
+    metadata_ = Column("metadata", JSON, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+    __table_args__ = (
+        Index("ix_rel_source_type", "source_id", "relation_type"),
+        Index("ix_rel_target_type", "target_id", "relation_type"),
+    )

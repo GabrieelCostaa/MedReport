@@ -1,6 +1,8 @@
 """
 Agente B: O Redator (The Writer).
 Consolida pesquisa + inputs do médico + template DNA em justificativa formal.
+
+Usa Instructor (structured outputs) para garantir schema JSON válido via Pydantic.
 """
 import json
 import logging
@@ -11,6 +13,15 @@ from app.core.config import settings
 from .prompts import WRITER_SYSTEM
 from .researcher import ResearchResult
 from .token_tracker import TokenUsage, extract_usage
+from .schemas import WriterOutput
+from .few_shot_examples import get_few_shot_messages
+
+try:
+    import instructor
+    INSTRUCTOR_AVAILABLE = True
+except ImportError:
+    instructor = None
+    INSTRUCTOR_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -148,33 +159,60 @@ async def write_justification(
 
     try:
         import openai
-        client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
-        response = await client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message},
-            ],
-            response_format={"type": "json_object"},
-            temperature=0.2,
-            max_tokens=4000,
-        )
+        # Build messages with optional few-shot examples per specialty
+        especialidade = medico_inputs.get("especialidade", "") or ""
+        messages = [{"role": "system", "content": system_prompt}]
+        few_shot = get_few_shot_messages(especialidade)
+        messages.extend(few_shot)
+        messages.append({"role": "user", "content": user_message})
 
-        raw = response.choices[0].message.content
-        usage = extract_usage(response, "Redator")
-        data = json.loads(raw)
+        if INSTRUCTOR_AVAILABLE:
+            # Instructor: forces Pydantic schema, auto-retries on validation errors
+            async_client = instructor.from_openai(
+                openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+            )
+            result = await async_client.chat.completions.create(
+                model="gpt-4o",
+                response_model=WriterOutput,
+                messages=messages,
+                temperature=0.2,
+                max_tokens=4000,
+                max_retries=2,
+            )
+            return DraftReport(
+                justificativa_completa=result.justificativa_completa,
+                diagnostico_resumo=result.diagnostico_resumo,
+                falha_terapeutica=result.falha_terapeutica,
+                risco_nao_realizacao=result.risco_nao_realizacao,
+                base_legal=result.base_legal,
+                referencias=result.referencias,
+                raw_response=result.model_dump_json(),
+            )
+        else:
+            # Fallback: raw JSON mode
+            client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+            response = await client.chat.completions.create(
+                model="gpt-4o",
+                messages=messages,
+                response_format={"type": "json_object"},
+                temperature=0.2,
+                max_tokens=4000,
+            )
+            raw = response.choices[0].message.content
+            usage = extract_usage(response, "Redator")
+            data = json.loads(raw)
 
-        return DraftReport(
-            justificativa_completa=data.get("justificativa_completa", ""),
-            diagnostico_resumo=data.get("diagnostico_resumo", ""),
-            falha_terapeutica=data.get("falha_terapeutica", ""),
-            risco_nao_realizacao=data.get("risco_nao_realizacao", ""),
-            base_legal=data.get("base_legal", ""),
-            referencias=data.get("referencias", []),
-            raw_response=raw,
-            token_usage=usage,
-        )
+            return DraftReport(
+                justificativa_completa=data.get("justificativa_completa", ""),
+                diagnostico_resumo=data.get("diagnostico_resumo", ""),
+                falha_terapeutica=data.get("falha_terapeutica", ""),
+                risco_nao_realizacao=data.get("risco_nao_realizacao", ""),
+                base_legal=data.get("base_legal", ""),
+                referencias=data.get("referencias", []),
+                raw_response=raw,
+                token_usage=usage,
+            )
 
     except Exception as e:
         logger.exception("Agente Redator falhou: %s", e)

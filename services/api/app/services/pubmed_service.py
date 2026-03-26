@@ -748,14 +748,25 @@ async def _cascade_search(
     all_pmids = []
     used_query = ""
 
-    for query in queries:
-        pmids = await search_pubmed(query, max_results=max_results)
+    import asyncio
+
+    for i, query in enumerate(queries):
+        level_timeout = 5.0  # 5s per cascade level
+        try:
+            pmids = await asyncio.wait_for(
+                search_pubmed(query, max_results=max_results),
+                timeout=level_timeout,
+            )
+        except asyncio.TimeoutError:
+            logger.warning("Cascade level %d timed out (%.1fs): %s", i + 1, level_timeout, query[:80])
+            continue
+
         if pmids:
             all_pmids = pmids
             used_query = query
-            logger.info("Cascade search HIT at: %s (%d results)", query[:80], len(pmids))
+            logger.info("Cascade search HIT at level %d: %s (%d results)", i + 1, query[:80], len(pmids))
             break
-        logger.info("Cascade search MISS: %s", query[:80])
+        logger.info("Cascade search MISS level %d: %s", i + 1, query[:80])
 
     if not all_pmids:
         return [], ""
@@ -839,7 +850,22 @@ async def get_evidences_for_cid(
     if articles:
         await _save_to_cache(db, cid, used_query, articles)
         refreshed_rows, _ = await _get_cached(db, cid)
-        return _cache_to_evidence_dicts(refreshed_rows)
+        evidence_dicts = _cache_to_evidence_dicts(refreshed_rows)
+
+        # 4.5 Semantic reranking — reorder by clinical relevance
+        try:
+            from app.services.semantic_search import semantic_rerank, build_clinical_query
+            clinical_query = build_clinical_query(cid, product_name, diagnostico)
+            evidence_dicts = semantic_rerank(
+                clinical_query, evidence_dicts,
+                top_k=settings.PUBMED_MAX_RESULTS,
+                text_field="snippet",
+            )
+            logger.info("Semantic rerank applied for CID %s (%d evidences)", cid, len(evidence_dicts))
+        except Exception as e:
+            logger.debug("Semantic rerank skipped: %s", e)
+
+        return evidence_dicts
 
     # 5. Cache stale como último recurso
     if cached_rows:

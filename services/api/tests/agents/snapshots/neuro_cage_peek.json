@@ -1,0 +1,14 @@
+{
+  "justificativa": "Paciente com diagnóstico de hérnia discal lombar L4-L5 com radiculopatia (CID M51.1), refratário à conduta clínica conservadora após 12 semanas incluindo AINEs, fisioterapia e bloqueio foraminal. O cage intersomático em PEEK apresenta módulo de elasticidade semelhante ao osso cortical (~3.5 GPa), minimizando stress-shielding (Nemoto et al., 2014). A compressão radicular sem descompressão evolui para desmielinização e déficit motor permanente (Kreiner et al., 2014).",
+  "keywords_found": [
+    "hérnia",
+    "M51.1",
+    "cage",
+    "PEEK",
+    "radiculopatia"
+  ],
+  "references": [
+    "Nemoto et al., 2014",
+    "Kreiner et al., 2014"
+  ]
+}

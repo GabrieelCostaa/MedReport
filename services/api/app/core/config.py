@@ -25,6 +25,17 @@ class Settings(BaseSettings):
     PUBMED_TIMEOUT_SECONDS: int = 15
     PUBMED_ENABLED: bool = True
 
+    # ANVISA API Gateway (OAuth2 Client Credentials)
+    ANVISA_CLIENT_ID: str = ""
+    ANVISA_CLIENT_SECRET: str = ""
+    ANVISA_TOKEN_URL: str = "https://acesso.prd.apps.anvisa.gov.br/auth/realms/externo/protocol/openid-connect/token"
+    ANVISA_GATEWAY_URL: str = "https://api-gateway.prd.apps.anvisa.gov.br/consultas-externas-api/api/v1"
+    ANVISA_TIMEOUT: int = 15
+
+    # UMLS Terminology Services (for Medical Knowledge Graph)
+    UMLS_API_KEY: str = ""
+    UMLS_BASE_URL: str = "https://uts-ws.nlm.nih.gov/rest"
+
     # ANS Data Sources
     ANS_TUSS_FTP_URL: str = "https://dadosabertos.ans.gov.br/FTP/PDA/terminologia_unificada_saude_suplementar_TUSS/TUSS.zip"
     ANS_ROL_XLSX_URL: str = "https://www.gov.br/ans/pt-br/acesso-a-informacao/participacao-da-sociedade/atualizacao-do-rol-de-procedimentos/Anexo_I_Rol_2021RN_465.2021_RN643.2025.xlsx/@@download/file"

@@ -174,7 +174,11 @@ def _generate_weasyprint(**kwargs) -> bytes:
         verification_url=verification_url,
     )
 
-    pdf_bytes = weasyprint.HTML(string=html_content).write_pdf()
+    pdf_bytes = weasyprint.HTML(string=html_content).write_pdf(
+        presentational_hints=True,
+        # PDF/UA accessibility: set document metadata
+        uncompressed_pdf=False,
+    )
     logger.info("PDF gerado via WeasyPrint: %d bytes, protocolo=%s", len(pdf_bytes), protocolo)
     return pdf_bytes
 

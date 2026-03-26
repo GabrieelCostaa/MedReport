@@ -9,12 +9,15 @@ Valida:
 """
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -172,34 +175,58 @@ class TussValidator:
         return result.scalars().all()
 
     async def check_anvisa_status(self, registro: str) -> AnvisaStatusResult:
-        """Verifica status do registro Anvisa no banco local."""
-        from app.db.models import AnvisaProduct
+        """
+        Verifica status do registro ANVISA.
+        Estratégia: API Gateway (principal) → banco local (fallback).
+        """
+        try:
+            from app.services.anvisa_service import consultar_registro
+            result = await consultar_registro(self.db, registro)
 
-        result = await self.db.execute(
-            select(AnvisaProduct).where(AnvisaProduct.registro == registro)
-        )
-        product = result.scalar_one_or_none()
+            if result.sucesso:
+                alerta = None
+                if result.status in ("vencido", "suspenso", "cancelado"):
+                    alerta = (
+                        f"ALERTA CRÍTICO: Registro Anvisa {registro} está {result.status} "
+                        f"(fonte: {result.fonte}). Isto invalida o critério 5 do STF (ADI 7.265)."
+                    )
+                return AnvisaStatusResult(
+                    registro=registro,
+                    status=result.status,
+                    data_validade=result.data_validade,
+                    alerta=alerta,
+                )
 
-        if not product:
             return AnvisaStatusResult(
                 registro=registro,
                 status="desconhecido",
-                alerta="Registro Anvisa não encontrado no banco. Execute verificação.",
+                alerta="Registro Anvisa não encontrado na API Gateway nem no banco local.",
             )
-
-        alerta = None
-        if product.status.value in ("vencido", "suspenso", "cancelado"):
-            alerta = (
-                f"ALERTA CRÍTICO: Registro Anvisa {registro} está {product.status.value}. "
-                f"Isto invalida o critério 5 do STF (ADI 7.265)."
+        except Exception as e:
+            logger.warning("ANVISA check failed, falling back to DB-only: %s", e)
+            # Fallback direto ao banco (comportamento anterior)
+            from app.db.models import AnvisaProduct
+            result = await self.db.execute(
+                select(AnvisaProduct).where(AnvisaProduct.registro == registro)
             )
-
-        return AnvisaStatusResult(
-            registro=registro,
-            status=product.status.value,
-            data_validade=product.data_validade,
-            alerta=alerta,
-        )
+            product = result.scalar_one_or_none()
+            if not product:
+                return AnvisaStatusResult(
+                    registro=registro,
+                    status="desconhecido",
+                    alerta="Registro Anvisa não encontrado. Execute verificação.",
+                )
+            alerta = None
+            if product.status.value in ("vencido", "suspenso", "cancelado"):
+                alerta = (
+                    f"ALERTA CRÍTICO: Registro Anvisa {registro} está {product.status.value}."
+                )
+            return AnvisaStatusResult(
+                registro=registro,
+                status=product.status.value,
+                data_validade=product.data_validade,
+                alerta=alerta,
+            )
 
     async def get_compatible_procedures(self, material_code: str) -> list:
         """Busca procedimentos do Rol potencialmente compatíveis com o material."""

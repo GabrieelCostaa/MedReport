@@ -18,11 +18,36 @@ from sqlalchemy import text
 
 from app.db.session import engine
 
-# ─── IDs dos produtos (já existem no banco) ───────────────────────────
-KIT_FO_LASER = "3215b856-0d5b-4ae1-93bf-5a5f41c1b57c"
-KIT_EC2_ENXERTO = "6c58abf0-7206-40d0-8ee1-124e6187f4f7"
-KIT_EC2_OPUS = "95f84f17-6114-4c9d-81f9-d030da290344"
-KIT_LP_CT = "bf6f8607-9722-4391-86c3-55d52e089145"
+# ─── IDs dos produtos (placeholders - resolvidos em runtime) ──────────
+KIT_FO_LASER = "__KIT_FO_LASER__"
+KIT_EC2_ENXERTO = "__KIT_EC2_ENXERTO__"
+KIT_EC2_OPUS = "__KIT_EC2_OPUS__"
+KIT_LP_CT = "__KIT_LP_CT__"
+
+async def _resolve_product_ids(evidences):
+    from app.db.session import AsyncSessionLocal
+    from app.db.models import Product
+    from sqlalchemy import select
+    mapping = {}
+    async with AsyncSessionLocal() as db:
+        r = await db.execute(select(Product))
+        for p in r.scalars().all():
+            name = p.nome.lower()
+            pid = str(p.id)
+            if "laser" in name or "kit fo" in name:
+                mapping["__KIT_FO_LASER__"] = pid
+            elif "enxerto" in name and "ec2" in name:
+                mapping["__KIT_EC2_ENXERTO__"] = pid
+            elif "opus" in name or ("ec2" in name and "enxerto" not in name):
+                mapping["__KIT_EC2_OPUS__"] = pid
+            elif "biossilex" in name or "biovidro" in name:
+                mapping["__KIT_LP_CT__"] = pid
+    # fallback
+    if "__KIT_LP_CT__" not in mapping and "__KIT_EC2_OPUS__" in mapping:
+        mapping["__KIT_LP_CT__"] = mapping["__KIT_EC2_OPUS__"]
+    fallback = next(iter(mapping.values()), None)
+    for ev in evidences:
+        ev["product_id"] = mapping.get(ev["product_id"], fallback)
 
 EVIDENCES = [
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -463,6 +488,7 @@ INSERT_SQL = text("""
 
 
 async def main():
+    await _resolve_product_ids(EVIDENCES)
     async with engine.begin() as conn:
         count_before = (await conn.execute(text("SELECT count(*) FROM clinical_evidences"))).scalar()
         print(f"Evidências antes: {count_before}")
