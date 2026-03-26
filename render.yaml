@@ -1,0 +1,40 @@
+# Render.com Blueprint — deploy com um clique
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: medreport-api
+    runtime: docker
+    dockerfilePath: services/api/Dockerfile
+    dockerContext: services/api
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: medreport-db
+          property: connectionURI
+        # Render gera: postgresql://user:pass@host/db
+        # Precisamos trocar para asyncpg:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false  # definir manualmente no dashboard
+      - key: ANVISA_CLIENT_ID
+        sync: false
+      - key: ANVISA_CLIENT_SECRET
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          name: medreport-redis
+          type: redis
+          property: connectionURI
+      - key: API_BASE_URL
+        value: https://medreport-api.onrender.com
+      - key: PUBMED_ENABLED
+        value: "true"
+
+databases:
+  - name: medreport-db
+    plan: free
+    databaseName: medreport
+    user: medreport

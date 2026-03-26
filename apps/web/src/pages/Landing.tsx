@@ -449,14 +449,15 @@ function Hero() {
                 { delay: 0.7, content: <Text as="span" color="white">protegendo</Text> },
                 { delay: 0.9, content: <Text as="span" color="white">pacientes.</Text> },
               ].map((line, i) => (
-                <Box key={i} overflow="hidden" pb="0.2em" mb="-0.2em">
+                <Box key={i} overflow="hidden" pb="0.15em" mb="-0.05em">
                   <MotionBox
                     initial={{ y: '110%' }}
                     animate={{ y: '0%' }}
                     transition={{ duration: 0.9, ease: EASE, delay: line.delay }}
                   >
                     <Heading fontFamily={SERIF} fontSize={{ base: '3.5rem', md: '6rem', lg: '8rem' }}
-                      fontWeight="900" lineHeight="0.95" letterSpacing="-0.03em">
+                      fontWeight="900" lineHeight="1.05" letterSpacing="-0.03em"
+                      pb="0.05em">
                       {line.content}
                     </Heading>
                   </MotionBox>
@@ -1059,11 +1060,504 @@ function Testimonial() {
   );
 }
 
-function FinalCTA() { return null; }
+/* ─── HOW IT WORKS ─── */
+
+function HowItWorks() {
+  const steps = [
+    {
+      num: '01',
+      title: 'Preencha o diagnóstico',
+      desc: 'Informe o CID, o produto OPME e o quadro clínico. A IA identifica lacunas e faz perguntas A/B/C se precisar.',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      ),
+    },
+    {
+      num: '02',
+      title: 'A IA gera em 3 minutos',
+      desc: '4 agentes trabalham em sequência: pesquisa PubMed, redação técnica, auditoria de dados e validação hard-coded.',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      ),
+    },
+    {
+      num: '03',
+      title: 'Revise, assine e envie',
+      desc: 'Revise o texto, assine eletronicamente com QR Code verificável e exporte em PDF, DOCX ou XML TISS.',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      ),
+    },
+  ];
+
+  return (
+    <Box id="como-funciona" bg={C.dark} py={{ base: 20, md: 28 }} position="relative" overflow="hidden">
+      <TopoBg opacity={0.04} />
+      <Container maxW="7xl" position="relative" zIndex={1}>
+        <VStack gap={4} mb={{ base: 14, md: 20 }}>
+          <Reveal>
+            <HStack gap={3} justify="center">
+              <Box w="40px" h="1px" bg={C.accent} />
+              <Text fontSize="xs" fontWeight="600" color={C.accent} letterSpacing="0.2em" textTransform="uppercase">
+                Como funciona
+              </Text>
+              <Box w="40px" h="1px" bg={C.accent} />
+            </HStack>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <Heading fontFamily={SERIF} fontSize={{ base: '2.5rem', md: '4rem' }} fontWeight="800"
+              color="white" textAlign="center" lineHeight="1.1" letterSpacing="-0.02em">
+              Três passos.<br />Zero burocracia.
+            </Heading>
+          </Reveal>
+        </VStack>
+
+        <SimpleGrid columns={{ base: 1, md: 3 }} gap={{ base: 6, md: 8 }}>
+          {steps.map((step, i) => (
+            <Reveal key={i} delay={i * 0.15}>
+              <MotionBox
+                whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                bg={C.darkAlt}
+                border="1px solid"
+                borderColor="whiteAlpha.100"
+                borderRadius="20px"
+                p={{ base: 8, md: 10 }}
+                h="full"
+                position="relative"
+                overflow="hidden"
+                _hover={{ borderColor: `${C.accent}44` }}
+                transition="border-color 0.4s"
+              >
+                <Box position="absolute" top={0} left={0} right={0} h="2px"
+                  bg={`linear-gradient(90deg, transparent, ${C.accent}66, transparent)`} opacity={0} _groupHover={{ opacity: 1 }}
+                  transition="opacity 0.4s" />
+                <VStack align="start" gap={5}>
+                  <HStack justify="space-between" w="full">
+                    <Text fontSize="4xl" fontWeight="900" color={C.accent} opacity={0.3} fontFamily={SERIF}>
+                      {step.num}
+                    </Text>
+                    <Box p={3} borderRadius="14px" bg={`${C.accent}11`}>{step.icon}</Box>
+                  </HStack>
+                  <Heading fontSize={{ base: 'xl', md: '2xl' }} fontWeight="700" color="white" lineHeight="1.2">
+                    {step.title}
+                  </Heading>
+                  <Text color={C.gray} fontSize="md" lineHeight="1.7">
+                    {step.desc}
+                  </Text>
+                </VStack>
+              </MotionBox>
+            </Reveal>
+          ))}
+        </SimpleGrid>
+      </Container>
+    </Box>
+  );
+}
+
+
+/* ─── PRICING ─── */
+
+function Pricing() {
+  const plans = [
+    {
+      name: 'Starter',
+      price: '149',
+      desc: 'Para médicos que fazem até 30 justificativas por mês.',
+      features: [
+        '30 relatórios/mês',
+        'Exportação PDF e DOCX',
+        'Busca PubMed automática',
+        'Assinatura eletrônica SHA-256',
+        'Suporte por e-mail',
+      ],
+      cta: 'Começar grátis',
+      popular: false,
+    },
+    {
+      name: 'Professional',
+      price: '299',
+      desc: 'Para clínicas e médicos com volume moderado.',
+      features: [
+        '100 relatórios/mês',
+        'PDF + DOCX + XML TISS',
+        'Pipeline de 4 agentes IA',
+        'QR Code de verificação pública',
+        'Compliance TISS/TUSS automático',
+        'Suporte prioritário',
+      ],
+      cta: 'Começar grátis',
+      popular: true,
+    },
+    {
+      name: 'Enterprise',
+      price: '499',
+      desc: 'Para distribuidoras e hospitais com alto volume.',
+      features: [
+        'Relatórios ilimitados',
+        'Tudo do Professional',
+        'RPA de cotações',
+        'API para integração',
+        'Gestão multi-usuário (RBAC)',
+        'SLA e suporte dedicado',
+      ],
+      cta: 'Falar com vendas',
+      popular: false,
+    },
+  ];
+
+  return (
+    <Box id="precos" bg={C.darkAlt} py={{ base: 20, md: 28 }} position="relative" overflow="hidden">
+      <Box position="absolute" inset={0} bg={`radial-gradient(ellipse at 50% 0%, ${C.accent}08, transparent 70%)`} />
+      <Container maxW="7xl" position="relative" zIndex={1}>
+        <VStack gap={4} mb={{ base: 14, md: 20 }}>
+          <Reveal>
+            <HStack gap={3} justify="center">
+              <Box w="40px" h="1px" bg={C.accent} />
+              <Text fontSize="xs" fontWeight="600" color={C.accent} letterSpacing="0.2em" textTransform="uppercase">
+                Planos
+              </Text>
+              <Box w="40px" h="1px" bg={C.accent} />
+            </HStack>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <Heading fontFamily={SERIF} fontSize={{ base: '2.5rem', md: '4rem' }} fontWeight="800"
+              color="white" textAlign="center" lineHeight="1.1" letterSpacing="-0.02em">
+              Invista em aprovação,<br />não em retrabalho.
+            </Heading>
+          </Reveal>
+          <Reveal delay={0.2}>
+            <Text color={C.gray} fontSize="lg" textAlign="center" maxW="2xl">
+              Comece grátis por 14 dias. Sem cartão de crédito. Cancele quando quiser.
+            </Text>
+          </Reveal>
+        </VStack>
+
+        <SimpleGrid columns={{ base: 1, md: 3 }} gap={{ base: 6, md: 0 }} alignItems="stretch">
+          {plans.map((plan, i) => (
+            <Reveal key={i} delay={i * 0.12}>
+              <Box
+                bg={plan.popular ? C.dark : 'transparent'}
+                border="1px solid"
+                borderColor={plan.popular ? C.accent : 'whiteAlpha.100'}
+                borderRadius={i === 0 ? '20px 0 0 20px' : i === 2 ? '0 20px 20px 0' : '0'}
+                borderLeftWidth={i === 0 ? '1px' : plan.popular ? '1px' : '0'}
+                p={{ base: 8, md: 10 }}
+                position="relative"
+                overflow="hidden"
+                transform={plan.popular ? { base: 'none', md: 'scaleY(1.04)' } : 'none'}
+                zIndex={plan.popular ? 2 : 1}
+                boxShadow={plan.popular ? `0 0 60px ${C.accent}15` : 'none'}
+              >
+                {plan.popular && (
+                  <Box position="absolute" top={0} left={0} right={0}>
+                    <Box bg={C.accent} color={C.dark} fontSize="xs" fontWeight="700" textAlign="center"
+                      py={1.5} letterSpacing="0.1em" textTransform="uppercase">
+                      Mais popular
+                    </Box>
+                  </Box>
+                )}
+                <VStack align="start" gap={6} pt={plan.popular ? 8 : 0}>
+                  <Box>
+                    <Text fontSize="sm" fontWeight="600" color={C.accent} letterSpacing="0.05em">
+                      {plan.name}
+                    </Text>
+                    <HStack align="baseline" gap={1} mt={2}>
+                      <Text fontSize="sm" color={C.gray} fontWeight="500">R$</Text>
+                      <Text fontSize="5xl" fontWeight="900" color="white" lineHeight="1" fontFamily={SERIF}>
+                        {plan.price}
+                      </Text>
+                      <Text fontSize="sm" color={C.gray} fontWeight="400">/mês</Text>
+                    </HStack>
+                    <Text fontSize="sm" color={C.gray} mt={2} lineHeight="1.5">
+                      {plan.desc}
+                    </Text>
+                  </Box>
+                  <Box w="full" h="1px" bg="whiteAlpha.100" />
+                  <VStack align="start" gap={3} flex={1}>
+                    {plan.features.map((f, j) => (
+                      <HStack key={j} gap={3} align="start">
+                        <Box mt="3px" flexShrink={0}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="2.5" strokeLinecap="round">
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                        </Box>
+                        <Text fontSize="sm" color={C.grayLight} lineHeight="1.5">{f}</Text>
+                      </HStack>
+                    ))}
+                  </VStack>
+                  <Box w="full" pt={2}>
+                    {plan.popular ? (
+                      <RollButton to="/register" h={48}>{plan.cta}</RollButton>
+                    ) : (
+                      <Box
+                        as={RouterLink}
+                        to={i === 2 ? '#' : '/register'}
+                        display="block"
+                        textAlign="center"
+                        py={3}
+                        borderRadius="12px"
+                        border="1px solid"
+                        borderColor="whiteAlpha.200"
+                        color="white"
+                        fontSize="sm"
+                        fontWeight="600"
+                        _hover={{ borderColor: C.accent, color: C.accent }}
+                        transition="all 0.3s"
+                      >
+                        {plan.cta}
+                      </Box>
+                    )}
+                  </Box>
+                </VStack>
+              </Box>
+            </Reveal>
+          ))}
+        </SimpleGrid>
+      </Container>
+    </Box>
+  );
+}
+
+
+/* ─── FAQ ─── */
+
+function FAQ() {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const faqs = [
+    {
+      q: 'O MedReport substitui o julgamento clínico do médico?',
+      a: 'Não. O MedReport gera a justificativa técnica com base em evidências científicas e nos dados fornecidos pelo médico. O texto final sempre passa por revisão humana antes da assinatura. O médico tem total controle sobre o conteúdo.',
+    },
+    {
+      q: 'Como funciona a assinatura eletrônica?',
+      a: 'O relatório é selado com hash SHA-256 e um QR Code que permite verificação pública de autenticidade. Qualquer pessoa pode escanear o QR Code para confirmar que o documento não foi alterado após a assinatura.',
+    },
+    {
+      q: 'Os dados dos pacientes são seguros?',
+      a: 'Sim. Seguimos a LGPD (Lei Geral de Proteção de Dados). Os dados são criptografados em trânsito (TLS) e em repouso. Implementamos controle de acesso por papéis (RBAC), auditoria completa de acessos e minimização de dados.',
+    },
+    {
+      q: 'Quais especialidades são suportadas?',
+      a: 'Ortopedia, neurocirurgia, cirurgia vascular, cirurgia cardíaca, urologia, cirurgia plástica, ginecologia, oftalmologia, otorrinolaringologia e cirurgia geral. O sistema é treinado com exemplos específicos de cada especialidade.',
+    },
+    {
+      q: 'O sistema funciona com qualquer convênio?',
+      a: 'Sim. As justificativas são geradas em conformidade com as normas da ANS (RN 395, RN 465, padrão TISS/TUSS) que são universais para todos os convênios. O formato de exportação XML segue o padrão TISS.',
+    },
+    {
+      q: 'Posso testar antes de pagar?',
+      a: 'Sim. Oferecemos 14 dias de teste grátis em todos os planos, sem necessidade de cartão de crédito. Você pode gerar relatórios reais durante o período de teste.',
+    },
+    {
+      q: 'Como a IA evita dados fabricados (alucinações)?',
+      a: 'Usamos um pipeline de 4 camadas: o Pesquisador busca evidências reais no PubMed, o Redator gera o texto, o Auditor confronta cada dado com a ficha oficial do produto, e o Validador (Python puro, sem IA) extrai e verifica todas as entidades técnicas via regex. Se houver divergência, o PDF é bloqueado.',
+    },
+    {
+      q: 'Preciso instalar alguma coisa?',
+      a: 'Não. O MedReport é 100% web. Funciona no navegador do computador, tablet ou celular. Basta criar uma conta e começar.',
+    },
+  ];
+
+  return (
+    <Box id="faq" bg={C.dark} py={{ base: 20, md: 28 }} position="relative">
+      <Container maxW="4xl" position="relative" zIndex={1}>
+        <VStack gap={4} mb={{ base: 14, md: 20 }}>
+          <Reveal>
+            <HStack gap={3} justify="center">
+              <Box w="40px" h="1px" bg={C.accent} />
+              <Text fontSize="xs" fontWeight="600" color={C.accent} letterSpacing="0.2em" textTransform="uppercase">
+                Perguntas frequentes
+              </Text>
+              <Box w="40px" h="1px" bg={C.accent} />
+            </HStack>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <Heading fontFamily={SERIF} fontSize={{ base: '2.5rem', md: '3.5rem' }} fontWeight="800"
+              color="white" textAlign="center" lineHeight="1.1" letterSpacing="-0.02em">
+              Tire suas dúvidas.
+            </Heading>
+          </Reveal>
+        </VStack>
+
+        <VStack gap={0} w="full">
+          {faqs.map((faq, i) => {
+            const isOpen = openIdx === i;
+            return (
+              <Reveal key={i} delay={i * 0.05}>
+                <Box
+                  w="full"
+                  borderBottom="1px solid"
+                  borderColor="whiteAlpha.100"
+                  cursor="pointer"
+                  onClick={() => setOpenIdx(isOpen ? null : i)}
+                  role="button"
+                  _hover={{ bg: 'whiteAlpha.50' }}
+                  transition="background 0.2s"
+                >
+                  <HStack justify="space-between" py={6} px={2}>
+                    <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="500" color="white" pr={4}>
+                      {faq.q}
+                    </Text>
+                    <Box
+                      flexShrink={0}
+                      transform={isOpen ? 'rotate(45deg)' : 'rotate(0deg)'}
+                      transition="transform 0.3s cubic-bezier(0.65, 0.05, 0, 1)"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="2" strokeLinecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                    </Box>
+                  </HStack>
+                  <Box
+                    overflow="hidden"
+                    maxH={isOpen ? '300px' : '0'}
+                    opacity={isOpen ? 1 : 0}
+                    transition="all 0.4s cubic-bezier(0.65, 0.05, 0, 1)"
+                    px={2}
+                  >
+                    <Text fontSize="md" color={C.grayLight} lineHeight="1.8" pb={6}>
+                      {faq.a}
+                    </Text>
+                  </Box>
+                </Box>
+              </Reveal>
+            );
+          })}
+        </VStack>
+      </Container>
+    </Box>
+  );
+}
+
+
+/* ─── FINAL CTA ─── */
+
+function FinalCTA() {
+  return (
+    <Box bg={C.dark} py={{ base: 20, md: 28 }} position="relative" overflow="hidden">
+      <Box position="absolute" inset={0}
+        bg={`radial-gradient(ellipse at 50% 50%, ${C.accent}12, transparent 70%)`} />
+      <TopoBg opacity={0.03} />
+      <Container maxW="4xl" position="relative" zIndex={1}>
+        <VStack gap={8} textAlign="center">
+          <Reveal>
+            <Heading fontFamily={SERIF} fontSize={{ base: '2.5rem', md: '4.5rem' }} fontWeight="800"
+              color="white" lineHeight="1.05" letterSpacing="-0.03em">
+              Pare de perder horas.<br />
+              <Text as="span" color={C.accent}>Comece a aprovar.</Text>
+            </Heading>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <Text color={C.grayLight} fontSize="lg" maxW="xl" lineHeight="1.8">
+              14 dias grátis. Sem cartão de crédito. Cancele quando quiser.
+              Sua primeira justificativa técnica em menos de 5 minutos.
+            </Text>
+          </Reveal>
+          <Reveal delay={0.25}>
+            <HStack gap={4} flexWrap="wrap" justify="center">
+              <RollButton to="/register" icon={<ArrowRight />}>
+                Criar conta grátis
+              </RollButton>
+              <RollOutlineButton href="#precos">
+                Ver planos
+              </RollOutlineButton>
+            </HStack>
+          </Reveal>
+        </VStack>
+      </Container>
+    </Box>
+  );
+}
+
 
 /* ─── FOOTER ─── */
 
-function Footer() { return null; }
+function Footer() {
+  return (
+    <Box bg={C.darkAlt} borderTop="1px solid" borderColor="whiteAlpha.100">
+      <Container maxW="7xl" py={{ base: 12, md: 16 }}>
+        <SimpleGrid columns={{ base: 1, md: 4 }} gap={{ base: 10, md: 8 }}>
+          {/* Brand */}
+          <VStack align="start" gap={4}>
+            <HStack gap={2}>
+              <LogoIcon />
+              <Text fontWeight="700" color="white" fontSize="lg">MedReport</Text>
+            </HStack>
+            <Text fontSize="sm" color={C.gray} lineHeight="1.7">
+              Inteligência artificial para geração de justificativas técnicas de OPME.
+              Aprovando laudos, protegendo pacientes.
+            </Text>
+          </VStack>
+
+          {/* Produto */}
+          <VStack align="start" gap={3}>
+            <Text fontSize="xs" fontWeight="600" color={C.accent} letterSpacing="0.1em" textTransform="uppercase" mb={1}>
+              Produto
+            </Text>
+            {['Como funciona', 'Planos e preços', 'FAQ', 'API'].map((item) => (
+              <Text key={item} as="a" href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+                fontSize="sm" color={C.grayLight} _hover={{ color: 'white' }} transition="color 0.2s" cursor="pointer">
+                {item}
+              </Text>
+            ))}
+          </VStack>
+
+          {/* Compliance */}
+          <VStack align="start" gap={3}>
+            <Text fontSize="xs" fontWeight="600" color={C.accent} letterSpacing="0.1em" textTransform="uppercase" mb={1}>
+              Compliance
+            </Text>
+            {['LGPD', 'TISS/TUSS', 'ANS (RN 465)', 'ANVISA', 'Assinatura Eletrônica'].map((item) => (
+              <Text key={item} fontSize="sm" color={C.grayLight}>
+                {item}
+              </Text>
+            ))}
+          </VStack>
+
+          {/* Contato */}
+          <VStack align="start" gap={3}>
+            <Text fontSize="xs" fontWeight="600" color={C.accent} letterSpacing="0.1em" textTransform="uppercase" mb={1}>
+              Contato
+            </Text>
+            <Text fontSize="sm" color={C.grayLight}>contato@medreport.com.br</Text>
+            <HStack gap={3} mt={2}>
+              {['LinkedIn', 'Instagram', 'YouTube'].map((social) => (
+                <Box key={social} as="a" href="#" px={3} py={1.5} borderRadius="8px"
+                  border="1px solid" borderColor="whiteAlpha.100"
+                  fontSize="xs" color={C.grayLight} fontWeight="500"
+                  _hover={{ borderColor: C.accent, color: C.accent }} transition="all 0.2s" cursor="pointer">
+                  {social}
+                </Box>
+              ))}
+            </HStack>
+          </VStack>
+        </SimpleGrid>
+
+        {/* Bottom bar */}
+        <Flex mt={12} pt={8} borderTop="1px solid" borderColor="whiteAlpha.100"
+          justify="space-between" align="center" flexWrap="wrap" gap={4}>
+          <Text fontSize="xs" color={C.gray}>
+            © {new Date().getFullYear()} MedReport. Todos os direitos reservados.
+          </Text>
+          <HStack gap={6}>
+            {['Termos de Uso', 'Política de Privacidade', 'LGPD'].map((link) => (
+              <Text key={link} as="a" href="#" fontSize="xs" color={C.gray}
+                _hover={{ color: C.accent }} transition="color 0.2s" cursor="pointer">
+                {link}
+              </Text>
+            ))}
+          </HStack>
+        </Flex>
+      </Container>
+    </Box>
+  );
+}
 
 /* ═══════════════════════════════════════════════
    PAGE
@@ -1094,12 +1588,15 @@ export default function Landing() {
       <Marquee />
       <Statement />
       <Stats />
+      <HowItWorks />
       <CinematicBreak1 />
       <Gallery />
       <CinematicBreak2 />
       <HorizontalFeatures />
       <Compliance />
       <Testimonial />
+      <Pricing />
+      <FAQ />
       <FinalCTA />
       <Footer />
     </Box>

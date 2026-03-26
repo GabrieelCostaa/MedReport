@@ -18,10 +18,64 @@ from app.db.init_db import create_tables, seed
 limiter = Limiter(key_func=get_remote_address)
 
 
+async def _auto_etl_if_empty():
+    """
+    Auto-popula tabelas TUSS/ANVISA se estiverem vazias.
+    Roda em background — não bloqueia o startup.
+    Garante que o sistema nunca fique sem dados regulatórios.
+    """
+    import asyncio as _aio
+    from sqlalchemy import select, func
+    from app.db.session import AsyncSessionLocal
+    from app.db.models import TussMaterial, TussProcedure, AnvisaProduct
+
+    try:
+        async with AsyncSessionLocal() as db:
+            tuss_count = (await db.execute(select(func.count(TussMaterial.codigo_tuss)))).scalar()
+            anvisa_count = (await db.execute(select(func.count(AnvisaProduct.id)))).scalar()
+
+        tasks = []
+
+        if tuss_count < 100:
+            logging.getLogger("startup").info("TUSS vazio (%d) — baixando da ANS em background...", tuss_count)
+            async def _load_tuss():
+                try:
+                    from scripts.etl.download_tuss import run_etl
+                    async with AsyncSessionLocal() as db:
+                        result = await run_etl(db_session=db)
+                        logging.getLogger("startup").info("TUSS carregado: %s", result)
+                except Exception as e:
+                    logging.getLogger("startup").warning("Auto-ETL TUSS falhou: %s", e)
+            tasks.append(_load_tuss())
+
+        if anvisa_count < 100:
+            logging.getLogger("startup").info("ANVISA vazio (%d) — baixando dados abertos em background...", anvisa_count)
+            async def _load_anvisa():
+                try:
+                    from scripts.etl.download_anvisa import run_etl
+                    async with AsyncSessionLocal() as db:
+                        result = await run_etl(db_session=db)
+                        logging.getLogger("startup").info("ANVISA carregado: %s", result)
+                except Exception as e:
+                    logging.getLogger("startup").warning("Auto-ETL ANVISA falhou: %s", e)
+            tasks.append(_load_anvisa())
+
+        if tasks:
+            await _aio.gather(*tasks)
+        else:
+            logging.getLogger("startup").info("Dados regulatórios OK (TUSS=%d, ANVISA=%d)", tuss_count, anvisa_count)
+
+    except Exception as e:
+        logging.getLogger("startup").warning("Auto-ETL check falhou (non-blocking): %s", e)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await create_tables()
     await seed()
+    # Auto-populate regulatory data in background if empty
+    import asyncio as _aio
+    _aio.create_task(_auto_etl_if_empty())
     yield
 
 
@@ -106,19 +160,16 @@ async def graph_stats():
     G = get_graph()
     if G is None:
         return {"loaded": False, "nodes": 0, "edges": 0}
+    try:
+        import networkx as nx
+        node_types = dict(sorted(
+            {t: 0 for t in set(nx.get_node_attributes(G, "semantic_type").values())}.items()
+        )) if G.number_of_nodes() > 0 else {}
+    except ImportError:
+        node_types = {}
     return {
         "loaded": True,
         "nodes": G.number_of_nodes(),
         "edges": G.number_of_edges(),
-        "node_types": dict(
-            sorted(
-                {t: 0 for t in set(nx.get_node_attributes(G, "semantic_type").values())}.items()
-            )
-        ) if G.number_of_nodes() > 0 else {},
+        "node_types": node_types,
     }
-
-
-try:
-    import networkx as nx
-except ImportError:
-    pass

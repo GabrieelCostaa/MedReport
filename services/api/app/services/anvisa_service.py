@@ -123,43 +123,64 @@ async def _consultar_api_gateway(registro: str) -> Optional[AnvisaResult]:
             resp.raise_for_status()
             data = resp.json()
 
-        # Parse response — formato pode variar
-        items = data if isinstance(data, list) else data.get("content", data.get("data", []))
-        if not items:
+        # Parse response — formato paginado: {"content": [...], "pageable": {...}}
+        items = data.get("content", []) if isinstance(data, dict) else data
+        if isinstance(items, list) and not items:
             return AnvisaResult(registro=registro, fonte="api_gateway", sucesso=False)
 
         item = items[0] if isinstance(items, list) else items
 
-        # Normalizar status
-        situacao_raw = (
-            item.get("situacaoRegistro", "")
-            or item.get("situacao", "")
-            or ""
-        ).upper()
+        # Normalizar status (campo "situacao" pode ser string ou nested)
+        situacao_raw = ""
+        if isinstance(item.get("situacao"), str):
+            situacao_raw = item["situacao"].upper()
+        elif isinstance(item.get("situacao"), dict):
+            situacao_raw = (item["situacao"].get("descricao", "") or "").upper()
+
+        # Verificar flag "cancelado" (int: 0 ou 1)
+        is_cancelado = item.get("cancelado", 0)
+        if isinstance(is_cancelado, int) and is_cancelado == 1:
+            situacao_raw = "CANCELADO"
+
+        # Verificar vencimento
+        vencimento = item.get("vencimento", {})
+        is_vencido = vencimento.get("vencido", False) if isinstance(vencimento, dict) else False
+
         status_map = {
-            "VIGENTE": "ativo", "ATIVO": "ativo",
-            "VENCIDO": "vencido", "CANCELADO": "cancelado",
+            "VIGENTE": "ativo", "ATIVO": "ativo", "VÁLIDO": "ativo",
+            "VENCIDO": "vencido", "CANCELADO": "cancelado", "INVÁLIDO": "cancelado",
             "SUSPENSO": "suspenso",
         }
-        status = status_map.get(situacao_raw, "ativo" if "VIGENTE" in situacao_raw else "vencido")
+        status = status_map.get(situacao_raw, "vencido" if is_vencido else "ativo")
 
-        # Parse data_validade
+        # Parse data_validade (pode ser epoch millis ou string)
         data_val = None
-        val_str = item.get("dataVencimento", "") or item.get("validadeRegistroCadastro", "")
-        if val_str and val_str not in ("VIGENTE", ""):
-            for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%Y-%m-%dT%H:%M:%S"):
+        val_raw = item.get("dataVencimento") or (vencimento.get("data") if isinstance(vencimento, dict) else None)
+        if isinstance(val_raw, (int, float)) and val_raw > 0:
+            # Epoch milliseconds
+            data_val = datetime.fromtimestamp(val_raw / 1000, tz=timezone.utc)
+        elif isinstance(val_raw, str) and val_raw not in ("VIGENTE", ""):
+            for fmt in ("%Y-%m-%d", "%d/%m/%Y"):
                 try:
-                    data_val = datetime.strptime(val_str.split("T")[0] if "T" in val_str else val_str, fmt.split("T")[0])
+                    data_val = datetime.strptime(val_raw.split("T")[0], fmt)
                     break
                 except ValueError:
                     continue
 
+        # Extrair empresa (pode ser nested dict)
+        empresa = item.get("empresa", {})
+        fabricante = ""
+        if isinstance(empresa, dict):
+            fabricante = empresa.get("razaoSocial", "") or ""
+        else:
+            fabricante = item.get("razaoSocial", "") or item.get("fabricante", "") or ""
+
         return AnvisaResult(
             registro=registro,
-            nome_comercial=item.get("nomeProduto", "") or item.get("nomeComercial", "") or "",
+            nome_comercial=item.get("produto", "") or item.get("nomeProduto", "") or item.get("nomeComercial", "") or "",
             nome_tecnico=item.get("nomeTecnico", "") or "",
-            fabricante=item.get("razaoSocial", "") or item.get("fabricante", "") or "",
-            classe_risco=item.get("classeRisco", "") or item.get("classificacaoRisco", "") or "",
+            fabricante=fabricante,
+            classe_risco=item.get("siglaRiscoProduto", "") or item.get("classeRisco", "") or "",
             status=status,
             data_validade=data_val,
             fonte="api_gateway",

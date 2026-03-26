@@ -13,7 +13,10 @@ class Settings(BaseSettings):
     SECRET_KEY: str  # Obrigatório — defina via variável de ambiente ou .env
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 1 dia — reduzir para 30 min ao implementar refresh token
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    CORS_ORIGINS: List[str] = [
+        "http://localhost:3000", "http://127.0.0.1:3000",
+        "https://medreport.vercel.app", "https://*.vercel.app",
+    ]
     OPENAI_API_KEY: str = ""
     INGEST_API_KEY: str = ""  # Token para RPA/robôs enviarem cotações (opcional)
     API_BASE_URL: str = "http://localhost:8000"  # URL base para links de verificação (override em produção)
