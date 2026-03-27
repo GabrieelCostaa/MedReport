@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000", "http://127.0.0.1:3000",
         "https://medreport.vercel.app", "https://*.vercel.app",
+        "https://web-six-woad-83.vercel.app",
     ]
     OPENAI_API_KEY: str = ""
     INGEST_API_KEY: str = ""  # Token para RPA/robôs enviarem cotações (opcional)

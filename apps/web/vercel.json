@@ -3,8 +3,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://medreport-api.onrender.com/api/$1" },
-    { "source": "/auth/(.*)", "destination": "https://medreport-api.onrender.com/auth/$1" },
+    { "source": "/api/(.*)", "destination": "https://medreport-api-07t9.onrender.com/api/$1" },
+    { "source": "/auth/(.*)", "destination": "https://medreport-api-07t9.onrender.com/auth/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
