@@ -74,8 +74,13 @@ async def lifespan(app: FastAPI):
     await create_tables()
     await seed()
     # Auto-populate regulatory data in background if empty
-    import asyncio as _aio
-    _aio.create_task(_auto_etl_if_empty())
+    # Skip on low-memory environments (Render free tier = 512MB)
+    import os
+    if os.environ.get("SKIP_AUTO_ETL") != "true":
+        import asyncio as _aio
+        _aio.create_task(_auto_etl_if_empty())
+    else:
+        logging.getLogger("startup").info("Auto-ETL skipped (SKIP_AUTO_ETL=true)")
     yield
 
 
