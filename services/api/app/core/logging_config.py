@@ -31,7 +31,7 @@ def setup_logging():
         structlog.processors.UnicodeDecoder(),
     ]
 
-    # Add OpenTelemetry trace ID if available
+    # Add OpenTelemetry trace ID if available (optional dependency)
     try:
         from opentelemetry import trace as otel_trace
 
@@ -44,7 +44,7 @@ def setup_logging():
             return event_dict
 
         shared_processors.append(add_otel_context)
-    except ImportError:
+    except (ImportError, Exception):
         pass
 
     if is_dev:
