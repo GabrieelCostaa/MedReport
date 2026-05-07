@@ -20,6 +20,7 @@ from pydantic import BaseModel
 
 from app.db.session import get_db
 from app.db.models import Product, Report, ReportTemplate, AuditAction
+from app.core.config import settings
 from app.core.security import get_current_user_id, require_current_user_id
 from app.services.agents.pipeline import ReportPipeline
 from app.services.agents.checklist import ReportChecklist
@@ -87,8 +88,13 @@ async def evidences_preview(
 # Pipeline Multi-Agente
 # ============================================================================
 
+def _ai_rate_limit() -> str:
+    """Rate limit dos endpoints de pipeline AI. Relaxado em TESTING_MODE."""
+    return "1000/hour" if settings.TESTING_MODE else "20/hour"
+
+
 @router.post("/start-report")
-@limiter.limit("20/hour")
+@limiter.limit(_ai_rate_limit)
 async def start_report(
     request: Request,
     body: StartReportIn,
@@ -147,7 +153,7 @@ async def start_report(
 
 
 @router.post("/start-report-stream")
-@limiter.limit("20/hour")
+@limiter.limit(_ai_rate_limit)
 async def start_report_stream(
     request: Request,
     body: StartReportIn,
@@ -446,7 +452,7 @@ async def batch_status(
 
 
 @router.post("/generate")
-@limiter.limit("20/hour")
+@limiter.limit(_ai_rate_limit)
 async def generate_full(
     request: Request,
     body: GenerateIn,
