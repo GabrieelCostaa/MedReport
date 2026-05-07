@@ -16,7 +16,13 @@ export type LoginResponse = {
   user: User;
 };
 
+export type AuthConfig = { testing_mode: boolean };
+
 export const authApi = {
+  config() {
+    return apiRequest<AuthConfig>('/auth/config');
+  },
+
   login(email: string, password: string) {
     const body = new URLSearchParams({ username: email, password });
     return fetch('/auth/token', {
@@ -36,10 +42,20 @@ export const authApi = {
     });
   },
 
-  register(email: string, password: string, nome: string, crm: string, crm_uf: string) {
+  register(
+    email: string,
+    password: string,
+    nome?: string,
+    crm?: string,
+    crm_uf?: string,
+  ) {
+    const payload: Record<string, string> = { email, password };
+    if (nome) payload.nome = nome;
+    if (crm) payload.crm = crm;
+    if (crm_uf) payload.crm_uf = crm_uf;
     return apiRequest<LoginResponse>('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ email, password, nome, crm, crm_uf }),
+      body: JSON.stringify(payload),
     });
   },
 

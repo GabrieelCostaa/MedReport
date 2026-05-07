@@ -1,5 +1,21 @@
 const API_BASE = '/api';
 
+function formatErrorDetail(detail: unknown): string | null {
+  if (detail == null) return null;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map((d) => {
+        if (typeof d === 'string') return d;
+        if (d && typeof d === 'object' && 'msg' in d) return String((d as { msg: unknown }).msg);
+        return JSON.stringify(d);
+      })
+      .join('; ');
+  }
+  if (typeof detail === 'object' && 'msg' in detail) return String((detail as { msg: unknown }).msg);
+  return JSON.stringify(detail);
+}
+
 function getToken(): string | null {
   return localStorage.getItem('token');
 }
@@ -30,7 +46,7 @@ export async function apiRequest<T>(
   }
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error((err as { detail?: string }).detail ?? 'Request failed');
+    throw new Error(formatErrorDetail((err as { detail?: unknown }).detail) ?? 'Request failed');
   }
   if (res.status === 204) return undefined as T;
   return res.json();
