@@ -139,6 +139,9 @@ async def start_report(
     if pipeline_result.get("step") == "done":
         report = await _save_report(db, user_id, product, body, pipeline_result)
         pipeline_result["report_id"] = str(report.id)
+        sid = pipeline_result.get("session_id")
+        if sid:
+            ReportPipeline._cleanup_session(sid)
 
     return pipeline_result
 
@@ -197,6 +200,9 @@ async def start_report_stream(
             if pipeline_result.get("step") == "done":
                 report = await _save_report(db, user_id, product, body, pipeline_result)
                 pipeline_result["report_id"] = str(report.id)
+                sid = pipeline_result.get("session_id")
+                if sid:
+                    ReportPipeline._cleanup_session(sid)
             await progress_queue.put({"event": "done", "data": pipeline_result})
 
         task = asyncio.create_task(run_pipeline())
@@ -232,8 +238,10 @@ async def answer_questions(
 
     if pipeline_result.get("step") == "done":
         session = ReportPipeline.get_session(body.session_id)
-        report = await _save_report_from_session(db, user_id, session, pipeline_result)
-        pipeline_result["report_id"] = str(report.id)
+        if session:
+            report = await _save_report_from_session(db, user_id, session, pipeline_result)
+            pipeline_result["report_id"] = str(report.id)
+            ReportPipeline._cleanup_session(body.session_id)
 
     return pipeline_result
 
@@ -266,6 +274,7 @@ async def answer_stream(
                 if session:
                     report = await _save_report_from_session(db, user_id, session, pipeline_result)
                     pipeline_result["report_id"] = str(report.id)
+                    ReportPipeline._cleanup_session(body.session_id)
             await progress_queue.put({"event": "done", "data": pipeline_result})
 
         task = asyncio.create_task(run_pipeline())
@@ -387,6 +396,9 @@ async def generate_batch(
 
                     if pipeline_result.get("step") == "done":
                         report = await _save_report(db, user_id, product, item, pipeline_result)
+                        sid = pipeline_result.get("session_id")
+                        if sid:
+                            ReportPipeline._cleanup_session(sid)
                         job["results"].append({
                             "index": index,
                             "report_id": str(report.id),
@@ -510,6 +522,10 @@ async def generate_full(
                 pipeline_result,
             )
             pipeline_result["report_id"] = str(report.id)
+
+        sid = pipeline_result.get("session_id")
+        if sid:
+            ReportPipeline._cleanup_session(sid)
 
     return pipeline_result
 
