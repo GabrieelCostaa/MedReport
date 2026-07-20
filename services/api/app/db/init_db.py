@@ -51,39 +51,33 @@ CLINICAL_EVIDENCE_NEW_COLUMNS = [
 ]
 
 
+async def _add_missing_columns(table: str, columns: list[tuple[str, str]]) -> None:
+    """Adiciona colunas novas UMA POR TRANSAÇÃO.
+
+    CRÍTICO: no Postgres, um ALTER que falha (coluna já existe) aborta a
+    transação inteira — se todos os ALTERs compartilharem uma transação, o
+    primeiro "já existe" envenena os seguintes e as colunas NOVAS nunca são
+    criadas (o except engole tudo silenciosamente). Uma transação por coluna
+    isola cada falha esperada.
+    """
+    for col_name, col_type in columns:
+        try:
+            async with engine.begin() as conn:
+                await conn.execute(text(
+                    f"ALTER TABLE {table} ADD COLUMN {col_name} {col_type}"
+                ))
+            logger.info("Added column %s.%s", table, col_name)
+        except Exception:
+            pass  # coluna já existe
+
+
 async def create_tables():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    async with engine.begin() as conn:
-        for col_name, col_type in REPORT_NEW_COLUMNS:
-            try:
-                await conn.execute(text(
-                    f"ALTER TABLE reports ADD COLUMN {col_name} {col_type}"
-                ))
-                logger.info("Added column reports.%s", col_name)
-            except Exception:
-                pass
-
-    async with engine.begin() as conn:
-        for col_name, col_type in CLINICAL_EVIDENCE_NEW_COLUMNS:
-            try:
-                await conn.execute(text(
-                    f"ALTER TABLE clinical_evidences ADD COLUMN {col_name} {col_type}"
-                ))
-                logger.info("Added column clinical_evidences.%s", col_name)
-            except Exception:
-                pass
-
-    async with engine.begin() as conn:
-        for col_name, col_type in USER_NEW_COLUMNS:
-            try:
-                await conn.execute(text(
-                    f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"
-                ))
-                logger.info("Added column users.%s", col_name)
-            except Exception:
-                pass
+    await _add_missing_columns("reports", REPORT_NEW_COLUMNS)
+    await _add_missing_columns("clinical_evidences", CLINICAL_EVIDENCE_NEW_COLUMNS)
+    await _add_missing_columns("users", USER_NEW_COLUMNS)
 
 
 PRODUCTS_SEED = [
