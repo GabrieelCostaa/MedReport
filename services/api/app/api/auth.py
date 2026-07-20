@@ -63,6 +63,10 @@ class RegisterIn(BaseModel):
     @field_validator("password")
     @classmethod
     def validate_password_strength(cls, v: str) -> str:
+        if settings.TESTING_MODE:
+            if len(v) < 6:
+                raise ValueError("Senha deve ter ao menos 6 caracteres")
+            return v
         if len(v) < 8:
             raise ValueError("Senha deve ter ao menos 8 caracteres")
         if not any(c.isupper() for c in v):
@@ -74,8 +78,16 @@ class RegisterIn(BaseModel):
         return v
 
 
+def _register_rate_limit() -> str:
+    return "1000/hour" if settings.TESTING_MODE else "5/hour"
+
+
+def _login_rate_limit() -> str:
+    return "1000/minute" if settings.TESTING_MODE else "10/minute"
+
+
 @router.post("/register")
-@limiter.limit("5/hour")
+@limiter.limit(_register_rate_limit)
 async def register(
     request: Request,
     body: RegisterIn,
@@ -98,23 +110,24 @@ async def register(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Role inválido. Use: {', '.join(valid_roles)}",
         )
-    # Valida nome (não vazio se fornecido)
-    if body.nome is not None and not body.nome.strip():
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Nome não pode ser vazio.",
-        )
-    # Valida CRM e UF se fornecidos
-    if body.crm and not CRM_REGEX.match(body.crm):
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="CRM inválido. Use apenas dígitos (4-8 caracteres).",
-        )
-    if body.crm_uf and body.crm_uf.upper() not in VALID_UFS:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"UF inválida: {body.crm_uf}",
-        )
+    if not settings.TESTING_MODE:
+        # Valida nome (não vazio se fornecido)
+        if body.nome is not None and not body.nome.strip():
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Nome não pode ser vazio.",
+            )
+        # Valida CRM e UF se fornecidos
+        if body.crm and not CRM_REGEX.match(body.crm):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="CRM inválido. Use apenas dígitos (4-8 caracteres).",
+            )
+        if body.crm_uf and body.crm_uf.upper() not in VALID_UFS:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"UF inválida: {body.crm_uf}",
+            )
     user = User(
         email=body.email,
         hashed_password=get_password_hash(body.password),
@@ -123,6 +136,10 @@ async def register(
         crm=body.crm,
         crm_uf=body.crm_uf.upper() if body.crm_uf else None,
     )
+    if settings.TESTING_MODE:
+        from datetime import datetime
+        user.legal_basis_acknowledged = True
+        user.legal_basis_at = datetime.utcnow()
     db.add(user)
     await db.flush()
     await db.refresh(user)
@@ -142,13 +159,13 @@ async def register(
             nome=user.nome,
             crm=user.crm,
             crm_uf=user.crm_uf,
-            legal_basis_acknowledged=False,
+            legal_basis_acknowledged=user.legal_basis_acknowledged or False,
         ),
     }
 
 
 @token_router.post("/token")
-@limiter.limit("10/minute")
+@limiter.limit(_login_rate_limit)
 async def login(
     request: Request,
     form: OAuth2PasswordRequestForm = Depends(),
@@ -182,6 +199,12 @@ async def login(
             legal_basis_acknowledged=user.legal_basis_acknowledged or False,
         ),
     }
+
+
+@router.get("/config")
+async def auth_config():
+    """Configuração pública do auth — frontend usa para ajustar o formulário."""
+    return {"testing_mode": settings.TESTING_MODE}
 
 
 @router.get("/me")

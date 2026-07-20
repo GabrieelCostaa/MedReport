@@ -54,6 +54,10 @@ class Settings(BaseSettings):
     ANS_DUT_PDF_URL: str = "https://www.gov.br/ans/pt-br/acesso-a-informacao/participacao-da-sociedade/atualizacao-do-rol-de-procedimentos/Anexo_II_DUT_2021_RN_465.2021_RN628.2025_RN629.2025.pdf/@@download/file"
     ANS_DATA_DIR: str = "data/ans"
 
+    # Modo teste: relaxa validações de cadastro/login para facilitar
+    # testes com médicos. NUNCA habilitar em produção com dados reais.
+    TESTING_MODE: bool = False
+
     class Config:
         env_file = ".env"
 

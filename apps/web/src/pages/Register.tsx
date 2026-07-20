@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
   Box,
@@ -29,8 +29,13 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [testingMode, setTestingMode] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
+
+  useEffect(() => {
+    authApi.config().then((c) => setTestingMode(c.testing_mode)).catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,21 +47,25 @@ export default function Register() {
       toast({ title: 'A senha deve ter pelo menos 6 caracteres', status: 'error' });
       return;
     }
-    if (!nome.trim()) {
-      toast({ title: 'Nome completo é obrigatório', status: 'error' });
-      return;
-    }
-    if (!/^\d{4,8}$/.test(crm)) {
-      toast({ title: 'CRM inválido. Use apenas dígitos (4-8 caracteres)', status: 'error' });
-      return;
-    }
-    if (!crmUf) {
-      toast({ title: 'Selecione a UF do CRM', status: 'error' });
-      return;
+    if (!testingMode) {
+      if (!nome.trim()) {
+        toast({ title: 'Nome completo é obrigatório', status: 'error' });
+        return;
+      }
+      if (!/^\d{4,8}$/.test(crm)) {
+        toast({ title: 'CRM inválido. Use apenas dígitos (4-8 caracteres)', status: 'error' });
+        return;
+      }
+      if (!crmUf) {
+        toast({ title: 'Selecione a UF do CRM', status: 'error' });
+        return;
+      }
     }
     setLoading(true);
     try {
-      const res = await authApi.register(email, password, nome, crm, crmUf);
+      const res = testingMode
+        ? await authApi.register(email, password)
+        : await authApi.register(email, password, nome, crm, crmUf);
       localStorage.setItem('token', res.access_token);
       localStorage.setItem('user', JSON.stringify(res.user));
       toast({
@@ -64,7 +73,7 @@ export default function Register() {
         status: 'success',
         duration: 3000,
       });
-      navigate('/legal-basis');
+      navigate(res.user.legal_basis_acknowledged ? '/dashboard' : '/legal-basis');
     } catch (err: unknown) {
       toast({
         title: 'Erro no cadastro',
@@ -123,51 +132,55 @@ export default function Register() {
 
           <form onSubmit={handleSubmit}>
             <VStack gap={4} align="stretch">
-              {/* Nome */}
-              <FormControl isRequired>
-                <FormLabel fontSize="sm" fontWeight="500" color="gray.700">Nome completo</FormLabel>
-                <Input
-                  type="text"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  placeholder="Dr. João da Silva"
-                  size="lg"
-                  fontSize="sm"
-                  borderRadius="lg"
-                />
-              </FormControl>
+              {!testingMode && (
+                <>
+                  {/* Nome */}
+                  <FormControl isRequired>
+                    <FormLabel fontSize="sm" fontWeight="500" color="gray.700">Nome completo</FormLabel>
+                    <Input
+                      type="text"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      placeholder="Dr. João da Silva"
+                      size="lg"
+                      fontSize="sm"
+                      borderRadius="lg"
+                    />
+                  </FormControl>
 
-              {/* CRM + UF */}
-              <HStack gap={3} align="flex-end">
-                <FormControl isRequired flex={1}>
-                  <FormLabel fontSize="sm" fontWeight="500" color="gray.700">CRM</FormLabel>
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    value={crm}
-                    onChange={(e) => setCrm(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                    placeholder="123456"
-                    size="lg"
-                    fontSize="sm"
-                    borderRadius="lg"
-                  />
-                </FormControl>
-                <FormControl isRequired w="110px">
-                  <FormLabel fontSize="sm" fontWeight="500" color="gray.700">UF</FormLabel>
-                  <Select
-                    value={crmUf}
-                    onChange={(e) => setCrmUf(e.target.value)}
-                    size="lg"
-                    fontSize="sm"
-                    borderRadius="lg"
-                    placeholder="UF"
-                  >
-                    {UFS_BRASIL.map((uf) => (
-                      <option key={uf} value={uf}>{uf}</option>
-                    ))}
-                  </Select>
-                </FormControl>
-              </HStack>
+                  {/* CRM + UF */}
+                  <HStack gap={3} align="flex-end">
+                    <FormControl isRequired flex={1}>
+                      <FormLabel fontSize="sm" fontWeight="500" color="gray.700">CRM</FormLabel>
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        value={crm}
+                        onChange={(e) => setCrm(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                        placeholder="123456"
+                        size="lg"
+                        fontSize="sm"
+                        borderRadius="lg"
+                      />
+                    </FormControl>
+                    <FormControl isRequired w="110px">
+                      <FormLabel fontSize="sm" fontWeight="500" color="gray.700">UF</FormLabel>
+                      <Select
+                        value={crmUf}
+                        onChange={(e) => setCrmUf(e.target.value)}
+                        size="lg"
+                        fontSize="sm"
+                        borderRadius="lg"
+                        placeholder="UF"
+                      >
+                        {UFS_BRASIL.map((uf) => (
+                          <option key={uf} value={uf}>{uf}</option>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </HStack>
+                </>
+              )}
 
               {/* Email */}
               <FormControl isRequired>
@@ -190,7 +203,7 @@ export default function Register() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder={testingMode ? 'Mínimo 6 caracteres' : 'Mín. 8 chars: maiúscula, minúscula e número'}
                   size="lg"
                   fontSize="sm"
                   borderRadius="lg"

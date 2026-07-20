@@ -610,8 +610,9 @@ class ReportPipeline:
             trace.score("hard_validation", 1.0 if validation.aprovado else 0.0, f"{len(validation.issues)} issues")
             trace.flush()
 
-        # Cleanup: remove session from in-process cache (data is saved to DB)
-        cls._cleanup_session(session.session_id)
+        # NOTE: session cleanup is deferred to the API caller, AFTER the report
+        # is persisted via _save_report_from_session — otherwise the caller
+        # would get None back from get_session() and skip the save.
 
         result = {
             "session_id": session.session_id,

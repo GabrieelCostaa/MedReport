@@ -20,6 +20,7 @@ from pydantic import BaseModel
 
 from app.db.session import get_db, AsyncSessionLocal
 from app.db.models import Product, Report, ReportTemplate, AuditAction, User
+from app.core.config import settings
 from app.core.security import get_current_user_id, require_current_user_id
 from app.services.agents.pipeline import ReportPipeline
 from app.services.agents.checklist import ReportChecklist
@@ -102,8 +103,13 @@ async def evidences_preview(
 # Pipeline Multi-Agente
 # ============================================================================
 
+def _ai_rate_limit() -> str:
+    """Rate limit dos endpoints de pipeline AI. Relaxado em TESTING_MODE."""
+    return "1000/hour" if settings.TESTING_MODE else "20/hour"
+
+
 @router.post("/start-report")
-@limiter.limit("20/hour")
+@limiter.limit(_ai_rate_limit)
 async def start_report(
     request: Request,
     body: StartReportIn,
@@ -155,12 +161,15 @@ async def start_report(
     if pipeline_result.get("step") == "done":
         report = await _save_report(db, user_id, product, body, pipeline_result)
         pipeline_result["report_id"] = str(report.id)
+        sid = pipeline_result.get("session_id")
+        if sid:
+            ReportPipeline._cleanup_session(sid)
 
     return pipeline_result
 
 
 @router.post("/start-report-stream")
-@limiter.limit("20/hour")
+@limiter.limit(_ai_rate_limit)
 async def start_report_stream(
     request: Request,
     body: StartReportIn,
@@ -214,6 +223,9 @@ async def start_report_stream(
             if pipeline_result.get("step") == "done":
                 report = await _save_report(db, user_id, product, body, pipeline_result)
                 pipeline_result["report_id"] = str(report.id)
+                sid = pipeline_result.get("session_id")
+                if sid:
+                    ReportPipeline._cleanup_session(sid)
             await progress_queue.put({"event": "done", "data": pipeline_result})
 
         task = asyncio.create_task(run_pipeline())
@@ -249,8 +261,10 @@ async def answer_questions(
 
     if pipeline_result.get("step") == "done":
         session = ReportPipeline.get_session(body.session_id)
-        report = await _save_report_from_session(db, user_id, session, pipeline_result)
-        pipeline_result["report_id"] = str(report.id)
+        if session:
+            report = await _save_report_from_session(db, user_id, session, pipeline_result)
+            pipeline_result["report_id"] = str(report.id)
+            ReportPipeline._cleanup_session(body.session_id)
 
     return pipeline_result
 
@@ -283,6 +297,7 @@ async def answer_stream(
                 if session:
                     report = await _save_report_from_session(db, user_id, session, pipeline_result)
                     pipeline_result["report_id"] = str(report.id)
+                    ReportPipeline._cleanup_session(body.session_id)
             await progress_queue.put({"event": "done", "data": pipeline_result})
 
         task = asyncio.create_task(run_pipeline())
@@ -411,6 +426,9 @@ async def generate_batch(
                         if pipeline_result.get("step") == "done":
                             report = await _save_report(sdb, user_id, product, item, pipeline_result)
                             await sdb.commit()
+                            sid = pipeline_result.get("session_id")
+                            if sid:
+                                ReportPipeline._cleanup_session(sid)
                             job["results"].append({
                                 "index": index,
                                 "report_id": str(report.id),
@@ -458,7 +476,7 @@ async def batch_status(
 
 
 @router.post("/generate")
-@limiter.limit("20/hour")
+@limiter.limit(_ai_rate_limit)
 async def generate_full(
     request: Request,
     body: GenerateIn,
@@ -535,6 +553,10 @@ async def generate_full(
                 pipeline_result,
             )
             pipeline_result["report_id"] = str(report.id)
+
+        sid = pipeline_result.get("session_id")
+        if sid:
+            ReportPipeline._cleanup_session(sid)
 
     return pipeline_result
 
