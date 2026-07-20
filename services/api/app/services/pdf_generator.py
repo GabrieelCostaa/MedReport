@@ -34,6 +34,76 @@ def _split_paragraphs(text: str) -> list[str]:
     return paragraphs
 
 
+# Títulos de seção inseridos pelo Redator (devem espelhar writer._SECTION_TITLES).
+_SECTION_TITLES = [
+    "QUADRO CLÍNICO E HISTÓRIA",
+    "FALHA TERAPÊUTICA PRÉVIA",
+    "JUSTIFICATIVA TÉCNICA E SUPERIORIDADE DO MATERIAL",
+    "EVIDÊNCIA CIENTÍFICA",
+    "RISCO DA NÃO REALIZAÇÃO",
+    "CONCLUSÃO",
+]
+
+
+def _normalize_title(line: str) -> str:
+    """Normaliza uma linha para comparação com títulos de seção."""
+    import re
+    t = line.strip().upper()
+    t = re.sub(r"^\d+[\.\)]\s*", "", t)   # remove numeração "1. "
+    t = t.rstrip(":.").strip()
+    return t
+
+
+def _split_into_sections(body: str) -> list[dict]:
+    """Divide o corpo da justificativa em seções tituladas.
+
+    O Redator produz o corpo com títulos em MAIÚSCULAS por seção. Esta função
+    reconstrói (titulo, parágrafos) para renderização com cabeçalhos próprios.
+    Se nenhum título conhecido for encontrado (ex.: Auditor reflowou o texto),
+    devolve uma única seção "Justificativa Técnica" com o corpo inteiro.
+    """
+    if not body or not body.strip():
+        return []
+
+    known = {_normalize_title(t): t for t in _SECTION_TITLES}
+    # Títulos em capitalização de exibição (Title Case-ish, mantém acentos).
+    display = {
+        "QUADRO CLÍNICO E HISTÓRIA": "Quadro Clínico e História",
+        "FALHA TERAPÊUTICA PRÉVIA": "Falha Terapêutica Prévia",
+        "JUSTIFICATIVA TÉCNICA E SUPERIORIDADE DO MATERIAL": "Justificativa Técnica e Superioridade do Material",
+        "EVIDÊNCIA CIENTÍFICA": "Evidência Científica",
+        "RISCO DA NÃO REALIZAÇÃO": "Risco da Não Realização",
+        "CONCLUSÃO": "Conclusão",
+    }
+
+    sections: list[dict] = []
+    current = None
+    for raw_line in body.split("\n"):
+        norm = _normalize_title(raw_line)
+        if norm in known:
+            current = {"titulo": display.get(known[norm], known[norm].title()), "buffer": []}
+            sections.append(current)
+        else:
+            if current is None:
+                current = {"titulo": "Justificativa Técnica", "buffer": []}
+                sections.append(current)
+            current["buffer"].append(raw_line)
+
+    # Converte buffers em parágrafos; descarta seções vazias.
+    result = []
+    known_count = sum(1 for s in sections if s["titulo"] != "Justificativa Técnica")
+    if known_count == 0:
+        # Nenhum título reconhecido → seção única com o corpo inteiro.
+        return [{"titulo": "Justificativa Técnica", "paragrafos": _split_paragraphs(body)}]
+
+    for s in sections:
+        conteudo = "\n".join(s["buffer"]).strip()
+        paragrafos = _split_paragraphs(conteudo)
+        if paragrafos:
+            result.append({"titulo": s["titulo"], "paragrafos": paragrafos})
+    return result
+
+
 def _generate_qr_png(url: str) -> bytes:
     """Gera QR Code como PNG em bytes."""
     import qrcode
@@ -72,6 +142,7 @@ def generate_pdf_bytes(
     checklist: dict = None,
     medico_nome: str = "",
     medico_crm: str = "",
+    medico_rqe: str = "",
     aprovado: bool = True,
     falha_terapeutica: str = "",
     risco_nao_realizacao: str = "",
@@ -79,54 +150,62 @@ def generate_pdf_bytes(
     signed_at_str: str = "",
     signature_hash: str = "",
     verification_url: str = "",
+    # Identidade do emissor (timbrado)
+    clinica_nome: str = "",
+    clinica_logo_url: str = "",
+    # Identificação anti-glosa
+    paciente_dob: str = "",
+    paciente_carteirinha: str = "",
+    paciente_cpf: str = "",
+    guia_numero: str = "",
+    atendimento_numero: str = "",
+    cids_secundarios: list = None,
+    materiais_tuss: list = None,
+    registro_anvisa: str = "",
+    compliance_texto: str = "",
 ) -> bytes:
     """Gera PDF em bytes. Tenta WeasyPrint, fallback para ReportLab."""
-    # Sanitize inputs
-    justificativa = justificativa or ""
-    paciente_nome = paciente_nome or ""
-    cid = cid or ""
-    diagnostico_resumo = diagnostico_resumo or ""
-    produto_nome = produto_nome or ""
-    convenio = convenio or ""
-    especialidade = especialidade or ""
-    codigo_tuss = codigo_tuss or ""
-    referencias = referencias or []
-    checklist = checklist or {}
-    medico_nome = medico_nome or ""
-    medico_crm = medico_crm or ""
-    falha_terapeutica = falha_terapeutica or ""
-    risco_nao_realizacao = risco_nao_realizacao or ""
-    base_legal = base_legal or ""
-    signed_at_str = signed_at_str or ""
-    signature_hash = signature_hash or ""
-    verification_url = verification_url or ""
-
     kwargs = dict(
-        justificativa=justificativa,
-        paciente_nome=paciente_nome,
-        cid=cid,
-        diagnostico_resumo=diagnostico_resumo,
-        produto_nome=produto_nome,
-        convenio=convenio,
-        especialidade=especialidade,
-        codigo_tuss=codigo_tuss,
-        referencias=referencias,
-        checklist=checklist,
-        medico_nome=medico_nome,
-        medico_crm=medico_crm,
+        justificativa=justificativa or "",
+        paciente_nome=paciente_nome or "",
+        cid=cid or "",
+        diagnostico_resumo=diagnostico_resumo or "",
+        produto_nome=produto_nome or "",
+        convenio=convenio or "",
+        especialidade=especialidade or "",
+        codigo_tuss=codigo_tuss or "",
+        referencias=referencias or [],
+        checklist=checklist or {},
+        medico_nome=medico_nome or "",
+        medico_crm=medico_crm or "",
+        medico_rqe=medico_rqe or "",
         aprovado=aprovado,
-        falha_terapeutica=falha_terapeutica,
-        risco_nao_realizacao=risco_nao_realizacao,
-        base_legal=base_legal,
-        signed_at_str=signed_at_str,
-        signature_hash=signature_hash,
-        verification_url=verification_url,
+        falha_terapeutica=falha_terapeutica or "",
+        risco_nao_realizacao=risco_nao_realizacao or "",
+        base_legal=base_legal or "",
+        signed_at_str=signed_at_str or "",
+        signature_hash=signature_hash or "",
+        verification_url=verification_url or "",
+        clinica_nome=clinica_nome or "",
+        clinica_logo_url=clinica_logo_url or "",
+        paciente_dob=paciente_dob or "",
+        paciente_carteirinha=paciente_carteirinha or "",
+        paciente_cpf=paciente_cpf or "",
+        guia_numero=guia_numero or "",
+        atendimento_numero=atendimento_numero or "",
+        cids_secundarios=cids_secundarios or [],
+        materiais_tuss=materiais_tuss or [],
+        registro_anvisa=registro_anvisa or "",
+        compliance_texto=compliance_texto or "",
     )
 
     try:
         return _generate_weasyprint(**kwargs)
     except Exception as e:
-        logger.warning("WeasyPrint falhou (%s), usando ReportLab", e)
+        logger.warning(
+            "WeasyPrint indisponível/falhou (%s) — usando fallback ReportLab "
+            "(layout reduzido). Verifique as libs do WeasyPrint no ambiente.", e
+        )
         return _generate_reportlab(**kwargs)
 
 
@@ -157,14 +236,24 @@ def _generate_weasyprint(**kwargs) -> bytes:
         convenio=kwargs.get("convenio") or "Não informado",
         especialidade=kwargs.get("especialidade") or "",
         codigo_tuss=kwargs.get("codigo_tuss") or "",
-        justificativa_paragrafos=_split_paragraphs(kwargs.get("justificativa", "")),
-        falha_terapeutica_paragrafos=_split_paragraphs(kwargs.get("falha_terapeutica", "")),
-        risco_paragrafos=_split_paragraphs(kwargs.get("risco_nao_realizacao", "")),
+        secoes=_split_into_sections(kwargs.get("justificativa", "")),
         base_legal_paragrafos=_split_paragraphs(kwargs.get("base_legal", "")),
+        compliance_texto=_split_paragraphs(kwargs.get("compliance_texto", "")),
         referencias=refs,
         checklist=kwargs.get("checklist"),
         medico_nome=kwargs.get("medico_nome"),
         medico_crm=kwargs.get("medico_crm"),
+        medico_rqe=kwargs.get("medico_rqe") or "",
+        clinica_nome=kwargs.get("clinica_nome") or "",
+        clinica_logo_url=kwargs.get("clinica_logo_url") or "",
+        paciente_dob=kwargs.get("paciente_dob") or "",
+        paciente_carteirinha=kwargs.get("paciente_carteirinha") or "",
+        paciente_cpf=kwargs.get("paciente_cpf") or "",
+        guia_numero=kwargs.get("guia_numero") or "",
+        atendimento_numero=kwargs.get("atendimento_numero") or "",
+        cids_secundarios=kwargs.get("cids_secundarios") or [],
+        materiais_tuss=kwargs.get("materiais_tuss") or [],
+        registro_anvisa=kwargs.get("registro_anvisa") or "",
         data_emissao=datetime.now().strftime("%d/%m/%Y"),
         protocolo=protocolo,
         watermark=watermark,
@@ -244,9 +333,10 @@ def _generate_reportlab(**kwargs) -> bytes:
 
     # ── HEADER ──
     # Title + date in a table
+    clinica_nome = kwargs.get("clinica_nome") or "Relatório Médico Complementar"
     header_data = [
         [
-            [Paragraph("Relatório Médico Complementar", s_title),
+            [Paragraph(clinica_nome, s_title),
              Paragraph("Justificativa Técnica para Autorização de Material OPME", s_subtitle)],
             [Paragraph(data_emissao, s_date),
              Paragraph(f"Protocolo: {protocolo}", s_date)],
@@ -270,15 +360,32 @@ def _generate_reportlab(**kwargs) -> bytes:
     espec = kwargs.get("especialidade") or "—"
     produto = kwargs.get("produto_nome") or "—"
     tuss = kwargs.get("codigo_tuss") or "—"
+    dob = kwargs.get("paciente_dob") or "—"
+    carteirinha = kwargs.get("paciente_carteirinha") or "—"
+    guia = kwargs.get("guia_numero") or "—"
+    atend = kwargs.get("atendimento_numero") or ""
+    guia_atend = f"{guia}" + (f" / {atend}" if atend else "")
+    anvisa = kwargs.get("registro_anvisa") or ""
+    cids_sec = kwargs.get("cids_secundarios") or []
 
     meta_data = [
         [Paragraph("<b>Paciente:</b>", s_meta_label), Paragraph(paciente, s_meta_value),
-         Paragraph("<b>Convênio:</b>", s_meta_label), Paragraph(convenio, s_meta_value)],
+         Paragraph("<b>Nascimento:</b>", s_meta_label), Paragraph(dob, s_meta_value)],
+        [Paragraph("<b>Convênio:</b>", s_meta_label), Paragraph(convenio, s_meta_value),
+         Paragraph("<b>Carteirinha:</b>", s_meta_label), Paragraph(carteirinha, s_meta_value)],
         [Paragraph("<b>Diagnóstico (CID):</b>", s_meta_label), Paragraph(cid_diag, s_meta_value),
-         Paragraph("<b>Especialidade:</b>", s_meta_label), Paragraph(espec, s_meta_value)],
-        [Paragraph("<b>Material OPME:</b>", s_meta_label), Paragraph(produto, s_meta_value),
+         Paragraph("<b>Guia / Atend.:</b>", s_meta_label), Paragraph(guia_atend, s_meta_value)],
+        [Paragraph("<b>Especialidade:</b>", s_meta_label), Paragraph(espec, s_meta_value),
          Paragraph("<b>Código TUSS:</b>", s_meta_label), Paragraph(tuss, s_meta_value)],
+        [Paragraph("<b>Material OPME:</b>", s_meta_label), Paragraph(produto, s_meta_value),
+         Paragraph("<b>Reg. ANVISA:</b>", s_meta_label), Paragraph(anvisa or "—", s_meta_value)],
     ]
+    if cids_sec:
+        meta_data.append([
+            Paragraph("<b>CID secundários:</b>", s_meta_label),
+            Paragraph(", ".join(str(c) for c in cids_sec), s_meta_value),
+            Paragraph("", s_meta_label), Paragraph("", s_meta_value),
+        ])
     meta_table = Table(meta_data, colWidths=[3.2*cm, 5.3*cm, 3.2*cm, 5.3*cm])
     meta_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, -1), BG_BLUE),
@@ -291,23 +398,57 @@ def _generate_reportlab(**kwargs) -> bytes:
         ("RIGHTPADDING", (0, 0), (-1, -1), 8),
     ]))
     story.append(meta_table)
-    story.append(Spacer(1, 14))
+    story.append(Spacer(1, 12))
 
-    # ── HELPER: Add section ──
-    def add_section(title: str, text: str, style=s_body):
-        if not text or not text.strip():
+    # ── MATERIAIS TABLE ──
+    materiais = kwargs.get("materiais_tuss") or []
+    if materiais:
+        mat_rows = [[
+            Paragraph("<b>Código TUSS</b>", s_meta_value),
+            Paragraph("<b>Descrição do material</b>", s_meta_value),
+            Paragraph("<b>Qtd.</b>", s_meta_value),
+        ]]
+        for m in materiais:
+            if not isinstance(m, dict):
+                continue
+            mat_rows.append([
+                Paragraph(str(m.get("codigo") or "—"), s_meta_value),
+                Paragraph(str(m.get("nome") or "—"), s_meta_value),
+                Paragraph(str(m.get("qtd") or 1), s_meta_value),
+            ])
+        mat_table = Table(mat_rows, colWidths=[3.5*cm, 10.5*cm, 2*cm])
+        mat_table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), HexColor("#eef2f9")),
+            ("BOX", (0, 0), (-1, -1), 0.5, BORDER_BLUE),
+            ("INNERGRID", (0, 0), (-1, -1), 0.5, BORDER_BLUE),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("ALIGN", (2, 0), (2, -1), "CENTER"),
+            ("TOPPADDING", (0, 0), (-1, -1), 3),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+            ("LEFTPADDING", (0, 0), (-1, -1), 8),
+        ]))
+        story.append(mat_table)
+        story.append(Spacer(1, 12))
+
+    def _esc(p: str) -> str:
+        return p.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    # ── HELPER: Add pre-split section ──
+    def add_paras(title: str, paragrafos: list, style=s_body):
+        if not paragrafos:
             return
         story.append(Paragraph(title.upper(), s_section_title))
         story.append(HRFlowable(width="100%", thickness=1, color=BORDER_BLUE, spaceAfter=6))
-        for p in _split_paragraphs(text):
-            # Escape XML entities for ReportLab
-            safe_p = p.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            story.append(Paragraph(safe_p, style))
+        for p in paragrafos:
+            story.append(Paragraph(_esc(p), style))
 
-    # ── SECTIONS ──
-    add_section("Justificativa Técnica", kwargs.get("justificativa", ""))
-    add_section("Falha Terapêutica e Tratamentos Prévios", kwargs.get("falha_terapeutica", ""))
-    add_section("Risco da Não Realização do Procedimento", kwargs.get("risco_nao_realizacao", ""))
+    # ── CLINICAL SECTIONS (parsed from justificativa body) ──
+    for sec in _split_into_sections(kwargs.get("justificativa", "")):
+        add_paras(sec["titulo"], sec["paragrafos"])
+
+    # Adequação DUT/Rol (compliance)
+    add_paras("Adequação ao Rol / DUT (ANS)",
+              _split_paragraphs(kwargs.get("compliance_texto", "")), style=s_legal)
 
     # Legal block (different style)
     bl = kwargs.get("base_legal", "")
@@ -315,8 +456,7 @@ def _generate_reportlab(**kwargs) -> bytes:
         story.append(Paragraph("FUNDAMENTAÇÃO LEGAL", s_section_title))
         story.append(HRFlowable(width="100%", thickness=1, color=BORDER_BLUE, spaceAfter=6))
         for p in _split_paragraphs(bl):
-            safe_p = p.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            story.append(Paragraph(safe_p, s_legal))
+            story.append(Paragraph(_esc(p), s_legal))
 
     # ── REFERÊNCIAS ──
     refs = kwargs.get("referencias") or []
@@ -364,6 +504,9 @@ def _generate_reportlab(**kwargs) -> bytes:
     story.append(Spacer(1, 24))
     nome = kwargs.get("medico_nome") or "[Nome do Médico Responsável]"
     crm = kwargs.get("medico_crm") or "CRM: __________"
+    rqe = kwargs.get("medico_rqe") or ""
+    if rqe:
+        crm = f"{crm} · RQE {rqe}"
     signed_at_str = kwargs.get("signed_at_str") or ""
     sig_hash = kwargs.get("signature_hash") or ""
     verification_url = kwargs.get("verification_url") or ""
@@ -428,11 +571,21 @@ def _generate_reportlab(**kwargs) -> bytes:
     story.append(Spacer(1, 14))
     story.append(HRFlowable(width="100%", thickness=0.5, color=HexColor("#eeeeee"), spaceAfter=4))
     story.append(Paragraph(
-        f"Documento gerado em {data_emissao} • Protocolo {protocolo} • Informações médicas confidenciais",
+        f"Documento gerado em {data_emissao} • Protocolo {protocolo} • "
+        f"Informações médicas confidenciais (LGPD Art. 11)",
         s_footer,
     ))
 
-    doc.build(story)
+    def _page_number(canvas, doc_):
+        """Rodapé com numeração de página (paridade com o WeasyPrint)."""
+        canvas.saveState()
+        canvas.setFont("Helvetica", 7.5)
+        canvas.setFillColor(LIGHT_GRAY)
+        canvas.drawCentredString(A4[0] / 2.0, 1.2 * cm, f"Página {doc_.page}")
+        canvas.drawRightString(A4[0] - 2.2 * cm, 1.2 * cm, f"Protocolo {protocolo}")
+        canvas.restoreState()
+
+    doc.build(story, onFirstPage=_page_number, onLaterPages=_page_number)
     buffer.seek(0)
     pdf_bytes = buffer.read()
     logger.info("PDF gerado via ReportLab: %d bytes, protocolo=%s", len(pdf_bytes), protocolo)

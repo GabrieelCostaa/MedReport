@@ -109,10 +109,23 @@ def generate_docx_bytes(
     checklist: dict = None,
     medico_nome: str = "",
     medico_crm: str = "",
+    medico_rqe: str = "",
     aprovado: bool = True,
     falha_terapeutica: str = "",
     risco_nao_realizacao: str = "",
     base_legal: str = "",
+    clinica_nome: str = "",
+    clinica_logo_url: str = "",
+    paciente_dob: str = "",
+    paciente_carteirinha: str = "",
+    paciente_cpf: str = "",
+    guia_numero: str = "",
+    atendimento_numero: str = "",
+    cids_secundarios: list = None,
+    materiais_tuss: list = None,
+    registro_anvisa: str = "",
+    compliance_texto: str = "",
+    **_extra,
 ) -> bytes:
     # Sanitize inputs
     justificativa = justificativa or ""
@@ -127,9 +140,13 @@ def generate_docx_bytes(
     checklist = checklist or {}
     medico_nome = medico_nome or ""
     medico_crm = medico_crm or ""
+    medico_rqe = medico_rqe or ""
     falha_terapeutica = falha_terapeutica or ""
     risco_nao_realizacao = risco_nao_realizacao or ""
     base_legal = base_legal or ""
+    clinica_nome = clinica_nome or ""
+    cids_secundarios = cids_secundarios or []
+    materiais_tuss = materiais_tuss or []
 
     doc = Document()
 
@@ -154,7 +171,7 @@ def generate_docx_bytes(
     # ══════════════════════════════════════════════════════════════════
     p_title = doc.add_paragraph()
     p_title.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    _add_run(p_title, "RELATÓRIO MÉDICO COMPLEMENTAR", bold=True, size=15, color=NAVY)
+    _add_run(p_title, (clinica_nome or "RELATÓRIO MÉDICO COMPLEMENTAR").upper(), bold=True, size=15, color=NAVY)
     p_title.paragraph_format.space_after = Pt(0)
 
     p_sub = doc.add_paragraph()
@@ -173,14 +190,22 @@ def generate_docx_bytes(
     # ══════════════════════════════════════════════════════════════════
     meta_items = [
         ("Paciente", paciente_nome or "Não informado"),
+        ("Nascimento", paciente_dob or "—"),
         ("Convênio", convenio or "Não informado"),
+        ("Carteirinha", paciente_carteirinha or "—"),
         ("Diagnóstico (CID)", f"{cid} — {diagnostico_resumo}" if cid else diagnostico_resumo or "—"),
+        ("Guia / Atend.", (guia_numero or "—") + (f" / {atendimento_numero}" if atendimento_numero else "")),
         ("Especialidade", especialidade or "—"),
-        ("Material OPME", produto_nome or "—"),
         ("Código TUSS", codigo_tuss or "—"),
+        ("Material OPME", produto_nome or "—"),
+        ("Reg. ANVISA", registro_anvisa or "—"),
     ]
+    if cids_secundarios:
+        meta_items.append(("CID secundários", ", ".join(str(c) for c in cids_secundarios)))
+        meta_items.append(("", ""))
 
-    table = doc.add_table(rows=3, cols=4)
+    n_rows = (len(meta_items) + 1) // 2
+    table = doc.add_table(rows=n_rows, cols=4)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
     for i, (label, value) in enumerate(meta_items):
@@ -234,15 +259,14 @@ def generate_docx_bytes(
             _add_run(p, para_text, size=11, color=BODY)
 
     # ══════════════════════════════════════════════════════════════════
-    # BODY SECTIONS
+    # BODY SECTIONS (parseadas do corpo com títulos próprios)
     # ══════════════════════════════════════════════════════════════════
-    _add_section("Justificativa Técnica", justificativa)
+    from app.services.pdf_generator import _split_into_sections
+    for sec in _split_into_sections(justificativa):
+        _add_section(sec["titulo"], "\n\n".join(sec["paragrafos"]))
 
-    if falha_terapeutica:
-        _add_section("Falha Terapêutica e Tratamentos Prévios", falha_terapeutica)
-
-    if risco_nao_realizacao:
-        _add_section("Risco da Não Realização do Procedimento", risco_nao_realizacao)
+    if compliance_texto:
+        _add_section("Adequação ao Rol / DUT (ANS)", compliance_texto)
 
     if base_legal:
         _add_section("Fundamentação Legal", base_legal)
@@ -303,7 +327,10 @@ def generate_docx_bytes(
     p_crm = doc.add_paragraph()
     p_crm.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_crm.paragraph_format.space_after = Pt(0)
-    _add_run(p_crm, medico_crm or "CRM: __________", size=9, color=GRAY)
+    crm_line = medico_crm or "CRM: __________"
+    if medico_rqe:
+        crm_line = f"{crm_line} · RQE {medico_rqe}"
+    _add_run(p_crm, crm_line, size=9, color=GRAY)
 
     # ── Watermark (rascunho) ──
     if not aprovado:

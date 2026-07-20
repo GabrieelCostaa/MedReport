@@ -128,7 +128,8 @@ class TussValidator:
                     permitido=False,
                     mensagem=(
                         f"GLOSA: Código TUSS 19 '{codigo}' (material/OPME) não pode ser usado "
-                        f"em campo de Honorários. Deve ir para Anexo de Solicitação de OPME."
+                        f"em campo de Honorários. Deve ir para Anexo de Solicitação de OPME. "
+                        f"(TISS Tabela 38 — motivo 1801: PROCEDIMENTO INVÁLIDO)"
                     ),
                 )
 

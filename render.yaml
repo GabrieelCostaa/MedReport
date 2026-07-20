@@ -29,7 +29,10 @@ services:
           type: redis
           property: connectionURI
       - key: API_BASE_URL
-        value: https://medreport-api.onrender.com
+        # Host público REAL do serviço (o Render anexou o sufixo -07t9).
+        # Precisa bater com a URL servida, senão o QR/link de verificação
+        # dos PDFs assinados aponta para um host 503.
+        value: https://medreport-api-07t9.onrender.com
       - key: PUBMED_ENABLED
         value: "true"
 

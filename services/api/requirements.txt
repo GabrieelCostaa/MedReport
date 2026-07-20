@@ -31,3 +31,9 @@ instructor>=1.0.0
 # Search & NLP
 rapidfuzz>=3.6.0
 networkx>=3.2
+# Assinatura digital PAdES (self-signed em dev, ICP-Brasil PFX em prod)
+pyhanko>=0.21.0
+# Fuso horário America/Sao_Paulo em imagens slim (python:3.12-slim não traz tzdata)
+tzdata>=2024.1
+# Fila de tarefas assíncronas (importado por app/services/task_queue.py)
+taskiq-redis>=0.5.0

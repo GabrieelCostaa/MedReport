@@ -46,6 +46,7 @@ def compute_approval_score(
     cid_procedure_consistent: bool = True,
     compliance_mode: str = "",
     stf_checklist: dict | None = None,
+    operadora_glosa=None,  # OperadoraGlosaSummary — INFORMATIVO, não altera o score
 ) -> ApprovalScore:
     """Calcula score de completude documental estimada."""
 
@@ -188,6 +189,29 @@ def compute_approval_score(
             components["anvisa_status"] = "desconhecido"
         else:
             components["anvisa_status"] = "ativo"
+
+    # Risco da operadora (Painel de Glosas ANS) — informativo: entra em alertas e
+    # componentes surfaced, mas NUNCA no somatório do score (o comportamento da
+    # operadora não é mérito do laudo do médico).
+    if operadora_glosa is not None:
+        pc = (getattr(operadora_glosa, "medias_recentes", None) or {}).get("pc_glosa_inicial")
+        if pc is not None:
+            hist = " (dados históricos)" if getattr(operadora_glosa, "is_stale", False) else ""
+            alerts.append(
+                f"Convênio {operadora_glosa.razao_social} (ANS {operadora_glosa.registro_ans}): "
+                f"glosa inicial média de {pc:.1f}% nos últimos {operadora_glosa.n_semestres} "
+                f"semestres do Painel de Glosas ANS{hist} — informativo, não altera o score."
+            )
+        components["operadora_glosa"] = {
+            "registro_ans": getattr(operadora_glosa, "registro_ans", ""),
+            "medias_recentes": getattr(operadora_glosa, "medias_recentes", {}),
+            "periodo": getattr(operadora_glosa, "period_range", ""),
+        }
+        if getattr(operadora_glosa, "ambiguous", False):
+            gaps.append(
+                "Nome do convênio ambíguo — confirme a operadora "
+                "(múltiplas correspondências no Painel de Glosas ANS)."
+            )
 
     total = sum([
         components["aderencia_dut"],

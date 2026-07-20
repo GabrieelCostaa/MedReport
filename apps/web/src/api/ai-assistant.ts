@@ -99,6 +99,11 @@ export const aiAssistantApi = {
       surgery_description?: string;
       health_plan?: string;
       especialidade?: string;
+      // Identificação anti-glosa (opcionais)
+      paciente_dob?: string;
+      paciente_carteirinha?: string;
+      guia_numero?: string;
+      cids_secundarios?: string[];
     },
     onStep: (step: string, label: string) => void,
     onDone: (result: PipelineResult) => void,

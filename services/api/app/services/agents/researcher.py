@@ -194,8 +194,9 @@ async def research(product, diagnostico: str, cid: str, template=None, db: Optio
         import openai
         client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
+        model = settings.OPENAI_MODEL_RESEARCHER
         response = await client.chat.completions.create(
-            model="gpt-4o",
+            model=model,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message},
@@ -206,7 +207,7 @@ async def research(product, diagnostico: str, cid: str, template=None, db: Optio
         )
 
         raw = response.choices[0].message.content
-        usage = extract_usage(response, "Pesquisador")
+        usage = extract_usage(response, "Pesquisador", model=model)
         data = json.loads(raw)
 
         all_lacunas = []

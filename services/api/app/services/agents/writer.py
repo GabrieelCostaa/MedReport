@@ -30,12 +30,41 @@ logger = logging.getLogger(__name__)
 class DraftReport:
     justificativa_completa: str = ""
     diagnostico_resumo: str = ""
+    quadro_clinico: str = ""
     falha_terapeutica: str = ""
+    justificativa_tecnica: str = ""
+    evidencia_cientifica: str = ""
     risco_nao_realizacao: str = ""
+    conclusao: str = ""
     base_legal: str = ""
     referencias: list[str] = field(default_factory=list)
     raw_response: Optional[str] = None
     token_usage: Optional[TokenUsage] = None
+
+
+# Títulos das seções na montagem do corpo (justificativa_completa).
+_SECTION_TITLES = [
+    ("quadro_clinico", "QUADRO CLÍNICO E HISTÓRIA"),
+    ("falha_terapeutica", "FALHA TERAPÊUTICA PRÉVIA"),
+    ("justificativa_tecnica", "JUSTIFICATIVA TÉCNICA E SUPERIORIDADE DO MATERIAL"),
+    ("evidencia_cientifica", "EVIDÊNCIA CIENTÍFICA"),
+    ("risco_nao_realizacao", "RISCO DA NÃO REALIZAÇÃO"),
+    ("conclusao", "CONCLUSÃO"),
+]
+
+
+def _assemble_body(sections: dict) -> str:
+    """Monta o corpo da justificativa a partir das seções, com títulos.
+
+    Não regera nada — apenas concatena o que o Redator já produziu, de forma
+    determinística, mantendo compatível o campo único `justificativa_completa`.
+    """
+    parts = []
+    for key, titulo in _SECTION_TITLES:
+        conteudo = (sections.get(key) or "").strip()
+        if conteudo:
+            parts.append(f"{titulo}\n{conteudo}")
+    return "\n\n".join(parts)
 
 
 def _build_product_facts(product) -> str:
@@ -71,7 +100,7 @@ def _build_template_context(template) -> str:
     exemplos = getattr(template, 'exemplos_aprovados', None)
     if exemplos:
         ranked = sorted(exemplos, key=len, reverse=True)[:3]
-        parts.append("\nEXEMPLOS DE RELATÓRIOS JÁ APROVADOS POR CONVÊNIOS (copie este estilo EXATAMENTE):")
+        parts.append("\nEXEMPLOS DE RELATÓRIOS JÁ APROVADOS POR CONVÊNIOS (inspire-se no estilo, tom, estrutura e PROFUNDIDADE — não limite o tamanho ao do exemplo):")
         for i, ex in enumerate(ranked, 1):
             parts.append(f"--- Exemplo Aprovado {i} ---\n{ex}")
     return "\n".join(parts) or "Tom científico formal."
@@ -132,8 +161,9 @@ async def write_justification(
 
     evidence_text = "\n".join(evidence_parts) or "Nenhuma evidência adicional encontrada pelo pesquisador."
 
+    # Chaves com "_" são internas (ex.: _trace do observability) — não entram no prompt.
     medico_text = "\n".join(
-        f"- {k}: {v}" for k, v in medico_inputs.items() if v
+        f"- {k}: {v}" for k, v in medico_inputs.items() if v and not k.startswith("_")
     )
 
     system_prompt = WRITER_SYSTEM.format(
@@ -167,47 +197,78 @@ async def write_justification(
         messages.extend(few_shot)
         messages.append({"role": "user", "content": user_message})
 
+        model = settings.OPENAI_MODEL_WRITER
+
         if INSTRUCTOR_AVAILABLE:
-            # Instructor: forces Pydantic schema, auto-retries on validation errors
+            # Instructor: forces Pydantic schema, auto-retries on validation errors.
+            # create_with_completion também retorna a completion crua p/ capturar usage.
             async_client = instructor.from_openai(
                 openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
             )
-            result = await async_client.chat.completions.create(
-                model="gpt-4o",
+            result, completion = await async_client.chat.completions.create_with_completion(
+                model=model,
                 response_model=WriterOutput,
                 messages=messages,
                 temperature=0.2,
-                max_tokens=4000,
+                max_tokens=8000,
                 max_retries=2,
             )
+            usage = extract_usage(completion, "Redator", model=model)
+            sections = {
+                "quadro_clinico": result.quadro_clinico,
+                "falha_terapeutica": result.falha_terapeutica,
+                "justificativa_tecnica": result.justificativa_tecnica,
+                "evidencia_cientifica": result.evidencia_cientifica,
+                "risco_nao_realizacao": result.risco_nao_realizacao,
+                "conclusao": result.conclusao,
+            }
             return DraftReport(
-                justificativa_completa=result.justificativa_completa,
+                justificativa_completa=_assemble_body(sections),
                 diagnostico_resumo=result.diagnostico_resumo,
+                quadro_clinico=result.quadro_clinico,
                 falha_terapeutica=result.falha_terapeutica,
+                justificativa_tecnica=result.justificativa_tecnica,
+                evidencia_cientifica=result.evidencia_cientifica,
                 risco_nao_realizacao=result.risco_nao_realizacao,
+                conclusao=result.conclusao,
                 base_legal=result.base_legal,
                 referencias=result.referencias,
                 raw_response=result.model_dump_json(),
+                token_usage=usage,
             )
         else:
             # Fallback: raw JSON mode
             client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
             response = await client.chat.completions.create(
-                model="gpt-4o",
+                model=model,
                 messages=messages,
                 response_format={"type": "json_object"},
                 temperature=0.2,
-                max_tokens=4000,
+                max_tokens=8000,
             )
             raw = response.choices[0].message.content
-            usage = extract_usage(response, "Redator")
+            usage = extract_usage(response, "Redator", model=model)
             data = json.loads(raw)
 
+            sections = {
+                "quadro_clinico": data.get("quadro_clinico", ""),
+                "falha_terapeutica": data.get("falha_terapeutica", ""),
+                "justificativa_tecnica": data.get("justificativa_tecnica", ""),
+                "evidencia_cientifica": data.get("evidencia_cientifica", ""),
+                "risco_nao_realizacao": data.get("risco_nao_realizacao", ""),
+                "conclusao": data.get("conclusao", ""),
+            }
+            # Compat: se o modelo antigo devolver justificativa_completa única, use-a.
+            body = _assemble_body(sections) or data.get("justificativa_completa", "")
             return DraftReport(
-                justificativa_completa=data.get("justificativa_completa", ""),
+                justificativa_completa=body,
                 diagnostico_resumo=data.get("diagnostico_resumo", ""),
+                quadro_clinico=data.get("quadro_clinico", ""),
                 falha_terapeutica=data.get("falha_terapeutica", ""),
+                justificativa_tecnica=data.get("justificativa_tecnica", ""),
+                evidencia_cientifica=data.get("evidencia_cientifica", ""),
                 risco_nao_realizacao=data.get("risco_nao_realizacao", ""),
+                conclusao=data.get("conclusao", ""),
                 base_legal=data.get("base_legal", ""),
                 referencias=data.get("referencias", []),
                 raw_response=raw,

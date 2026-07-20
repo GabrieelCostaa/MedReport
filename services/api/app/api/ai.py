@@ -18,8 +18,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
-from app.db.session import get_db
-from app.db.models import Product, Report, ReportTemplate, AuditAction
+from app.db.session import get_db, AsyncSessionLocal
+from app.db.models import Product, Report, ReportTemplate, AuditAction, User
 from app.core.security import get_current_user_id, require_current_user_id
 from app.services.agents.pipeline import ReportPipeline
 from app.services.agents.checklist import ReportChecklist
@@ -34,7 +34,22 @@ limiter = Limiter(key_func=get_remote_address)
 # Schemas
 # ============================================================================
 
-class StartReportIn(BaseModel):
+class _AntiGlosaFields(BaseModel):
+    """Campos opcionais de identificação exigidos por operadoras (anti-glosa).
+
+    Todos opcionais para não quebrar clientes atuais; renderizados no PDF quando
+    presentes e usados como contexto clínico no pipeline quando relevantes.
+    """
+    paciente_dob: Optional[str] = None            # data de nascimento
+    paciente_carteirinha: Optional[str] = None    # nº carteirinha do convênio
+    paciente_cpf: Optional[str] = None
+    guia_numero: Optional[str] = None             # nº da guia TISS
+    atendimento_numero: Optional[str] = None
+    cids_secundarios: Optional[list[str]] = None
+    materiais_tuss: Optional[list[dict]] = None    # [{"codigo","nome","qtd"}]
+
+
+class StartReportIn(_AntiGlosaFields):
     product_id: str
     paciente_nome: str
     cid: str
@@ -131,6 +146,7 @@ async def start_report(
         medico_inputs=medico_inputs,
         db=db,
         user_id=user_id,
+        extra_report_fields=_extra_report_fields(body),
     )
 
     if pipeline_result.get("error"):
@@ -193,6 +209,7 @@ async def start_report_stream(
                 db=db,
                 on_progress=on_progress,
                 user_id=user_id,
+                extra_report_fields=_extra_report_fields(body),
             )
             if pipeline_result.get("step") == "done":
                 report = await _save_report(db, user_id, product, body, pipeline_result)
@@ -287,7 +304,7 @@ async def answer_stream(
     return StreamingResponse(event_stream(), media_type="text/event-stream")
 
 
-class GenerateIn(BaseModel):
+class GenerateIn(_AntiGlosaFields):
     product_id: str
     paciente_nome: str
     cid: str
@@ -351,55 +368,62 @@ async def generate_batch(
 
         async def process_one(item: BatchItemIn, index: int):
             async with semaphore:
-                try:
-                    result_db = await db.execute(
-                        select(Product).where(Product.id == UUID(item.product_id))
-                    )
-                    product = result_db.scalar_one_or_none()
-                    if not product:
-                        job["results"].append({"index": index, "error": "Produto não encontrado"})
+                # Cada corrotina abre a PRÓPRIA sessão de banco: AsyncSession NÃO é
+                # segura para uso concorrente, e a sessão da request já foi fechada
+                # (este código roda em background após o retorno). Isolar por paciente
+                # elimina o risco de mistura/erro cross-paciente.
+                async with AsyncSessionLocal() as sdb:
+                    try:
+                        result_db = await sdb.execute(
+                            select(Product).where(Product.id == UUID(item.product_id))
+                        )
+                        product = result_db.scalar_one_or_none()
+                        if not product:
+                            job["results"].append({"index": index, "error": "Produto não encontrado"})
+                            job["failed"] += 1
+                            return
+
+                        template_result = await sdb.execute(
+                            select(ReportTemplate).where(ReportTemplate.produto_id == product.id).limit(1)
+                        )
+                        template = template_result.scalar_one_or_none()
+
+                        medico_inputs = {
+                            "paciente_nome": item.paciente_nome,
+                            "cid": item.cid,
+                            "diagnostico": item.diagnostico,
+                            "surgery_description": item.surgery_description or "",
+                            "health_plan": item.health_plan or "",
+                            "especialidade": item.especialidade or "",
+                        }
+
+                        pipeline_result = await ReportPipeline.start(
+                            product=product,
+                            template=template,
+                            diagnostico=item.diagnostico,
+                            cid=item.cid,
+                            medico_inputs=medico_inputs,
+                            db=sdb,
+                            user_id=user_id,
+                            extra_report_fields=_extra_report_fields(item),
+                        )
+
+                        if pipeline_result.get("step") == "done":
+                            report = await _save_report(sdb, user_id, product, item, pipeline_result)
+                            await sdb.commit()
+                            job["results"].append({
+                                "index": index,
+                                "report_id": str(report.id),
+                                "aprovado": pipeline_result.get("aprovado", False),
+                            })
+                            job["completed"] += 1
+                        else:
+                            job["results"].append({"index": index, "status": pipeline_result.get("step")})
+                            job["completed"] += 1
+
+                    except Exception as e:
+                        job["results"].append({"index": index, "error": str(e)})
                         job["failed"] += 1
-                        return
-
-                    template_result = await db.execute(
-                        select(ReportTemplate).where(ReportTemplate.produto_id == product.id).limit(1)
-                    )
-                    template = template_result.scalar_one_or_none()
-
-                    medico_inputs = {
-                        "paciente_nome": item.paciente_nome,
-                        "cid": item.cid,
-                        "diagnostico": item.diagnostico,
-                        "surgery_description": item.surgery_description or "",
-                        "health_plan": item.health_plan or "",
-                        "especialidade": item.especialidade or "",
-                    }
-
-                    pipeline_result = await ReportPipeline.start(
-                        product=product,
-                        template=template,
-                        diagnostico=item.diagnostico,
-                        cid=item.cid,
-                        medico_inputs=medico_inputs,
-                        db=db,
-                        user_id=user_id,
-                    )
-
-                    if pipeline_result.get("step") == "done":
-                        report = await _save_report(db, user_id, product, item, pipeline_result)
-                        job["results"].append({
-                            "index": index,
-                            "report_id": str(report.id),
-                            "aprovado": pipeline_result.get("aprovado", False),
-                        })
-                        job["completed"] += 1
-                    else:
-                        job["results"].append({"index": index, "status": pipeline_result.get("step")})
-                        job["completed"] += 1
-
-                except Exception as e:
-                    job["results"].append({"index": index, "error": str(e)})
-                    job["failed"] += 1
 
         await _asyncio.gather(
             *[process_one(item, i) for i, item in enumerate(body.items)],
@@ -475,6 +499,7 @@ async def generate_full(
         medico_inputs=medico_inputs,
         db=db,
         user_id=user_id,
+        extra_report_fields=_extra_report_fields(body),
     )
 
     if pipeline_result.get("error"):
@@ -700,12 +725,23 @@ async def download_pdf(
 
     product_name = ""
     product_tuss = ""
+    registro_anvisa = ""
     if report.product_id:
         prod_result = await db.execute(select(Product).where(Product.id == report.product_id))
         product = prod_result.scalar_one_or_none()
         if product:
             product_name = product.nome or ""
             product_tuss = product.codigo_tuss_sugerido or ""
+            registro_anvisa = product.registro_anvisa or ""
+
+    # Emitente (clínica/RQE) do usuário
+    clinica_nome = clinica_logo_url = medico_rqe = ""
+    u_res = await db.execute(select(User).where(User.id == report.user_id))
+    u = u_res.scalar_one_or_none()
+    if u:
+        clinica_nome = getattr(u, "clinica_nome", "") or ""
+        clinica_logo_url = getattr(u, "clinica_logo_url", "") or ""
+        medico_rqe = getattr(u, "rqe", "") or ""
 
     # Extract TUSS from report or product
     tuss_codes = getattr(report, "tuss_codes", None) or []
@@ -733,6 +769,18 @@ async def download_pdf(
         falha_terapeutica=getattr(report, "falha_terapeutica", "") or "",
         risco_nao_realizacao=getattr(report, "risco_nao_realizacao", "") or "",
         base_legal=getattr(report, "base_legal_ans", "") or "",
+        medico_rqe=medico_rqe,
+        clinica_nome=clinica_nome,
+        clinica_logo_url=clinica_logo_url,
+        paciente_dob=getattr(report, "paciente_dob", "") or "",
+        paciente_carteirinha=getattr(report, "paciente_carteirinha", "") or "",
+        paciente_cpf=getattr(report, "paciente_cpf", "") or "",
+        guia_numero=getattr(report, "guia_numero", "") or "",
+        atendimento_numero=getattr(report, "atendimento_numero", "") or "",
+        cids_secundarios=getattr(report, "cids_secundarios", None) or [],
+        materiais_tuss=getattr(report, "materiais_tuss", None) or [],
+        registro_anvisa=registro_anvisa,
+        compliance_texto=getattr(report, "compliance_texto", "") or "",
     )
 
     # LGPD audit: log PDF export
@@ -766,6 +814,19 @@ def _build_tuss_codes(product) -> list[dict] | None:
     return None
 
 
+def _extra_report_fields(body) -> dict:
+    """Campos administrativos anti-glosa do request (não vão para o prompt do LLM;
+    são carregados pela sessão e persistidos no Report ao final)."""
+    return {
+        k: getattr(body, k, None)
+        for k in (
+            "paciente_dob", "paciente_carteirinha", "paciente_cpf",
+            "guia_numero", "atendimento_numero", "cids_secundarios", "materiais_tuss",
+        )
+        if getattr(body, k, None)
+    }
+
+
 async def _save_report(db, user_id, product, body, pipeline_result, request: Request = None) -> Report:
     """Cria Report a partir do resultado do pipeline."""
     report = Report(
@@ -773,11 +834,18 @@ async def _save_report(db, user_id, product, body, pipeline_result, request: Req
         product_id=product.id,
         status="review",
         paciente_nome=body.paciente_nome,
+        paciente_dob=getattr(body, "paciente_dob", None),
+        paciente_carteirinha=getattr(body, "paciente_carteirinha", None),
+        paciente_cpf=getattr(body, "paciente_cpf", None),
+        guia_numero=getattr(body, "guia_numero", None),
+        atendimento_numero=getattr(body, "atendimento_numero", None),
         especialidade=body.especialidade or pipeline_result.get("especialidade"),
         cid=body.cid,
+        cids_secundarios=getattr(body, "cids_secundarios", None),
         diagnosis=body.diagnostico,
         surgery_description=body.surgery_description,
         materials=product.nome,
+        materiais_tuss=getattr(body, "materiais_tuss", None),
         health_plan=body.health_plan,
         tuss_codes=_build_tuss_codes(product),
         justificativa_ia=pipeline_result.get("justificativa", ""),
@@ -791,6 +859,8 @@ async def _save_report(db, user_id, product, body, pipeline_result, request: Req
         approval_score=pipeline_result.get("approval_score"),
         approval_score_details=pipeline_result.get("approval_componentes"),
         compliance_mode=pipeline_result.get("compliance_mode"),
+        compliance_texto=pipeline_result.get("compliance_texto"),
+        operadora_registro_ans=pipeline_result.get("operadora_registro_ans"),
     )
     db.add(report)
     await db.flush()
@@ -814,11 +884,19 @@ async def _save_report_from_session(db, user_id, session, pipeline_result) -> Re
     product = session.product
     inputs = session.medico_inputs
 
+    extra = getattr(session, "extra_report_fields", None) or {}
     report = Report(
         user_id=UUID(user_id) if user_id else None,
         product_id=product.id,
         status="review",
         paciente_nome=inputs.get("paciente_nome", ""),
+        paciente_dob=extra.get("paciente_dob"),
+        paciente_carteirinha=extra.get("paciente_carteirinha"),
+        paciente_cpf=extra.get("paciente_cpf"),
+        guia_numero=extra.get("guia_numero"),
+        atendimento_numero=extra.get("atendimento_numero"),
+        cids_secundarios=extra.get("cids_secundarios"),
+        materiais_tuss=extra.get("materiais_tuss"),
         especialidade=inputs.get("especialidade", ""),
         cid=inputs.get("cid", ""),
         diagnosis=inputs.get("diagnostico", ""),
@@ -837,6 +915,8 @@ async def _save_report_from_session(db, user_id, session, pipeline_result) -> Re
         approval_score=pipeline_result.get("approval_score"),
         approval_score_details=pipeline_result.get("approval_componentes"),
         compliance_mode=pipeline_result.get("compliance_mode"),
+        compliance_texto=pipeline_result.get("compliance_texto"),
+        operadora_registro_ans=pipeline_result.get("operadora_registro_ans"),
     )
     db.add(report)
     await db.flush()

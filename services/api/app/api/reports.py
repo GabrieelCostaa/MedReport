@@ -5,6 +5,13 @@ from uuid import UUID
 from io import BytesIO
 from typing import Optional
 
+try:
+    from zoneinfo import ZoneInfo
+    _BR_TZ = ZoneInfo("America/Sao_Paulo")
+except Exception:  # pragma: no cover - fallback se tzdata ausente
+    from datetime import timezone, timedelta
+    _BR_TZ = timezone(timedelta(hours=-3))
+
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import Response, StreamingResponse
 from sqlalchemy import select, func
@@ -171,12 +178,14 @@ async def sign_report(
     # Resolve produto
     product_name = ""
     codigo_tuss = ""
+    registro_anvisa = ""
     if getattr(report, "product_id", None):
         prod_result = await db.execute(select(Product).where(Product.id == report.product_id))
         product = prod_result.scalar_one_or_none()
         if product:
             product_name = product.nome or ""
             codigo_tuss = product.codigo_tuss_sugerido or ""
+            registro_anvisa = product.registro_anvisa or ""
 
     tuss_codes = getattr(report, "tuss_codes", None) or []
     if tuss_codes and isinstance(tuss_codes, list):
@@ -187,8 +196,8 @@ async def sign_report(
     refs = report.referencias_bib if isinstance(getattr(report, "referencias_bib", None), list) else []
     aprovado = all(checklist.values()) if checklist else True
 
-    signed_at = datetime.utcnow()
-    signed_at_str = signed_at.strftime("%d/%m/%Y às %H:%M:%S UTC")
+    signed_at = datetime.now(_BR_TZ)
+    signed_at_str = signed_at.strftime("%d/%m/%Y às %H:%M") + " (horário de Brasília)"
     medico_crm_fmt = f"CRM/{user.crm_uf} {user.crm}" if user.crm_uf else f"CRM {user.crm}"
 
     from app.core.config import settings
@@ -214,6 +223,18 @@ async def sign_report(
             base_legal=getattr(report, "base_legal_ans", "") or "",
             medico_nome=user.nome or "",
             medico_crm=medico_crm_fmt,
+            medico_rqe=getattr(user, "rqe", "") or "",
+            clinica_nome=getattr(user, "clinica_nome", "") or "",
+            clinica_logo_url=getattr(user, "clinica_logo_url", "") or "",
+            paciente_dob=getattr(report, "paciente_dob", "") or "",
+            paciente_carteirinha=getattr(report, "paciente_carteirinha", "") or "",
+            paciente_cpf=getattr(report, "paciente_cpf", "") or "",
+            guia_numero=getattr(report, "guia_numero", "") or "",
+            atendimento_numero=getattr(report, "atendimento_numero", "") or "",
+            cids_secundarios=getattr(report, "cids_secundarios", None) or [],
+            materiais_tuss=getattr(report, "materiais_tuss", None) or [],
+            registro_anvisa=registro_anvisa,
+            compliance_texto=getattr(report, "compliance_texto", "") or "",
             signed_at_str=signed_at_str,
             # hash ainda não existe — será calculado após gerar o PDF
             signature_hash="",
@@ -222,14 +243,22 @@ async def sign_report(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao gerar PDF: {str(e)}")
 
-    # PAdES digital signature (embedded in PDF)
+    # PAdES digital signature (embedded in PDF).
+    # Se ICP_BRASIL_PFX_PATH estiver configurado, assina com certificado qualificado;
+    # caso contrário usa certificado self-signed (assinatura avançada, dev).
+    # pyHanko usa asyncio internamente e a versão síncrona não roda dentro do event
+    # loop do FastAPI — por isso executamos em thread separada (to_thread).
     try:
+        import asyncio as _asyncio
         from app.services.pdf_signer import sign_pdf_pades
-        pdf_bytes = sign_pdf_pades(
+        pdf_bytes = await _asyncio.to_thread(
+            sign_pdf_pades,
             pdf_bytes,
             medico_nome=user.nome or "",
             medico_crm=medico_crm_fmt,
             reason="Assinatura eletrônica de relatório OPME",
+            pfx_path=settings.ICP_BRASIL_PFX_PATH,
+            pfx_password=settings.ICP_BRASIL_PFX_PASSWORD,
         )
     except Exception as e:
         logger.warning("PAdES signing failed (continuing with unsigned PDF): %s", e)
@@ -372,12 +401,24 @@ async def download_report(
     # Resolve product name and TUSS code
     product_name = ""
     product_tuss = ""
+    registro_anvisa = ""
     if hasattr(r, "product_id") and r.product_id:
         prod_result = await db.execute(select(Product).where(Product.id == r.product_id))
         product = prod_result.scalar_one_or_none()
         if product:
             product_name = product.nome or ""
             product_tuss = product.codigo_tuss_sugerido or ""
+            registro_anvisa = product.registro_anvisa or ""
+
+    # Emitente (clínica/RQE) a partir do usuário dono do relatório
+    clinica_nome = clinica_logo_url = medico_rqe = ""
+    if getattr(r, "user_id", None):
+        u_res = await db.execute(select(User).where(User.id == r.user_id))
+        u = u_res.scalar_one_or_none()
+        if u:
+            clinica_nome = getattr(u, "clinica_nome", "") or ""
+            clinica_logo_url = getattr(u, "clinica_logo_url", "") or ""
+            medico_rqe = getattr(u, "rqe", "") or ""
 
     # Extract TUSS from report.tuss_codes JSON or product
     tuss_codes = getattr(r, "tuss_codes", None) or []
@@ -412,6 +453,18 @@ async def download_report(
             if getattr(r, "medico_crm", None) and getattr(r, "medico_crm_uf", None)
             else (getattr(r, "medico_crm", "") or "")
         ),
+        medico_rqe=medico_rqe,
+        clinica_nome=clinica_nome,
+        clinica_logo_url=clinica_logo_url,
+        paciente_dob=getattr(r, "paciente_dob", "") or "",
+        paciente_carteirinha=getattr(r, "paciente_carteirinha", "") or "",
+        paciente_cpf=getattr(r, "paciente_cpf", "") or "",
+        guia_numero=getattr(r, "guia_numero", "") or "",
+        atendimento_numero=getattr(r, "atendimento_numero", "") or "",
+        cids_secundarios=getattr(r, "cids_secundarios", None) or [],
+        materiais_tuss=getattr(r, "materiais_tuss", None) or [],
+        registro_anvisa=registro_anvisa,
+        compliance_texto=getattr(r, "compliance_texto", "") or "",
     )
 
     if format == "docx":

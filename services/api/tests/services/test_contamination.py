@@ -106,3 +106,19 @@ class TestFullContaminationCheck:
         result = check_contamination(text, synvisc, [synvisc, seprafilm])
         assert not result.clean
         assert len(result.issues) >= 2  # cross-product + training leak
+
+    def test_all_products_enables_cross_product_detection(self):
+        """Regressão: sem all_products a detecção cross-produto fica desligada;
+        com all_products (caminho novo do pipeline) ela é ativada."""
+        synvisc = _make_product("Synvisc-One", "80030810056")
+        seprafilm = _make_product("Seprafilm", "80030810099")
+        text = "Indica-se Seprafilm para viscossuplementação do joelho."
+
+        sem = check_contamination(text, synvisc)  # all_products=None
+        com = check_contamination(text, synvisc, [synvisc, seprafilm])
+
+        _cross = {"cross_product", "fingerprint"}
+        cross_sem = [i for i in sem.issues if i.tipo in _cross]
+        cross_com = [i for i in com.issues if i.tipo in _cross]
+        assert len(cross_sem) == 0
+        assert len(cross_com) >= 1

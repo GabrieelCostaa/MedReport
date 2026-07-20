@@ -21,10 +21,14 @@ logger = logging.getLogger(__name__)
 
 try:
     from pyhanko.sign import signers, fields as sig_fields
-    from pyhanko.sign.general import SimpleSigner
+    # SimpleSigner vive em pyhanko.sign.signers nas versões atuais (0.2x+);
+    # em versões antigas ficava em pyhanko.sign.general.
+    try:
+        from pyhanko.sign.signers import SimpleSigner
+    except ImportError:  # pragma: no cover - compat com pyHanko legado
+        from pyhanko.sign.general import SimpleSigner
     from pyhanko.pdf_utils.reader import PdfFileReader
     from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
-    from pyhanko import stamp
     PYHANKO_AVAILABLE = True
 except ImportError:
     PYHANKO_AVAILABLE = False
@@ -77,10 +81,28 @@ def _create_self_signed_signer(
         )
         cert_pem = cert.public_bytes(serialization.Encoding.PEM)
 
-        return SimpleSigner.load(
-            key_pem, cert_pem,
-            ca_chain_files=None,
-            key_passphrase=None,
+        # Constrói o SimpleSigner a partir dos PEMs EM MEMÓRIA (sem arquivo em disco).
+        # As versões atuais do pyHanko expõem load_*_from_pemder_data para isso;
+        # SimpleSigner.load() passou a exigir caminhos de arquivo.
+        from pyhanko.keys import (
+            load_private_key_from_pemder_data,
+            load_certs_from_pemder_data,
+        )
+        try:
+            from pyhanko_certvalidator.registry import SimpleCertificateStore
+        except ImportError:  # pragma: no cover
+            from pyhanko.sign.general import SimpleCertificateStore
+
+        signing_key = load_private_key_from_pemder_data(key_pem, passphrase=None)
+        certs = list(load_certs_from_pemder_data(cert_pem))
+        signing_cert = certs[0]
+        registry = SimpleCertificateStore()
+        registry.register_multiple(certs)
+
+        return SimpleSigner(
+            signing_cert=signing_cert,
+            signing_key=signing_key,
+            cert_registry=registry,
         )
     except Exception as e:
         logger.warning("Failed to create self-signed signer: %s", e)
@@ -139,9 +161,9 @@ def sign_pdf_pades(
             logger.warning("No signer available, returning unsigned PDF")
             return pdf_bytes
 
-        # Read PDF
-        reader = PdfFileReader(io.BytesIO(pdf_bytes))
-        writer = IncrementalPdfFileWriter(reader)
+        # Incremental writer diretamente do stream do PDF (pyHanko atual recebe
+        # o stream binário; versões antigas recebiam o PdfFileReader).
+        writer = IncrementalPdfFileWriter(io.BytesIO(pdf_bytes))
 
         # Add signature field (invisible by default)
         sig_field_name = "MedReportSignature"

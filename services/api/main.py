@@ -11,7 +11,7 @@ from slowapi.errors import RateLimitExceeded
 from app.core.logging_config import setup_logging, setup_opentelemetry
 setup_logging()
 
-from app.api import auth, reports, tuss, quotes, ai, erp_mock, notifications, products
+from app.api import auth, reports, tuss, quotes, ai, erp_mock, notifications, products, glosas
 from app.core.config import settings
 from app.db.init_db import create_tables, seed
 
@@ -25,14 +25,21 @@ async def _auto_etl_if_empty():
     Garante que o sistema nunca fique sem dados regulatórios.
     """
     import asyncio as _aio
+    from datetime import datetime, timedelta, timezone
     from sqlalchemy import select, func
     from app.db.session import AsyncSessionLocal
-    from app.db.models import TussMaterial, TussProcedure, AnvisaProduct
+    from app.db.models import (
+        TussMaterial, TussProcedure, AnvisaProduct,
+        GlosaMotivo, OperadoraGlosaIndicador,
+    )
 
     try:
         async with AsyncSessionLocal() as db:
             tuss_count = (await db.execute(select(func.count(TussMaterial.codigo_tuss)))).scalar()
             anvisa_count = (await db.execute(select(func.count(AnvisaProduct.id)))).scalar()
+            glosa_motivos_count = (await db.execute(select(func.count(GlosaMotivo.codigo)))).scalar()
+            glosa_panel_count = (await db.execute(select(func.count(OperadoraGlosaIndicador.id)))).scalar()
+            glosa_panel_last = (await db.execute(select(func.max(OperadoraGlosaIndicador.created_at)))).scalar()
 
         tasks = []
 
@@ -60,10 +67,47 @@ async def _auto_etl_if_empty():
                     logging.getLogger("startup").warning("Auto-ETL ANVISA falhou: %s", e)
             tasks.append(_load_anvisa())
 
+        if glosa_motivos_count < 10:
+            logging.getLogger("startup").info(
+                "Tabela 38 vazia (%d) — carregando do arquivo do repo...", glosa_motivos_count)
+            async def _load_tabela38():
+                try:
+                    from scripts.etl.ingest_tabela38 import run_etl
+                    async with AsyncSessionLocal() as db:
+                        result = await run_etl(db_session=db)
+                        logging.getLogger("startup").info("Tabela 38 carregada: %s", result)
+                except Exception as e:
+                    logging.getLogger("startup").warning("Auto-ETL Tabela 38 falhou: %s", e)
+            tasks.append(_load_tabela38())
+
+        # Painel de Glosas: carrega se vazio OU refresh mensal (snapshot ~8,5MB)
+        panel_stale = False
+        if glosa_panel_last is not None:
+            last = glosa_panel_last
+            if last.tzinfo is None:
+                last = last.replace(tzinfo=timezone.utc)
+            panel_stale = datetime.now(timezone.utc) - last > timedelta(days=30)
+        if glosa_panel_count < 100 or panel_stale:
+            motivo = "vazio" if glosa_panel_count < 100 else "desatualizado (>30 dias)"
+            logging.getLogger("startup").info(
+                "Painel de Glosas %s — baixando dados abertos da ANS em background...", motivo)
+            async def _load_glosa_panel():
+                try:
+                    from scripts.etl.download_glosa_panel import run_etl
+                    async with AsyncSessionLocal() as db:
+                        result = await run_etl(db_session=db)
+                        logging.getLogger("startup").info("Painel de Glosas carregado: %s", result)
+                except Exception as e:
+                    logging.getLogger("startup").warning("Auto-ETL Painel de Glosas falhou: %s", e)
+            tasks.append(_load_glosa_panel())
+
         if tasks:
             await _aio.gather(*tasks)
         else:
-            logging.getLogger("startup").info("Dados regulatórios OK (TUSS=%d, ANVISA=%d)", tuss_count, anvisa_count)
+            logging.getLogger("startup").info(
+                "Dados regulatórios OK (TUSS=%d, ANVISA=%d, Tab38=%d, PainelGlosas=%d)",
+                tuss_count, anvisa_count, glosa_motivos_count, glosa_panel_count,
+            )
 
     except Exception as e:
         logging.getLogger("startup").warning("Auto-ETL check falhou (non-blocking): %s", e)
@@ -119,6 +163,7 @@ app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(auth.token_router, prefix="/auth", tags=["token"])
 app.include_router(reports.router, prefix="/api/reports", tags=["reports"])
 app.include_router(tuss.router, prefix="/api/tuss", tags=["tuss"])
+app.include_router(glosas.router, prefix="/api/glosas", tags=["glosas"])
 app.include_router(quotes.router, prefix="/api/quotes", tags=["quotes"])
 app.include_router(ai.router, prefix="/api/ai", tags=["ai"])
 app.include_router(products.router, prefix="/api/products", tags=["products"])

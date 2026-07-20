@@ -52,6 +52,22 @@ async def main():
     except Exception as e:
         print(f"Modelos ERRO: {e}")
 
+    print("\n--- TISS Tabela 38 (Motivos de Glosa — arquivo do repo) ---")
+    try:
+        from scripts.etl.ingest_tabela38 import run_etl as tabela38_etl
+        async with AsyncSessionLocal() as db:
+            print(f"Tabela 38: {await tabela38_etl(db_session=db)}")
+    except Exception as e:
+        print(f"Tabela 38 ERRO: {e}")
+
+    print("\n--- Painel de Glosas ANS (PDA-057, por operadora) ---")
+    try:
+        from scripts.etl.download_glosa_panel import run_etl as glosa_panel_etl
+        async with AsyncSessionLocal() as db:
+            print(f"Painel Glosas: {await glosa_panel_etl(db_session=db)}")
+    except Exception as e:
+        print(f"Painel Glosas ERRO: {e}")
+
     print("\n" + "=" * 60)
     print("ETL concluído.")
     print("Nota: DUT requer OPENAI_API_KEY para estruturação LLM.")

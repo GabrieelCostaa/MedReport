@@ -54,9 +54,13 @@ async def _get_redis():
         return None
 
 
-async def create_session(user_id: str, data: dict) -> str:
-    """Create a new session with TTL. Returns session_id."""
-    session_id = str(uuid.uuid4())
+async def create_session(user_id: str, data: dict, session_id: Optional[str] = None) -> str:
+    """Create a new session with TTL. Returns session_id.
+
+    Passe `session_id` para reutilizar o id do pipeline — caso contrário a chave
+    do Redis nunca casaria com o id usado por answer()/get_session (bug histórico).
+    """
+    session_id = session_id or str(uuid.uuid4())
     payload = {
         "user_id": user_id,
         "created_at": datetime.utcnow().isoformat(),

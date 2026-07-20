@@ -6,11 +6,17 @@
 <style>
   @page {
     size: A4;
-    margin: 20mm 22mm 25mm 22mm;
+    margin: 18mm 20mm 22mm 20mm;
     @bottom-center {
       content: "Página " counter(page) " de " counter(pages);
       font-size: 7.5pt;
       color: #aaa;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    @bottom-right {
+      content: "Protocolo {{ protocolo }}";
+      font-size: 7pt;
+      color: #bbb;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
   }
@@ -24,37 +30,47 @@
     color: #2d2d2d;
   }
 
-  /* ── HEADER ── */
-  .header {
+  /* ── LETTERHEAD ── */
+  .letterhead {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     border-bottom: 2.5px solid #1a3c6e;
     padding-bottom: 10px;
-    margin-bottom: 16px;
+    margin-bottom: 4px;
   }
-
-  .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
-
-  .header-title {
+  .letterhead-logo img { max-height: 54px; max-width: 150px; display: block; }
+  .letterhead-text { flex: 1; }
+  .clinica-nome {
     font-size: 15pt;
     font-weight: 700;
     color: #1a3c6e;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
   }
-
-  .header-subtitle {
-    font-size: 8.5pt;
+  .clinica-sub {
+    font-size: 8pt;
     color: #888;
-    margin-top: 2px;
+    margin-top: 1px;
   }
-
-  .header-date {
+  .letterhead-meta {
+    text-align: right;
     font-size: 8pt;
     color: #999;
-    text-align: right;
-    line-height: 1.4;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+
+  /* ── DOCUMENT TITLE BAND ── */
+  .doc-title {
+    text-align: center;
+    font-size: 11pt;
+    font-weight: 700;
+    color: #1a3c6e;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 8px 0 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #dce3ee;
   }
 
   /* ── METADATA ── */
@@ -65,37 +81,58 @@
     background: #f5f7fb;
     border: 1px solid #dce3ee;
     border-radius: 4px;
-    margin-bottom: 18px;
-    font-size: 9pt;
+    margin-bottom: 14px;
+    font-size: 8.8pt;
   }
-
   .meta-item {
-    padding: 6px 12px;
+    padding: 5px 12px;
     border-bottom: 1px solid #e8ecf2;
     display: flex;
     gap: 6px;
   }
-
-  .meta-item:nth-last-child(-n+2) {
-    border-bottom: none;
-  }
-
+  .meta-item.full { grid-column: 1 / -1; }
   .meta-label {
     font-weight: 600;
     color: #1a3c6e;
     white-space: nowrap;
-    min-width: 100px;
+    min-width: 92px;
   }
+  .meta-value { color: #444; }
 
-  .meta-value {
-    color: #444;
-  }
-
-  /* ── SECTIONS ── */
-  .section {
+  /* ── MATERIAIS TABLE ── */
+  .materiais {
     margin-bottom: 14px;
   }
+  .materiais-title {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #1a3c6e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  table.mat {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.8pt;
+  }
+  table.mat th {
+    background: #eef2f9;
+    color: #1a3c6e;
+    text-align: left;
+    padding: 4px 8px;
+    border: 1px solid #dce3ee;
+    font-weight: 600;
+  }
+  table.mat td {
+    padding: 4px 8px;
+    border: 1px solid #e8ecf2;
+    color: #444;
+  }
+  table.mat td.qtd { text-align: center; width: 60px; }
 
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 13px; }
   .section-title {
     font-size: 10pt;
     font-weight: 700;
@@ -106,15 +143,8 @@
     padding-bottom: 3px;
     margin-bottom: 8px;
   }
-
-  .section-body {
-    text-align: justify;
-  }
-
-  .section-body p {
-    margin-bottom: 7px;
-    text-indent: 2em;
-  }
+  .section-body { text-align: justify; }
+  .section-body p { margin-bottom: 7px; text-indent: 2em; }
 
   /* ── LEGAL BLOCK ── */
   .legal-block {
@@ -125,11 +155,7 @@
     font-size: 9.5pt;
     color: #555;
   }
-
-  .legal-block p {
-    margin-bottom: 4px;
-    text-indent: 0;
-  }
+  .legal-block p { margin-bottom: 4px; text-indent: 0; }
 
   /* ── REFERENCES ── */
   .references {
@@ -137,30 +163,12 @@
     color: #666;
     border-top: 1px solid #ddd;
     padding-top: 8px;
-    margin-top: 16px;
+    margin-top: 14px;
   }
-
-  .references-title {
-    font-size: 9pt;
-    font-weight: 700;
-    color: #1a3c6e;
-    margin-bottom: 4px;
-  }
-
-  .references ol {
-    padding-left: 18px;
-  }
-
-  .references li {
-    margin-bottom: 2px;
-    line-height: 1.4;
-  }
-
-  .references li a {
-    color: #1a3c6e;
-    text-decoration: none;
-    font-size: 7.5pt;
-  }
+  .references-title { font-size: 9pt; font-weight: 700; color: #1a3c6e; margin-bottom: 4px; }
+  .references ol { padding-left: 18px; }
+  .references li { margin-bottom: 2px; line-height: 1.4; }
+  .references li a { color: #1a3c6e; text-decoration: none; font-size: 7.5pt; }
 
   /* ── CHECKLIST ── */
   .checklist {
@@ -174,43 +182,19 @@
     border: 1px solid #d0ddd0;
     border-radius: 3px;
   }
-
-  .checklist-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
+  .checklist-item { display: flex; align-items: center; gap: 5px; }
   .check-ok { color: #27ae60; font-weight: bold; }
   .check-fail { color: #c0392b; font-weight: bold; }
 
-  /* ── SIGNATURE ── */
-  .closing {
-    margin-top: 30px;
-    text-align: center;
-    font-size: 10pt;
-  }
-
-  .closing .line {
-    width: 220px;
-    border-top: 1px solid #444;
-    margin: 36px auto 5px;
-  }
-
-  .closing .doctor-name {
-    font-weight: 700;
-    font-size: 10.5pt;
-    color: #2d2d2d;
-  }
-
-  .closing .crm {
-    color: #888;
-    font-size: 8.5pt;
-  }
+  /* ── SIGNATURE (unsigned) ── */
+  .closing { margin-top: 30px; text-align: center; font-size: 10pt; }
+  .closing .line { width: 240px; border-top: 1px solid #444; margin: 40px auto 5px; }
+  .closing .doctor-name { font-weight: 700; font-size: 10.5pt; color: #2d2d2d; }
+  .closing .crm { color: #888; font-size: 8.5pt; }
 
   /* ── ASSINATURA ELETRÔNICA ── */
   .sig-block {
-    margin-top: 28px;
+    margin-top: 26px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -220,74 +204,25 @@
     background: #f4f7ff;
     gap: 16px;
   }
-
   .sig-content { flex: 1; }
-
-  .sig-line-short {
-    width: 160px;
-    border-top: 1px solid #444;
-    margin-bottom: 8px;
-  }
-
-  .sig-name {
-    font-weight: 700;
-    font-size: 10.5pt;
-    color: #2d2d2d;
-  }
-
-  .sig-crm {
-    color: #888;
-    font-size: 8pt;
-    margin-bottom: 8px;
-  }
-
-  .sig-label {
-    font-size: 7pt;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    margin-bottom: 2px;
-  }
-
-  .sig-date {
-    font-size: 9pt;
-    color: #1a3c6e;
-    font-weight: 700;
-  }
-
-  .sig-hash {
-    font-size: 6.5pt;
-    color: #aaa;
-    font-family: 'Courier New', Courier, monospace;
-    margin-top: 5px;
-    word-break: break-all;
-  }
-
-  .sig-qr {
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-  .sig-qr img {
-    display: block;
-    width: 78px;
-    height: 78px;
-  }
-
-  .sig-scan {
-    font-size: 6pt;
-    color: #888;
-    margin-top: 3px;
-  }
+  .sig-name { font-weight: 700; font-size: 10.5pt; color: #2d2d2d; }
+  .sig-crm { color: #888; font-size: 8pt; margin-bottom: 8px; }
+  .sig-label { font-size: 7pt; color: #888; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
+  .sig-date { font-size: 9pt; color: #1a3c6e; font-weight: 700; }
+  .sig-hash { font-size: 6.5pt; color: #aaa; font-family: 'Courier New', Courier, monospace; margin-top: 5px; word-break: break-all; }
+  .sig-qr { text-align: center; flex-shrink: 0; }
+  .sig-qr img { display: block; width: 78px; height: 78px; }
+  .sig-scan { font-size: 6pt; color: #888; margin-top: 3px; }
 
   /* ── FOOTER ── */
   .doc-footer {
-    margin-top: 20px;
+    margin-top: 18px;
     text-align: center;
     font-size: 7.5pt;
     color: #bbb;
     border-top: 1px solid #eee;
     padding-top: 6px;
+    line-height: 1.5;
   }
 
   /* ── WATERMARK ── */
@@ -309,28 +244,51 @@
 
 {% if watermark %}<div class="watermark">{{ watermark }}</div>{% endif %}
 
-<div class="header">
-  <div class="header-top">
-    <div>
-      <div class="header-title">Relatório Médico Complementar</div>
-      <div class="header-subtitle">Justificativa Técnica para Autorização de Material OPME</div>
-    </div>
-    <div class="header-date">
-      {{ data_emissao }}<br>
-      Protocolo: {{ protocolo }}
-    </div>
+<!-- LETTERHEAD -->
+<div class="letterhead">
+  {% if clinica_logo_url %}
+  <div class="letterhead-logo"><img src="{{ clinica_logo_url }}" alt="Logotipo"></div>
+  {% endif %}
+  <div class="letterhead-text">
+    <div class="clinica-nome">{{ clinica_nome or 'Relatório Médico Complementar' }}</div>
+    <div class="clinica-sub">Documento médico complementar</div>
+  </div>
+  <div class="letterhead-meta">
+    Emissão: {{ data_emissao }}<br>
+    Protocolo: {{ protocolo }}
   </div>
 </div>
 
+<div class="doc-title">Justificativa Técnica para Autorização de Material OPME</div>
+
+<!-- METADATA -->
 <div class="meta-grid">
   <div class="meta-item">
     <span class="meta-label">Paciente:</span>
     <span class="meta-value">{{ paciente_nome }}</span>
   </div>
   <div class="meta-item">
+    <span class="meta-label">Nascimento:</span>
+    <span class="meta-value">{{ paciente_dob or '—' }}</span>
+  </div>
+  <div class="meta-item">
     <span class="meta-label">Convênio:</span>
     <span class="meta-value">{{ convenio }}</span>
   </div>
+  <div class="meta-item">
+    <span class="meta-label">Carteirinha:</span>
+    <span class="meta-value">{{ paciente_carteirinha or '—' }}</span>
+  </div>
+  {% if paciente_cpf or guia_numero %}
+  <div class="meta-item">
+    <span class="meta-label">CPF:</span>
+    <span class="meta-value">{{ paciente_cpf or '—' }}</span>
+  </div>
+  <div class="meta-item">
+    <span class="meta-label">Guia / Atend.:</span>
+    <span class="meta-value">{{ guia_numero or '—' }}{% if atendimento_numero %} / {{ atendimento_numero }}{% endif %}</span>
+  </div>
+  {% endif %}
   <div class="meta-item">
     <span class="meta-label">Diagnóstico (CID):</span>
     <span class="meta-value">{{ cid }}{% if diagnostico_resumo %} — {{ diagnostico_resumo }}{% endif %}</span>
@@ -339,46 +297,67 @@
     <span class="meta-label">Especialidade:</span>
     <span class="meta-value">{{ especialidade or '—' }}</span>
   </div>
+  {% if cids_secundarios %}
+  <div class="meta-item full">
+    <span class="meta-label">CID secundários:</span>
+    <span class="meta-value">{{ cids_secundarios | join(', ') }}</span>
+  </div>
+  {% endif %}
   <div class="meta-item">
     <span class="meta-label">Material OPME:</span>
     <span class="meta-value">{{ produto_nome }}</span>
   </div>
-  {% if codigo_tuss %}
   <div class="meta-item">
     <span class="meta-label">Código TUSS:</span>
-    <span class="meta-value">{{ codigo_tuss }}</span>
+    <span class="meta-value">{{ codigo_tuss or '—' }}</span>
+  </div>
+  {% if registro_anvisa %}
+  <div class="meta-item full">
+    <span class="meta-label">Registro ANVISA:</span>
+    <span class="meta-value">{{ registro_anvisa }}</span>
   </div>
   {% endif %}
 </div>
 
-<!-- JUSTIFICATIVA TÉCNICA -->
-<div class="section">
-  <div class="section-title">Justificativa Técnica</div>
-  <div class="section-body">
-    {% for paragrafo in justificativa_paragrafos %}
-    <p>{{ paragrafo }}</p>
-    {% endfor %}
-  </div>
-</div>
-
-<!-- FALHA TERAPÊUTICA -->
-{% if falha_terapeutica_paragrafos %}
-<div class="section">
-  <div class="section-title">Falha Terapêutica e Tratamentos Prévios</div>
-  <div class="section-body">
-    {% for paragrafo in falha_terapeutica_paragrafos %}
-    <p>{{ paragrafo }}</p>
-    {% endfor %}
-  </div>
+<!-- MATERIAIS -->
+{% if materiais_tuss %}
+<div class="materiais">
+  <div class="materiais-title">Materiais Solicitados</div>
+  <table class="mat">
+    <thead>
+      <tr><th>Código TUSS</th><th>Descrição do material</th><th class="qtd">Qtd.</th></tr>
+    </thead>
+    <tbody>
+      {% for m in materiais_tuss %}
+      <tr>
+        <td>{{ m.codigo or '—' }}</td>
+        <td>{{ m.nome or '—' }}</td>
+        <td class="qtd">{{ m.qtd or 1 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endif %}
 
-<!-- RISCO DA NÃO REALIZAÇÃO -->
-{% if risco_paragrafos %}
+<!-- SEÇÕES CLÍNICAS -->
+{% for sec in secoes %}
 <div class="section">
-  <div class="section-title">Risco da Não Realização do Procedimento</div>
+  <div class="section-title">{{ sec.titulo }}</div>
   <div class="section-body">
-    {% for paragrafo in risco_paragrafos %}
+    {% for paragrafo in sec.paragrafos %}
+    <p>{{ paragrafo }}</p>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+
+<!-- ADEQUAÇÃO DUT/ROL -->
+{% if compliance_texto %}
+<div class="section">
+  <div class="section-title">Adequação ao Rol / DUT (ANS)</div>
+  <div class="legal-block">
+    {% for paragrafo in compliance_texto %}
     <p>{{ paragrafo }}</p>
     {% endfor %}
   </div>
@@ -406,9 +385,7 @@
     <li>
       {% if ref is mapping %}
         {{ ref.texto }}
-        {% if ref.link %}
-          <a href="{{ ref.link }}">[Verificar]</a>
-        {% endif %}
+        {% if ref.link %}<a href="{{ ref.link }}">[Verificar]</a>{% endif %}
       {% else %}
         {{ ref }}
       {% endif %}
@@ -434,9 +411,8 @@
 {% if signed_at_str %}
 <div class="sig-block">
   <div class="sig-content">
-    <div class="sig-line-short"></div>
-    <div class="sig-name">{{ medico_nome | default('[Nome do Médico Responsável]') }}</div>
-    <div class="sig-crm">{{ medico_crm | default('CRM: __________') }}</div>
+    <div class="sig-name">{{ medico_nome or '[Nome do Médico Responsável]' }}</div>
+    <div class="sig-crm">{{ medico_crm or 'CRM: __________' }}{% if medico_rqe %} · RQE {{ medico_rqe }}{% endif %}</div>
     <div class="sig-label">Assinado eletronicamente em</div>
     <div class="sig-date">{{ signed_at_str }}</div>
     {% if signature_hash %}
@@ -445,7 +421,7 @@
   </div>
   {% if qr_b64 %}
   <div class="sig-qr">
-    <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code para verificação de autenticidade do relatório OPME" role="img" aria-label="Escaneie para verificar autenticidade">
+    <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code para verificação de autenticidade" role="img" aria-label="Escaneie para verificar autenticidade">
     <div class="sig-scan">Verificar autenticidade</div>
   </div>
   {% endif %}
@@ -453,13 +429,14 @@
 {% else %}
 <div class="closing">
   <div class="line"></div>
-  <div class="doctor-name">{{ medico_nome | default('[Nome do Médico Responsável]') }}</div>
-  <div class="crm">{{ medico_crm | default('CRM: __________') }}</div>
+  <div class="doctor-name">{{ medico_nome or '[Nome do Médico Responsável]' }}</div>
+  <div class="crm">{{ medico_crm or 'CRM: __________' }}{% if medico_rqe %} · RQE {{ medico_rqe }}{% endif %}</div>
 </div>
 {% endif %}
 
 <div class="doc-footer">
-  Documento gerado em {{ data_emissao }} • Protocolo {{ protocolo }} • Informações médicas confidenciais
+  Documento gerado em {{ data_emissao }} • Protocolo {{ protocolo }}<br>
+  Informações médicas confidenciais — uso restrito à operadora de saúde destinatária (LGPD, Lei 13.709/2018, Art. 11).
 </div>
 
 </body>

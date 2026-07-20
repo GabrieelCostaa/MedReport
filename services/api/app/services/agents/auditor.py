@@ -170,25 +170,28 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None, pu
     try:
         import openai
 
-        usage = None  # Instructor path doesn't track usage separately
+        usage = None
 
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
         ]
 
+        model = settings.OPENAI_MODEL_AUDITOR
+
         if INSTRUCTOR_AVAILABLE:
             async_client = instructor.from_openai(
                 openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
             )
-            result = await async_client.chat.completions.create(
-                model="gpt-4o",
+            result, completion = await async_client.chat.completions.create_with_completion(
+                model=model,
                 response_model=AuditorOutput,
                 messages=messages,
                 temperature=0.1,
-                max_tokens=5000,
+                max_tokens=8000,
                 max_retries=2,
             )
+            usage = extract_usage(completion, "Auditor", model=model)
             # Log Chain-of-Thought for debugging/audit
             if result.chain_of_thought:
                 logger.info("Auditor CoT: %s", result.chain_of_thought[:500])
@@ -224,14 +227,14 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None, pu
             # Fallback: raw JSON mode
             client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
             response = await client.chat.completions.create(
-                model="gpt-4o",
+                model=model,
                 messages=messages,
                 response_format={"type": "json_object"},
                 temperature=0.1,
-                max_tokens=5000,
+                max_tokens=8000,
             )
             raw = response.choices[0].message.content
-            usage = extract_usage(response, "Auditor")
+            usage = extract_usage(response, "Auditor", model=model)
             data = json.loads(raw)
 
             checklist = data.get("checklist", {})
@@ -294,7 +297,8 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None, pu
         # Deterministic post-processing: strip RN mentions from body
         # when base_legal exists as separate field (prevents PDF duplication)
         if draft.base_legal:
-            texto_corrigido = _strip_legal_from_body(texto_corrigido)
+            texto_corrigido, legal_entries = _strip_legal_from_body(texto_corrigido)
+            audit_log_entries.extend(legal_entries)
 
         # Deterministic anti-hallucination: remove fabricated monetary values
         texto_corrigido, money_entries = _strip_fabricated_costs(
@@ -343,10 +347,16 @@ async def audit(draft: DraftReport, product, clinical_evidences: list = None, pu
 
 
 def _strip_fabricated_costs(text: str, evidences: list) -> tuple[str, list[AuditEntry]]:
-    """Remove valores monetários e argumentos de custo fabricados.
+    """Neutraliza valores monetários fabricados SEM destruir a frase clínica.
 
-    1. Remove R$X.XXX que não venham das evidências
-    2. Remove frases com argumento de custo qualitativo sem referência bibliográfica
+    Estratégia flag-and-rewrite (não apaga frases inteiras):
+    1. Valores R$ sem evidência → remove APENAS o token monetário, preserva a frase.
+    2. Argumentos qualitativos de custo sem citação → apenas SINALIZA (tipo="alerta");
+       o próprio Auditor LLM já foi instruído a reescrever essas frases em
+       texto_corrigido, então aqui só registramos para o log de auditoria.
+
+    Isso corrige a causa de encurtamento indevido do laudo: antes, qualquer frase
+    que mencionasse custo era apagada por completo, levando junto conteúdo clínico.
     """
     entries = []
     if not text:
@@ -360,32 +370,30 @@ def _strip_fabricated_costs(text: str, evidences: list) -> tuple[str, list[Audit
     )
     evidence_money = set(re.findall(r"R\$[\d.,]+", evidence_text))
 
-    fabricated_sentences = set()
-
-    # 1. Encontrar valores monetários no texto gerado
+    # 1. Remover APENAS o token monetário fabricado, mantendo a frase clínica.
     money_pattern = re.compile(r"R\$\s*[\d.,]+(?:\s*(?:a|e|até)\s*R\$\s*[\d.,]+)?")
-    for match in money_pattern.finditer(text):
+
+    def _replace_money(match: re.Match) -> str:
         value_str = match.group(0)
         individual_values = re.findall(r"R\$\s*[\d.,]+", value_str)
         has_evidence = any(
             v.replace(" ", "") in {e.replace(" ", "") for e in evidence_money}
             for v in individual_values
         )
-        if not has_evidence:
-            sentence = _extract_sentence(text, match.start(), match.end())
-            if sentence:
-                fabricated_sentences.add(sentence)
-                entries.append(AuditEntry(
-                    tipo="remocao",
-                    campo="custo",
-                    original=sentence,
-                    corrigido="",
-                    motivo=f"Valor monetário '{value_str}' sem evidência científica — removido.",
-                ))
+        if has_evidence:
+            return value_str  # valor com fonte — mantém
+        entries.append(AuditEntry(
+            tipo="alerta",
+            campo="custo",
+            original=value_str,
+            corrigido="",
+            motivo=f"Valor monetário '{value_str}' sem evidência científica — token removido, frase preservada.",
+        ))
+        return ""  # remove só o valor, preserva o restante da frase
 
-    # 2. Detectar argumentos qualitativos de custo sem referência
-    # Frases com palavras de custo que NÃO contêm citação "(Autor, Ano)"
-    # TOLERÂNCIA: frases com citação bibliográfica são MANTIDAS (custo-efetividade com evidência é válido)
+    text = money_pattern.sub(_replace_money, text)
+
+    # 2. Argumentos qualitativos de custo sem citação → apenas sinalizar (não apagar).
     cost_words = re.compile(
         r"(?:custos?\s+(?:significativ|maior|menor|elevad|reduzid)|"
         r"custo.{0,20}(?:efetiv|benefício)|"
@@ -396,35 +404,28 @@ def _strip_fabricated_costs(text: str, evidences: list) -> tuple[str, list[Audit
     )
     citation_pattern = re.compile(r"\([A-Z][a-záéíóúàãõâêô]+.*?\d{4}\)")
 
+    flagged = set()
     for match in cost_words.finditer(text):
         sentence = _extract_sentence(text, match.start(), match.end())
-        if sentence and sentence not in fabricated_sentences:
-            if citation_pattern.search(sentence):
-                # Has bibliographic reference — KEEP (cost-effectiveness with evidence is valid)
-                entries.append(AuditEntry(
-                    tipo="validacao",
-                    campo="custo",
-                    original=sentence,
-                    corrigido=sentence,
-                    motivo="Argumento de custo mantido: possui referência bibliográfica.",
-                ))
-            else:
-                fabricated_sentences.add(sentence)
-                entries.append(AuditEntry(
-                    tipo="remocao",
-                    campo="custo",
-                    original=sentence,
-                    corrigido="",
-                    motivo="Argumento de custo sem referência bibliográfica — removido.",
-                ))
+        if not sentence or sentence in flagged:
+            continue
+        flagged.add(sentence)
+        if citation_pattern.search(sentence):
+            entries.append(AuditEntry(
+                tipo="validacao", campo="custo", original=sentence, corrigido=sentence,
+                motivo="Argumento de custo mantido: possui referência bibliográfica.",
+            ))
+        else:
+            entries.append(AuditEntry(
+                tipo="alerta", campo="custo", original=sentence, corrigido="",
+                motivo="Argumento de custo sem referência bibliográfica — sinalizado para revisão (frase preservada).",
+            ))
 
-    # Remover frases fabricadas
-    for sentence in fabricated_sentences:
-        text = text.replace(sentence, "")
-
-    # Limpar espaços duplos e linhas vazias
-    text = re.sub(r"\n\s*\n\s*\n", "\n\n", text)
+    # Limpar dupla pontuação/espaços deixados pela remoção de tokens R$.
+    text = re.sub(r"\(\s*[—–-]?\s*\)", "", text)   # parênteses esvaziados
+    text = re.sub(r"\s+([,.;:])", r"\1", text)      # espaço antes de pontuação
     text = re.sub(r"  +", " ", text)
+    text = re.sub(r"\n\s*\n\s*\n", "\n\n", text)
 
     return text.strip(), entries
 
@@ -463,15 +464,16 @@ def _check_cid_in_text(text: str) -> list[AuditEntry]:
     return entries
 
 
-def _strip_legal_from_body(text: str) -> str:
+def _strip_legal_from_body(text: str) -> tuple[str, list[AuditEntry]]:
     """Remove sentenças com RNs da ANS do corpo da justificativa.
 
     Quando base_legal existe como campo separado, menções a RNs no corpo
     causam duplicação no PDF. Esta função remove deterministicamente
-    sentenças que mencionem RNs da ANS.
+    sentenças que mencionem RNs da ANS e registra cada remoção no audit_log.
     """
+    entries: list[AuditEntry] = []
     if not text:
-        return text
+        return text, entries
 
     # Also strip the auditor's appended "[CAMPO SEPARADO" block if present
     marker = "\n\n[CAMPO SEPARADO"
@@ -488,12 +490,21 @@ def _strip_legal_from_body(text: str) -> str:
     for line in lines:
         # Split line into sentences and filter
         sentences = re.split(r"(?<=[.!?])\s+", line)
-        kept = [s for s in sentences if not rn_pattern.search(s)]
+        kept = []
+        for s in sentences:
+            if rn_pattern.search(s):
+                entries.append(AuditEntry(
+                    tipo="remocao", campo="base_legal_duplicada",
+                    original=s.strip(), corrigido="",
+                    motivo="Menção a RN/legislação removida do corpo (renderizada em seção própria de Fundamentação Legal — evita duplicação no PDF).",
+                ))
+            else:
+                kept.append(s)
         cleaned = " ".join(kept).strip()
         if cleaned:
             cleaned_lines.append(cleaned)
 
-    return "\n".join(cleaned_lines)
+    return "\n".join(cleaned_lines), entries
 
 
 def _extract_product_keywords(product) -> set[str]:

@@ -7,6 +7,7 @@ from app.db.models import (
     User, TussTerm, UserRole, Product, ReportTemplate,
     TussMaterial, RolVersion, DutVersion, RolProcedure, DutRule,
     AnvisaProduct, TissRule, ProductTussMapping,
+    GlosaMotivo, OperadoraGlosaIndicador,
 )
 from app.core.security import get_password_hash
 
@@ -24,12 +25,25 @@ REPORT_NEW_COLUMNS = [
     ("medico_crm_uf", "VARCHAR(2)"),
     ("signature_hash", "VARCHAR(64)"),
     ("pdf_signed_bytes", "BYTEA"),
+    # Identificação anti-glosa (paciente/guia/materiais)
+    ("paciente_dob", "VARCHAR(20)"),
+    ("paciente_carteirinha", "VARCHAR(60)"),
+    ("paciente_cpf", "VARCHAR(20)"),
+    ("guia_numero", "VARCHAR(60)"),
+    ("atendimento_numero", "VARCHAR(60)"),
+    ("cids_secundarios", "JSON"),
+    ("materiais_tuss", "JSON"),
+    ("compliance_texto", "TEXT"),
+    ("operadora_registro_ans", "VARCHAR(20)"),
 ]
 
 USER_NEW_COLUMNS = [
     ("nome", "VARCHAR(255)"),
     ("crm", "VARCHAR(50)"),
     ("crm_uf", "VARCHAR(2)"),
+    ("rqe", "VARCHAR(50)"),
+    ("clinica_nome", "VARCHAR(255)"),
+    ("clinica_logo_url", "VARCHAR(500)"),
 ]
 
 CLINICAL_EVIDENCE_NEW_COLUMNS = [
@@ -613,7 +627,7 @@ TISS_RULES_SEED = [
         "campo": "Honorarios",
         "regra": "proibido",
         "tabela_tuss_aplicavel": "19",
-        "descricao": "GLOSA: Materiais OPME (Tabela 19) NÃO podem ser lançados como Honorários. Devem ir no Anexo OPME ou Mat/Med.",
+        "descricao": "GLOSA: Materiais OPME (Tabela 19) NÃO podem ser lançados como Honorários. Devem ir no Anexo OPME ou Mat/Med. (TISS Tabela 38 — motivo 1801: PROCEDIMENTO INVÁLIDO)",
         "versao_tiss": "4.01.00",
     },
     # Guia de Internação — materiais OPME vão no anexo OPME
@@ -638,7 +652,7 @@ TISS_RULES_SEED = [
         "campo": "Honorarios",
         "regra": "proibido",
         "tabela_tuss_aplicavel": "19",
-        "descricao": "GLOSA: Materiais OPME (Tabela 19) NÃO podem ser lançados como Honorários em guia de Internação.",
+        "descricao": "GLOSA: Materiais OPME (Tabela 19) NÃO podem ser lançados como Honorários em guia de Internação. (TISS Tabela 38 — motivo 1801: PROCEDIMENTO INVÁLIDO)",
         "versao_tiss": "4.01.00",
     },
     {
@@ -655,7 +669,7 @@ TISS_RULES_SEED = [
         "campo": "Honorarios",
         "regra": "proibido",
         "tabela_tuss_aplicavel": "19",
-        "descricao": "GLOSA: Guia de Honorário Individual NÃO pode conter materiais OPME (Tabela 19).",
+        "descricao": "GLOSA: Guia de Honorário Individual NÃO pode conter materiais OPME (Tabela 19). (TISS Tabela 38 — motivo 1801: PROCEDIMENTO INVÁLIDO)",
         "versao_tiss": "4.01.00",
     },
     # Solicitação de OPME — campo correto

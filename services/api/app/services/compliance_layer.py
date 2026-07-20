@@ -33,6 +33,7 @@ class ComplianceContext:
     approval_score: Optional[ApprovalScore] = None
     rol_alternatives: list = field(default_factory=list)
     stf_checklist: Optional[dict] = None
+    operadora_glosa: object = None  # OperadoraGlosaSummary (informativo, Painel ANS)
 
 
 @dataclass
@@ -88,6 +89,7 @@ async def build_compliance_context(
     evidence_count: int = 0,
     evidence_levels: list[str] | None = None,
     on_progress=None,
+    health_plan: str = "",
 ) -> ComplianceContext:
     """
     Constrói contexto de compliance completo para o pipeline.
@@ -165,6 +167,22 @@ async def build_compliance_context(
         else:
             await _emit(f"Anvisa: registro {produto_registro_anvisa} — {ctx.anvisa_status.status}")
 
+    # 4b. Painel de Glosas ANS — risco da operadora (INFORMATIVO, não altera score)
+    health_plan = health_plan or (patient_data or {}).get("health_plan", "") or ""
+    if health_plan:
+        await _emit("Consultando Painel de Glosas ANS para a operadora informada...")
+        try:
+            from app.services.glosa_service import (
+                get_operadora_glosa_summary, build_glosa_alert,
+            )
+            ctx.operadora_glosa = await get_operadora_glosa_summary(db, health_plan)
+            if ctx.operadora_glosa:
+                await _emit(build_glosa_alert(ctx.operadora_glosa))
+            else:
+                await _emit("Operadora não localizada no Painel de Glosas da ANS (informativo)")
+        except Exception as e:
+            logger.warning("Painel de glosas indisponível (non-fatal): %s", e)
+
     # 5. Modo Fora do Rol: checklist STF
     if ctx.mode == "fora_do_rol":
         await _emit("Construindo checklist STF (ADI 7.265)...")
@@ -191,6 +209,7 @@ async def build_compliance_context(
         cid_procedure_consistent=True,
         compliance_mode=ctx.mode,
         stf_checklist=ctx.stf_checklist,
+        operadora_glosa=ctx.operadora_glosa,
     )
     await _emit(
         f"Score de completude: {ctx.approval_score.score}/100 ({ctx.approval_score.nivel})"
@@ -329,3 +348,75 @@ def build_auditor_compliance_instructions(ctx: ComplianceContext) -> str:
         parts.append(f"\nALERTA ANVISA: {ctx.anvisa_status.alerta}")
 
     return "\n".join(parts)
+
+
+def build_compliance_summary_text(ctx: "ComplianceContext") -> str:
+    """Texto legível da seção "Adequação ao Rol / DUT (ANS)" do PDF/DOCX.
+
+    Resume, em linguagem de auditoria, o enquadramento regulatório apurado no
+    momento da geração: modo de cobertura, critérios DUT, validação TUSS e
+    situação do registro ANVISA. É persistido no Report para o documento final.
+    """
+    if ctx is None:
+        return ""
+
+    parts: list[str] = []
+
+    if ctx.mode == "rol_dut":
+        numero = getattr(getattr(ctx, "dut_rule", None), "numero_dut", None)
+        cabecalho = (
+            f"Procedimento constante do Rol de Procedimentos da ANS, sujeito à "
+            f"Diretriz de Utilização (DUT{f' nº {numero}' if numero else ''})."
+        )
+        parts.append(cabecalho)
+        ev = ctx.dut_evaluation
+        if ev:
+            met = len(ev.criteria_met)
+            total = met + len(ev.criteria_unmet) + len(ev.criteria_unknown) + len(ev.criteria_subjective)
+            if total:
+                parts.append(
+                    f"Critérios da DUT verificados nesta solicitação: {met} de {total} "
+                    f"atendidos de forma objetiva."
+                )
+            for c in ev.criteria_met:
+                if c.mensagem:
+                    parts.append(f"— Atendido: {c.mensagem}")
+            for c in ev.criteria_subjective:
+                if c.mensagem:
+                    parts.append(f"— Critério clínico (avaliação do médico assistente): {c.mensagem}")
+    elif ctx.mode == "fora_do_rol":
+        parts.append(
+            "Procedimento/material não listado no Rol da ANS. Solicitação fundamentada "
+            "na Lei 14.454/2022 e nos critérios cumulativos fixados pelo STF (ADI 7.265): "
+            "prescrição por médico assistente, ausência de negativa expressa da ANS, "
+            "inexistência de alternativa terapêutica adequada no Rol, evidência científica "
+            "e registro ativo na ANVISA — conforme demonstrado neste relatório."
+        )
+        stf = ctx.stf_checklist or {}
+        atendidos = [
+            k.replace("_", " ") for k, v in stf.items()
+            if isinstance(v, dict) and v.get("atendido")
+        ]
+        if atendidos:
+            parts.append(f"Critérios STF já demonstrados: {', '.join(atendidos)}.")
+    else:
+        parts.append(
+            "Procedimento de cobertura obrigatória pelo Rol de Procedimentos da ANS, "
+            "sem Diretriz de Utilização condicionante aplicável."
+        )
+
+    tv = ctx.tuss_validation
+    if tv and tv.valido and tv.nome:
+        parts.append(f"Código TUSS {tv.codigo} validado na terminologia vigente: {tv.nome}.")
+
+    av = ctx.anvisa_status
+    if av and av.status == "ativo":
+        validade = ""
+        if av.data_validade:
+            try:
+                validade = f", válido até {av.data_validade.strftime('%d/%m/%Y')}"
+            except Exception:
+                validade = ""
+        parts.append(f"Registro ANVISA {av.registro} com situação ATIVA{validade}.")
+
+    return "\n\n".join(parts)

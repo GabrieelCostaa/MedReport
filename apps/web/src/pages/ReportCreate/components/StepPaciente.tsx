@@ -19,6 +19,12 @@ interface StepPacienteProps {
   onPacienteNomeChange: (value: string) => void;
   healthPlan: string;
   onHealthPlanChange: (value: string) => void;
+  pacienteDob: string;
+  onPacienteDobChange: (value: string) => void;
+  pacienteCarteirinha: string;
+  onPacienteCarteirinhaChange: (value: string) => void;
+  guiaNumero: string;
+  onGuiaNumeroChange: (value: string) => void;
   searchQuery: string;
   onSearchQueryChange: (value: string) => void;
   loadingProducts: boolean;
@@ -47,6 +53,12 @@ export default function StepPaciente({
   onPacienteNomeChange,
   healthPlan,
   onHealthPlanChange,
+  pacienteDob,
+  onPacienteDobChange,
+  pacienteCarteirinha,
+  onPacienteCarteirinhaChange,
+  guiaNumero,
+  onGuiaNumeroChange,
   searchQuery,
   onSearchQueryChange,
   loadingProducts,
@@ -111,6 +123,44 @@ export default function StepPaciente({
                 value={healthPlan}
                 onChange={(e) => onHealthPlanChange(e.target.value)}
                 placeholder="Nome do convenio"
+                borderRadius="lg"
+              />
+            </FormControl>
+
+            {/* Dados de autorização (opcionais) — reduzem risco de glosa */}
+            <HStack gap={3} align="start">
+              <FormControl>
+                <FormLabel fontWeight="500" color="text.secondary" fontSize="sm">
+                  Data de nascimento
+                </FormLabel>
+                <Input
+                  type="date"
+                  value={pacienteDob}
+                  onChange={(e) => onPacienteDobChange(e.target.value)}
+                  borderRadius="lg"
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel fontWeight="500" color="text.secondary" fontSize="sm">
+                  Carteirinha do convênio
+                </FormLabel>
+                <Input
+                  value={pacienteCarteirinha}
+                  onChange={(e) => onPacienteCarteirinhaChange(e.target.value)}
+                  placeholder="Nº da carteirinha"
+                  borderRadius="lg"
+                />
+              </FormControl>
+            </HStack>
+
+            <FormControl>
+              <FormLabel fontWeight="500" color="text.secondary" fontSize="sm">
+                Nº da guia (opcional)
+              </FormLabel>
+              <Input
+                value={guiaNumero}
+                onChange={(e) => onGuiaNumeroChange(e.target.value)}
+                placeholder="Nº da guia de solicitação TISS"
                 borderRadius="lg"
               />
             </FormControl>

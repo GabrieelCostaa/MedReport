@@ -123,6 +123,10 @@ export default function ReportCreate() {
   const [surgeryDescription, setSurgeryDescription] = useState('');
   const [healthPlan, setHealthPlan] = useState('');
   const [especialidade, setEspecialidade] = useState('');
+  // Identificação anti-glosa (opcionais)
+  const [pacienteDob, setPacienteDob] = useState('');
+  const [pacienteCarteirinha, setPacienteCarteirinha] = useState('');
+  const [guiaNumero, setGuiaNumero] = useState('');
 
   // Evidences preview (PubMed)
   const [evidencesPreview, setEvidencesPreview] = useState<EvidencesPreview | null>(null);
@@ -292,6 +296,9 @@ export default function ReportCreate() {
         surgery_description: surgeryDescription,
         health_plan: healthPlan,
         especialidade,
+        paciente_dob: pacienteDob || undefined,
+        paciente_carteirinha: pacienteCarteirinha || undefined,
+        guia_numero: guiaNumero || undefined,
       },
       (step, message) => {
         setPipelineStep(step);
@@ -477,6 +484,12 @@ export default function ReportCreate() {
           onPacienteNomeChange={setPacienteNome}
           healthPlan={healthPlan}
           onHealthPlanChange={setHealthPlan}
+          pacienteDob={pacienteDob}
+          onPacienteDobChange={setPacienteDob}
+          pacienteCarteirinha={pacienteCarteirinha}
+          onPacienteCarteirinhaChange={setPacienteCarteirinha}
+          guiaNumero={guiaNumero}
+          onGuiaNumeroChange={setGuiaNumero}
           searchQuery={searchQuery}
           onSearchQueryChange={handleProductSearchChange}
           loadingProducts={loadingProducts}

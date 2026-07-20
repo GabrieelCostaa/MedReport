@@ -19,8 +19,16 @@ class Settings(BaseSettings):
         "https://web-six-woad-83.vercel.app",
     ]
     OPENAI_API_KEY: str = ""
+    # Modelos por agente (override via env para tiering de custo). Default gpt-4o.
+    OPENAI_MODEL_RESEARCHER: str = "gpt-4o"
+    OPENAI_MODEL_WRITER: str = "gpt-4o"
+    OPENAI_MODEL_AUDITOR: str = "gpt-4o"
     INGEST_API_KEY: str = ""  # Token para RPA/robôs enviarem cotações (opcional)
     API_BASE_URL: str = "http://localhost:8000"  # URL base para links de verificação (override em produção)
+
+    # Assinatura digital ICP-Brasil (PAdES qualificado). Vazio => self-signed (dev).
+    ICP_BRASIL_PFX_PATH: str = ""
+    ICP_BRASIL_PFX_PASSWORD: str = ""
 
     # PubMed E-utilities
     PUBMED_API_KEY: str = ""

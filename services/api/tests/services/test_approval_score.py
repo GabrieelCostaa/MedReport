@@ -167,3 +167,42 @@ class TestGaps:
     def test_no_justification_generates_gap(self):
         score = compute_approval_score(has_justification=False)
         assert any("justificativa" in g.lower() for g in score.gaps)
+
+
+class TestOperadoraGlosaInformativo:
+    """O sinal do Painel de Glosas ANS é informativo: alerta sim, score não."""
+
+    def _stub_summary(self, ambiguous=False, stale=False):
+        from app.services.glosa_service import OperadoraGlosaSummary
+        return OperadoraGlosaSummary(
+            registro_ans="335690",
+            razao_social="Unimed Campinas",
+            match_score=100.0,
+            ambiguous=ambiguous,
+            is_stale=stale,
+            n_semestres=4,
+            period_range="2º sem/2023 a 1º sem/2025",
+            medias_recentes={"pc_glosa_inicial": 12.3},
+        )
+
+    def test_alert_appears_score_unchanged(self):
+        ev = _make_evaluation(met=3)
+        base = compute_approval_score(dut_evaluation=ev, evidence_count=3)
+        com = compute_approval_score(
+            dut_evaluation=ev, evidence_count=3, operadora_glosa=self._stub_summary()
+        )
+        assert com.score == base.score  # informativo: score idêntico
+        assert any("12.3%" in a and "Painel de Glosas" in a for a in com.alertas)
+        assert "operadora_glosa" in com.componentes
+
+    def test_ambiguous_adds_gap(self):
+        result = compute_approval_score(
+            dut_evaluation=_make_evaluation(met=3),
+            operadora_glosa=self._stub_summary(ambiguous=True),
+        )
+        assert any("ambíguo" in g for g in result.gaps)
+
+    def test_none_is_noop(self):
+        a = compute_approval_score(dut_evaluation=_make_evaluation(met=2))
+        b = compute_approval_score(dut_evaluation=_make_evaluation(met=2), operadora_glosa=None)
+        assert a.score == b.score and a.alertas == b.alertas

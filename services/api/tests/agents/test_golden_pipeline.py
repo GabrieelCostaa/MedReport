@@ -176,15 +176,34 @@ class TestWriterSchema:
 
     def test_writer_output_valid(self):
         output = WriterOutput(
-            justificativa_completa="x" * 250,
+            quadro_clinico="q" * 600,
+            falha_terapeutica="f" * 400,
+            justificativa_tecnica="j" * 800,
+            evidencia_cientifica="e" * 500,
+            risco_nao_realizacao="r" * 400,
+            conclusao="c" * 200,
             diagnostico_resumo="Gonartrose",
-            falha_terapeutica="AINEs falharam",
-            risco_nao_realizacao="Evolução para artroplastia",
             base_legal="RN 395 ANS",
             referencias=["Altman et al., 2015"],
         )
-        assert output.justificativa_completa
+        assert output.quadro_clinico
         assert len(output.referencias) == 1
+
+    def test_writer_output_rejects_short_sections(self):
+        """Os mínimos por seção devem ser aplicados (instructor retry depende disso)."""
+        import pytest
+        from pydantic import ValidationError
+        with pytest.raises(ValidationError):
+            WriterOutput(
+                quadro_clinico="curto demais",
+                falha_terapeutica="f" * 400,
+                justificativa_tecnica="j" * 800,
+                evidencia_cientifica="e" * 500,
+                risco_nao_realizacao="r" * 400,
+                conclusao="c" * 200,
+                diagnostico_resumo="x",
+                base_legal="RN 395",
+            )
 
     def test_auditor_output_valid(self):
         output = AuditorOutput(

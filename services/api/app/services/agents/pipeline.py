@@ -15,6 +15,7 @@ from .auditor import audit, AuditResult
 from .checklist import ReportChecklist
 from .validator import validate_technical_data, ValidationResult
 from .token_tracker import PipelineUsage
+from app.core.config import settings
 from app.services.observability import create_pipeline_trace
 
 logger = logging.getLogger(__name__)
@@ -104,6 +105,7 @@ def _enrich_references(
 class PipelineSession:
     """Estado de uma sessão do pipeline multi-agente."""
     session_id: str
+    user_id: Optional[str] = None  # dono da sessão (checagem de autorização)
     step: str = "init"  # init | researching | questions | writing | auditing | done
     product: object = None
     template: object = None
@@ -118,6 +120,10 @@ class PipelineSession:
     usage: PipelineUsage = field(default_factory=PipelineUsage)
     compliance_context: object = None  # ComplianceContext when available
     tuss_selection: object = None  # TussSelection when available
+    other_products: list = field(default_factory=list)  # p/ detecção cross-produto
+    # Campos administrativos (carteirinha, guia etc.) que NÃO entram no prompt,
+    # apenas são persistidos no Report ao final (fluxo com perguntas A/B/C).
+    extra_report_fields: dict = field(default_factory=dict)
 
 
 class ReportPipeline:
@@ -158,6 +164,7 @@ class ReportPipeline:
         db: Optional[AsyncSession] = None,
         on_progress=None,
         user_id: Optional[str] = None,
+        extra_report_fields: Optional[dict] = None,
     ) -> dict:
         """
         Inicia pipeline: executa Agente A (Pesquisador).
@@ -170,21 +177,35 @@ class ReportPipeline:
         session_id = str(uuid.uuid4())
         session = PipelineSession(
             session_id=session_id,
+            user_id=user_id,
             product=product,
             template=template,
             medico_inputs=medico_inputs,
+            extra_report_fields=extra_report_fields or {},
         )
         session.step = "researching"
         cls._sessions[session_id] = session
 
-        # Persist to Redis with user_id auth
+        # Persist to Redis with user_id auth (mesma session_id do pipeline)
         if user_id:
             from .session_store import create_session as store_create
             await store_create(user_id, {
-                "session_id": session_id,
                 "product_id": str(product.id),
                 "step": "researching",
-            })
+            }, session_id=session_id)
+
+        # Carrega fingerprints de OUTROS produtos p/ detecção de contaminação cruzada
+        # (nomes/registros ANVISA de outro produto vazando no texto). Capado.
+        if db is not None:
+            try:
+                from sqlalchemy import select as _select
+                from app.db.models import Product as _Product
+                others = await db.execute(
+                    _select(_Product).where(_Product.id != product.id).limit(200)
+                )
+                session.other_products = list(others.scalars().all())
+            except Exception as e:
+                logger.debug("Falha ao carregar outros produtos p/ contaminação: %s", e)
 
         async def _emit(step, label):
             if on_progress:
@@ -260,6 +281,7 @@ class ReportPipeline:
                 db=db,
                 procedure_code=selected_tuss_code,
                 patient_data=medico_inputs,
+                health_plan=medico_inputs.get("health_plan", "") or "",
                 produto_registro_anvisa=getattr(product, "registro_anvisa", "") or "",
                 # Doctor is authenticated on Hugo platform = prescription is implicit
                 medico_crm="HUGO_AUTH",
@@ -315,7 +337,15 @@ class ReportPipeline:
         Recebe respostas A/B/C do médico e avança o pipeline.
         """
         session = cls._sessions.get(session_id)
-        if not session:
+        if session is not None:
+            # Cache local: revalida o dono antes de prosseguir (evita acesso cross-user)
+            if user_id and session.user_id and session.user_id != user_id:
+                logger.warning(
+                    "answer() acesso negado: session=%s requested_by=%s owner=%s",
+                    session_id, user_id, session.user_id,
+                )
+                return {"error": "Sessão não encontrada ou não autorizada"}
+        else:
             # Try to verify session exists in Redis (even if not in local cache)
             if user_id:
                 from .session_store import get_session as store_get
@@ -364,7 +394,7 @@ class ReportPipeline:
         logger.info("Pipeline redação: session=%s", session.session_id)
 
         # Trace: Writer agent
-        gen_ctx = trace.generation("writer", model="gpt-4o", input_data={"cid": session.medico_inputs.get("cid")}) if trace else None
+        gen_ctx = trace.generation("writer", model=settings.OPENAI_MODEL_WRITER, input_data={"cid": session.medico_inputs.get("cid")}) if trace else None
         if gen_ctx:
             gen_ctx.__enter__()
 
@@ -387,45 +417,11 @@ class ReportPipeline:
             )
             gen_ctx.__exit__(None, None, None)
 
-        # Self-consistency: generate additional drafts and merge confirmed claims
-        try:
-            from .self_consistency import vote_on_claims, merge_drafts, extract_claims
-
-            if draft.justificativa_completa and len(draft.justificativa_completa) > 500:
-                await _emit("writing", "Validando consistência das afirmações médicas...")
-
-                # Generate 2 additional drafts with higher temperatures
-                extra_drafts = [draft.justificativa_completa]
-                for temp in [0.3, 0.5]:
-                    try:
-                        extra = await write_justification(
-                            research=session.research_result,
-                            product=session.product,
-                            template=session.template,
-                            medico_inputs=session.medico_inputs,
-                            clinical_evidences=session.clinical_evidences,
-                            pubmed_evidences=session.pubmed_evidences,
-                        )
-                        if extra.justificativa_completa:
-                            extra_drafts.append(extra.justificativa_completa)
-                            if extra.token_usage:
-                                session.usage.add(extra.token_usage)
-                    except Exception:
-                        pass
-
-                if len(extra_drafts) >= 2:
-                    consistency = vote_on_claims(extra_drafts)
-                    if consistency.disputed_claims:
-                        merged = merge_drafts(extra_drafts, consistency, base_draft_index=0)
-                        draft.justificativa_completa = merged
-                        await _emit("writing",
-                            f"Consistência: {len(consistency.confirmed_claims)} claims confirmados, "
-                            f"{len(consistency.disputed_claims)} removidos (score: {consistency.consistency_score:.0%})"
-                        )
-                    else:
-                        await _emit("writing", "Todas as afirmações consistentes entre gerações")
-        except Exception as e:
-            logger.debug("Self-consistency skipped: %s", e)
+        # NOTA: o passo de "self-consistency" (3 rascunhos + votação de frases) foi
+        # removido. Ele triplicava o custo do Redator e, por um bug de temperatura
+        # fixa, degenerava a votação e apagava frases legítimas — encurtando o laudo.
+        # A factualidade é garantida pelo Auditor (LLM) + validador determinístico
+        # (validate_technical_data) + detector de contaminação, logo abaixo.
 
         word_count = len((draft.justificativa_completa or "").split())
         await _emit("writing", f"Redação concluída — {word_count} palavras geradas")
@@ -434,7 +430,7 @@ class ReportPipeline:
         await _emit("auditing", f"Confrontando dados técnicos de {session.product.nome} com base oficial...")
         logger.info("Pipeline auditoria: session=%s", session.session_id)
 
-        audit_gen = trace.generation("auditor", model="gpt-4o") if trace else None
+        audit_gen = trace.generation("auditor", model=settings.OPENAI_MODEL_AUDITOR) if trace else None
         if audit_gen:
             audit_gen.__enter__()
 
@@ -531,6 +527,7 @@ class ReportPipeline:
             contamination = check_contamination(
                 audit_result.texto_corrigido,
                 session.product,
+                all_products=session.other_products or None,
             )
             if contamination.has_blocking:
                 for issue in contamination.issues:
@@ -566,6 +563,7 @@ class ReportPipeline:
                     tuss_validation=getattr(session.compliance_context, "tuss_validation", None),
                     tiss_validation=getattr(session.compliance_context, "tiss_validation", None),
                     anvisa_status=getattr(session.compliance_context, "anvisa_status", None),
+                    operadora_glosa=getattr(session.compliance_context, "operadora_glosa", None),
                     evidence_count=len(session.clinical_evidences) + len(session.pubmed_evidences),
                     evidence_levels=evidence_lvls or None,
                     has_justification=bool(audit_result.texto_corrigido),
@@ -589,6 +587,18 @@ class ReportPipeline:
                     compliance_data["stf_checklist"] = session.compliance_context.stf_checklist
                 if session.compliance_context.dut_suggestions:
                     compliance_data["dut_suggestions"] = session.compliance_context.dut_suggestions
+                og = getattr(session.compliance_context, "operadora_glosa", None)
+                if og is not None:
+                    compliance_data["operadora_glosa"] = og.to_dict()
+                    compliance_data["operadora_registro_ans"] = og.registro_ans
+                # Texto da seção "Adequação ao Rol/DUT" do PDF (persistido no Report)
+                try:
+                    from app.services.compliance_layer import build_compliance_summary_text
+                    compliance_data["compliance_texto"] = build_compliance_summary_text(
+                        session.compliance_context
+                    )
+                except Exception as e:
+                    logger.debug("compliance_texto não gerado: %s", e)
             except Exception as e:
                 logger.warning("Compliance score failed: %s", e)
 

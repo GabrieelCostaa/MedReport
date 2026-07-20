@@ -73,6 +73,10 @@ class User(Base):
     nome = Column(String(255), nullable=True)
     crm = Column(String(50), nullable=True)
     crm_uf = Column(String(2), nullable=True)
+    rqe = Column(String(50), nullable=True)  # Registro de Qualificação de Especialista
+    # Identidade da clínica/emissor (timbrado do PDF)
+    clinica_nome = Column(String(255), nullable=True)
+    clinica_logo_url = Column(String(500), nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -143,12 +147,20 @@ class Report(Base):
     status = Column(String(50), default="draft")  # draft | generating | review | approved | signed
     # Identificação
     paciente_nome = Column(String(255), nullable=True)
+    paciente_dob = Column(String(20), nullable=True)  # data de nascimento (ISO ou dd/mm/aaaa)
+    paciente_carteirinha = Column(String(60), nullable=True)  # nº da carteirinha do convênio
+    paciente_cpf = Column(String(20), nullable=True)
+    guia_numero = Column(String(60), nullable=True)  # nº da guia TISS
+    atendimento_numero = Column(String(60), nullable=True)  # nº do atendimento
     especialidade = Column(String(100), nullable=True)
     cid = Column(String(20), nullable=True)
+    cids_secundarios = Column(JSON, nullable=True)  # ["M17.1", "M25.5", ...]
     diagnosis = Column(Text, nullable=True)
     surgery_description = Column(Text, nullable=True)
     materials = Column(Text, nullable=True)
+    materiais_tuss = Column(JSON, nullable=True)  # [{"codigo": "...", "nome": "...", "qtd": 1}]
     health_plan = Column(String(255), nullable=True)
+    operadora_registro_ans = Column(String(20), nullable=True)  # registro ANS resolvido do convênio
     tuss_codes = Column(JSON, nullable=True)
     # Campos gerados pelo pipeline multi-agente
     justificativa_ia = Column(Text, nullable=True)
@@ -170,6 +182,7 @@ class Report(Base):
     approval_score = Column(Float, nullable=True)
     approval_score_details = Column(JSON, nullable=True)
     compliance_mode = Column(String(50), nullable=True)  # rol_dut | fora_do_rol | cobertura_direta
+    compliance_texto = Column(Text, nullable=True)  # seção "Adequação Rol/DUT" do PDF
     # Assinatura
     signed_at = Column(DateTime(timezone=True), nullable=True)
     # Snapshot dos dados do médico no momento da assinatura
@@ -413,6 +426,56 @@ class TissRule(Base):
 
     __table_args__ = (
         Index("ix_tiss_guia_campo", "tipo_guia", "campo"),
+    )
+
+
+class GlosaMotivo(Base):
+    """TISS Tabela 38 — Terminologia de mensagens (motivos de glosa).
+
+    Fonte: Padrão TISS, XLSX "TUSS - Demais terminologias" (aba Tab 38).
+    Ingerida a partir de data/ans/tabela38_motivos_glosa.csv (extraído 1x
+    via scripts/etl/extract_tabela38.py e versionado no repositório).
+    """
+    __tablename__ = "glosa_motivos"
+
+    codigo = Column(String(10), primary_key=True)  # ex.: "1001"
+    descricao = Column(Text, nullable=False)
+    descricao_normalized = Column(Text, nullable=True, index=True)
+    vigencia_inicio = Column(DateTime(timezone=True), nullable=True)
+    vigencia_fim = Column(DateTime(timezone=True), nullable=True)
+    ativo = Column(Boolean, default=True)  # False quando vigencia_fim já passou
+    versao_tiss = Column(String(20), nullable=True)  # ex.: "202601"
+    raw_data = Column(JSON, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+
+
+class OperadoraGlosaIndicador(Base):
+    """Painel de Indicadores de Glosa da ANS (PDA-057), por operadora e mês.
+
+    Snapshot completo recarregado atomicamente pelo ETL
+    scripts/etl/download_glosa_panel.py (5 CSVs de dados abertos).
+    """
+    __tablename__ = "operadora_glosa_indicadores"
+
+    id = Column(UUID(), primary_key=True, default=uuid.uuid4)
+    registro_ans = Column(String(20), nullable=False, index=True)
+    razao_social = Column(String(500), nullable=True)
+    razao_social_normalized = Column(String(500), nullable=True, index=True)
+    porte = Column(String(100), nullable=True)
+    segmentacao = Column(String(255), nullable=True)
+    modalidade = Column(String(255), nullable=True)
+    periodo = Column(String(7), nullable=False, index=True)  # "2019-01"
+    pc_glosa_inicial = Column(Float, nullable=True)  # %
+    pc_glosa_final = Column(Float, nullable=True)  # %
+    tempo_medio_pagamento_dias = Column(Float, nullable=True)
+    numero_guias_sem_retorno = Column(Float, nullable=True)
+    valor_guias_sem_retorno = Column(Float, nullable=True)  # R$
+    dt_carga = Column(String(20), nullable=True)  # DT_CARGA da ANS
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (
+        Index("ix_glosa_op_registro_periodo", "registro_ans", "periodo", unique=True),
     )
 
 
