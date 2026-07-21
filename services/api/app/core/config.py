@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     PUBMED_MAX_RESULTS: int = 10
     PUBMED_TIMEOUT_SECONDS: int = 15
     PUBMED_ENABLED: bool = True
+    # Europe PMC em português/espanhol (fonte SECUNDÁRIA de evidência; aberta, sem chave)
+    EUROPEPMC_PT_ENABLED: bool = True
+    EUROPEPMC_PT_MAX_RESULTS: int = 2
 
     # ANVISA API Gateway (OAuth2 Client Credentials)
     ANVISA_CLIENT_ID: str = ""

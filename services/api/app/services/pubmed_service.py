@@ -12,6 +12,7 @@ Estratégia de busca em cascata:
   7. Salva TUDO no cache → próxima consulta = instantânea
 """
 import logging
+import unicodedata
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -672,7 +673,8 @@ async def _search_europe_pmc(query: str, max_results: int = 10) -> list[dict]:
         "resultType": "core",
         "pageSize": max_results,
         "format": "json",
-        "sort": "RELEVANCE",
+        # sem 'sort' → relevância padrão do Europe PMC.
+        # (o valor "RELEVANCE" é inválido na API e zera o hitCount silenciosamente.)
     }
 
     try:
@@ -693,7 +695,8 @@ async def _search_europe_pmc(query: str, max_results: int = 10) -> list[dict]:
             first_author = ""
             authors_str = r.get("authorString", "")
             if authors_str:
-                first_author = authors_str.split(",")[0].split(" ")[-1].strip()
+                # Europe PMC: "Sobrenome INICIAIS, ..." → sobrenome = 1ª palavra
+                first_author = authors_str.split(",")[0].strip().split(" ")[0].strip()
 
             # Classificar tipo
             pub_type = (r.get("pubType") or "").lower()
@@ -996,6 +999,149 @@ async def get_evidences_for_cid(
 
     logger.warning("No evidence found for CID %s (all sources exhausted)", cid)
     return []
+
+
+def _strip_html(text: str) -> str:
+    """Remove markup HTML dos abstracts do Europe PMC (<h4>, <b>, etc.)."""
+    import re as _re
+    text = _re.sub(r"<[^>]+>", " ", text or "")
+    return _re.sub(r"\s+", " ", text).strip()
+
+
+def _europe_pmc_articles_to_evidence(articles: list[dict], source: str) -> list[dict]:
+    """Converte artigos crus do Europe PMC no evidence-dict do pipeline (mesmo schema
+    de _cache_to_evidence_dicts), marcando a fonte."""
+    out = []
+    for a in articles:
+        snippet = _strip_html(a.get("abstract") or a.get("title") or "")[:500]
+        out.append({
+            "pmid": a.get("pmid", ""),
+            "snippet": snippet,
+            "autor": a.get("first_author", ""),
+            "authors_full": a.get("authors", ""),
+            "referencia_completa": f"{a.get('authors','')}. {a.get('title','')}. {a.get('journal','')}. {a.get('year','')}.",
+            "ano": a.get("year", ""),
+            "tipo": a.get("article_type", "article"),
+            "journal": a.get("journal", ""),
+            "doi": a.get("doi", ""),
+            "source": source,
+        })
+    return out
+
+
+# Qualificadores clínicos que não ajudam a busca (reduzem recall se usados como AND)
+_PT_STOPTERMS = {
+    "primaria", "primario", "secundaria", "secundario", "bilateral", "unilateral",
+    "grau", "direito", "esquerdo", "direita", "esquerda", "cronica", "cronico",
+    "aguda", "agudo", "moderada", "moderado", "severa", "severo", "leve",
+    "associada", "associado", "com", "sem", "por", "para", "dos", "das",
+    "diagnostico", "quadro", "paciente", "apresenta",
+}
+
+
+def _pt_core_terms(diagnostico: str) -> list[str]:
+    """Extrai os termos clínicos-núcleo do diagnóstico (sem qualificadores)."""
+    import re as _re
+    palavras = []
+    for w in _re.findall(r"[A-Za-zÀ-ÿ]+", diagnostico or ""):
+        wl = w.lower()
+        norm = "".join(c for c in unicodedata.normalize("NFD", wl) if unicodedata.category(c) != "Mn")
+        if len(wl) >= 4 and norm not in _PT_STOPTERMS:
+            palavras.append(w)
+        if len(palavras) >= 3:
+            break
+    return palavras
+
+
+def _build_europepmc_pt_query(diagnostico: str, cid: str, combine: str = "AND") -> str:
+    """Query em PORTUGUÊS para o Europe PMC (literatura em PT/ES não contém os
+    termos MeSH em inglês). `combine="AND"` (preciso) ou "OR" (recall)."""
+    palavras = _pt_core_terms(diagnostico)
+    if not palavras:
+        return f'("{(diagnostico or cid)[:60]}") AND (LANG:por OR LANG:spa) AND (SRC:MED)'
+    # AND usa os 2 termos-núcleo (precisão); OR usa até 3 (recall)
+    usados = palavras[:2] if combine == "AND" else palavras[:3]
+    termos = f" {combine} ".join(f'"{p}"' if " " in p else p for p in usados)
+    return f"({termos}) AND (LANG:por OR LANG:spa) AND (SRC:MED)"
+
+
+async def _llm_filter_relevant_pt(diagnostico: str, evidences: list[dict]) -> list[dict]:
+    """Filtro de relevância via LLM barato: mantém só os artigos DIRETAMENTE
+    relevantes ao diagnóstico (remove os que só mencionam o termo em outro
+    contexto). Uma única chamada gpt-4o-mini para todos os candidatos.
+    Fail-soft: sem chave/erro, devolve a lista como está."""
+    if not settings.OPENAI_API_KEY or not evidences or not diagnostico:
+        return evidences
+    try:
+        import json as _json
+        import openai
+        client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        listagem = "\n".join(
+            f"[{i}] {(e.get('snippet') or '')[:220]}" for i, e in enumerate(evidences)
+        )
+        prompt = (
+            f"Diagnóstico do paciente: {diagnostico}\n\n"
+            f"Artigos candidatos (título/resumo):\n{listagem}\n\n"
+            "Quais são DIRETAMENTE relevantes para fundamentar um laudo médico sobre esse "
+            "diagnóstico (tratamento, evidência clínica ou fisiopatologia da condição)? "
+            "Descarte os que apenas mencionam um termo em outro contexto. "
+            'Responda STRICT JSON: {"relevantes": [índices]}.'
+        )
+        resp = await client.chat.completions.create(
+            model=settings.OPENAI_MODEL_TRANSLATOR,
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+            temperature=0.0,
+            max_tokens=60,
+        )
+        idxs = _json.loads(resp.choices[0].message.content).get("relevantes", [])
+        if isinstance(idxs, list):
+            keep = [evidences[i] for i in idxs if isinstance(i, int) and 0 <= i < len(evidences)]
+            logger.info("Filtro LLM PT: %d/%d artigos relevantes", len(keep), len(evidences))
+            return keep
+    except Exception as e:
+        logger.debug("Filtro LLM PT falhou (mantém léxico): %s", e)
+    return evidences
+
+
+async def get_pt_evidences_for_cid(
+    db: Optional[AsyncSession],
+    cid: str,
+    product_name: str = "",
+    diagnostico: str = "",
+    max_results: Optional[int] = None,
+) -> list[dict]:
+    """Evidência em PORTUGUÊS/ESPANHOL via Europe PMC (fonte SECUNDÁRIA).
+
+    Complementa o PubMed com literatura latino-americana que o auditor
+    brasileiro reconhece. Aberta, sem chave. Fonte marcada com
+    source="europepmc_pt". Fail-soft: nunca derruba a geração.
+    """
+    if not settings.EUROPEPMC_PT_ENABLED or not cid:
+        return []
+    max_results = max_results or settings.EUROPEPMC_PT_MAX_RESULTS
+    try:
+        # AND estrito dos 2 termos-núcleo (precisão). SEM fallback OR — o OR
+        # traz artigos que só mencionam uma palavra em contexto errado (ruído).
+        # Base PT é pequena: melhor 0-2 evidências boas que 3 com lixo.
+        pool = max(max_results * 4, 8)
+        articles = await _search_europe_pmc(
+            _build_europepmc_pt_query(diagnostico, cid, "AND"), max_results=pool)
+        evidences = _europe_pmc_articles_to_evidence(articles, source="europepmc_pt")
+        if not evidences:
+            return []
+        # Ordena por proximidade léxica, depois FILTRA relevância via LLM barato
+        # (remove artigos que só mencionam o termo em outro contexto — sem isso a
+        # base PT pequena traz tangenciais). Fail-soft mantém a ordem léxica.
+        ranked = _rerank_evidences(cid, product_name, diagnostico, evidences)
+        relevant = await _llm_filter_relevant_pt(diagnostico, ranked)
+        relevant = relevant[:max_results]
+        if relevant:
+            logger.info("Europe PMC PT: %d evidências PT/ES para CID %s", len(relevant), cid)
+        return relevant
+    except Exception as e:
+        logger.debug("Europe PMC PT falhou (non-fatal): %s", e)
+        return []
 
 
 async def get_evidences_preview(

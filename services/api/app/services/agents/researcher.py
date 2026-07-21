@@ -111,14 +111,27 @@ async def _fetch_clinical_evidences(db: Optional[AsyncSession], cid: str, produc
 
 
 async def _fetch_pubmed_evidences(db: Optional[AsyncSession], cid: str, product_name: str, diagnostico: str) -> list[dict]:
-    """Busca evidências do PubMed (cache progressivo)."""
+    """Busca evidências do PubMed (primária) + Europe PMC em PT/ES (secundária).
+
+    A literatura em português complementa o PubMed e é anexada ao fim, marcada
+    com source="europepmc_pt". Fail-soft: cada fonte cai sozinha sem derrubar a outra.
+    """
     if not db or not cid:
         return []
     try:
-        from app.services.pubmed_service import get_evidences_for_cid
-        return await get_evidences_for_cid(db, cid, product_name, diagnostico)
+        from app.services.pubmed_service import get_evidences_for_cid, get_pt_evidences_for_cid
+        pubmed = await get_evidences_for_cid(db, cid, product_name, diagnostico)
+        pt = await get_pt_evidences_for_cid(db, cid, product_name, diagnostico)
+        # dedup por DOI/pmid: não repete um artigo já trazido pelo PubMed
+        seen = {(e.get("doi") or "").lower() for e in pubmed if e.get("doi")}
+        seen |= {e.get("pmid") for e in pubmed if e.get("pmid")}
+        pt_extra = [
+            e for e in pt
+            if (e.get("doi") or "").lower() not in seen and e.get("pmid") not in seen
+        ]
+        return pubmed + pt_extra
     except Exception as e:
-        logger.warning("Falha ao buscar PubMed evidences: %s", e)
+        logger.warning("Falha ao buscar evidências (PubMed/EuropePMC PT): %s", e)
         try:
             await db.rollback()
         except Exception:

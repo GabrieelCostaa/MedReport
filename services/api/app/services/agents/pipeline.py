@@ -77,13 +77,22 @@ def _enrich_references(
         for ev in (pubmed_evidences or []):
             autor = ev.get("autor", "").lower()
             if autor and autor in ref_lower:
-                item["pmid"] = ev.get("pmid", "")
-                item["doi"] = ev.get("doi", "")
-                item["source"] = "pubmed"
-                if ev.get("pmid"):
-                    item["link"] = f"https://pubmed.ncbi.nlm.nih.gov/{ev['pmid']}/"
-                elif ev.get("doi"):
-                    item["link"] = f"https://doi.org/{ev['doi']}"
+                src = ev.get("source") or "pubmed"
+                pmid = ev.get("pmid", "")
+                doi = ev.get("doi", "")
+                item["pmid"] = pmid
+                item["doi"] = doi
+                item["source"] = src
+                if src == "europepmc_pt":
+                    # PMID numérico existe no Europe PMC; sintéticos "EPMC-*" usam DOI
+                    if pmid and pmid.isdigit():
+                        item["link"] = f"https://europepmc.org/article/MED/{pmid}"
+                    elif doi:
+                        item["link"] = f"https://doi.org/{doi}"
+                elif pmid and pmid.isdigit():
+                    item["link"] = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
+                elif doi:
+                    item["link"] = f"https://doi.org/{doi}"
                 break
 
         if "link" not in item:
