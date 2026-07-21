@@ -35,6 +35,11 @@ REPORT_NEW_COLUMNS = [
     ("materiais_tuss", "JSON"),
     ("compliance_texto", "TEXT"),
     ("operadora_registro_ans", "VARCHAR(20)"),
+    # Loop de prova de valor (desfecho na operadora)
+    ("outcome", "VARCHAR(20)"),
+    ("outcome_at", "TIMESTAMP"),
+    ("outcome_motivo_codigo", "VARCHAR(10)"),
+    ("outcome_notes", "TEXT"),
 ]
 
 USER_NEW_COLUMNS = [

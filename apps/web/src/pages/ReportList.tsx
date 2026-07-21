@@ -176,15 +176,29 @@ export default function ReportList() {
                       </Text>
                     </HStack>
                   </Box>
-                  <Badge
-                    colorScheme={r.status === 'signed' ? 'green' : 'yellow'}
-                    fontSize="xs"
-                    borderRadius="full"
-                    px={2}
-                    py={0.5}
-                  >
-                    {r.status === 'signed' ? 'Assinado' : 'Rascunho'}
-                  </Badge>
+                  <HStack gap={1.5}>
+                    {r.outcome && r.outcome !== 'pendente' && (
+                      <Badge
+                        colorScheme={r.outcome === 'aprovado' ? 'green' : r.outcome === 'glosado' ? 'red' : 'orange'}
+                        fontSize="xs"
+                        borderRadius="full"
+                        px={2}
+                        py={0.5}
+                        textTransform="capitalize"
+                      >
+                        {r.outcome}
+                      </Badge>
+                    )}
+                    <Badge
+                      colorScheme={r.status === 'signed' ? 'green' : 'yellow'}
+                      fontSize="xs"
+                      borderRadius="full"
+                      px={2}
+                      py={0.5}
+                    >
+                      {r.status === 'signed' ? 'Assinado' : 'Rascunho'}
+                    </Badge>
+                  </HStack>
                 </HStack>
               </Box>
             ))}

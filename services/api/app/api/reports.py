@@ -21,11 +21,20 @@ from pydantic import BaseModel
 logger = logging.getLogger(__name__)
 
 from app.db.session import get_db
-from app.db.models import Report, Product, User
+from app.db.models import Report, Product, User, AuditAction, GlosaMotivo
 from app.core.security import get_current_user_id, require_current_user_id
 from app.services.tiss import build_guia_solicitacao_xml
+from app.services.audit_service import audit_log
 
 router = APIRouter()
+
+_VALID_OUTCOMES = {"pendente", "aprovado", "glosado", "parcial"}
+
+
+class OutcomeIn(BaseModel):
+    outcome: str  # aprovado | glosado | parcial | pendente
+    motivo_codigo: Optional[str] = None  # TISS Tabela 38 (quando glosado/parcial)
+    notes: Optional[str] = None
 
 _MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
 _ALLOWED_MIME_TYPES = {
@@ -86,6 +95,8 @@ async def list_reports(
                 "status": r.status,
                 "created_at": r.created_at.isoformat() if r.created_at else "",
                 "patient_diagnosis": r.diagnosis,
+                "health_plan": r.health_plan,
+                "outcome": getattr(r, "outcome", None) or "pendente",
             }
             for r in reports
         ],
@@ -93,6 +104,152 @@ async def list_reports(
         "page": page,
         "per_page": per_page,
         "total_pages": (total + per_page - 1) // per_page if total > 0 else 1,
+    }
+
+
+def _score_band(score) -> str:
+    if score is None:
+        return "sem_score"
+    if score >= 80:
+        return "alto (80-100)"
+    if score >= 60:
+        return "medio (60-79)"
+    if score >= 40:
+        return "baixo (40-59)"
+    return "critico (0-39)"
+
+
+@router.get("/stats/approval")
+async def approval_stats(
+    user_id: str = Depends(require_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """Loop de prova de valor: taxa de aprovação real + calibração score×resultado.
+
+    A calibração (aprovação por faixa de approval_score) é o número que valida o
+    produto: se laudos com score alto aprovam mais que os de score baixo, o score
+    prediz aprovação — e isso vira argumento de venda.
+    """
+    result = await db.execute(select(Report).where(Report.user_id == UUID(user_id)))
+    reports = list(result.scalars().all())
+
+    def _out(r):
+        return getattr(r, "outcome", None) or "pendente"
+
+    total = len(reports)
+    com_desfecho = [r for r in reports if _out(r) in ("aprovado", "glosado", "parcial")]
+    aprovados = sum(1 for r in com_desfecho if _out(r) == "aprovado")
+    glosados = sum(1 for r in com_desfecho if _out(r) == "glosado")
+    parciais = sum(1 for r in com_desfecho if _out(r) == "parcial")
+    decididos = aprovados + glosados + parciais
+    taxa = round(aprovados / decididos, 3) if decididos else None
+
+    # Calibração score × resultado (só laudos com desfecho e score)
+    bandas: dict[str, dict] = {}
+    for r in com_desfecho:
+        b = _score_band(getattr(r, "approval_score", None))
+        d = bandas.setdefault(b, {"n": 0, "aprovados": 0})
+        d["n"] += 1
+        if _out(r) == "aprovado":
+            d["aprovados"] += 1
+    calibracao = [
+        {"faixa": b, "n": d["n"], "aprovados": d["aprovados"],
+         "taxa": round(d["aprovados"] / d["n"], 3) if d["n"] else None}
+        for b, d in sorted(bandas.items(), reverse=True)
+    ]
+
+    def _group(key_fn):
+        g: dict[str, dict] = {}
+        for r in com_desfecho:
+            k = key_fn(r) or "—"
+            d = g.setdefault(k, {"aprovados": 0, "glosados": 0, "parciais": 0, "n": 0})
+            d["n"] += 1
+            o = _out(r)
+            d["aprovados" if o == "aprovado" else "glosados" if o == "glosado" else "parciais"] += 1
+        return [
+            {"chave": k, **d, "taxa": round(d["aprovados"] / d["n"], 3) if d["n"] else None}
+            for k, d in sorted(g.items(), key=lambda kv: -kv[1]["n"])
+        ]
+
+    # Top motivos de glosa (cruza Tabela 38 p/ descrição)
+    motivos: dict[str, int] = {}
+    for r in com_desfecho:
+        cod = getattr(r, "outcome_motivo_codigo", None)
+        if cod:
+            motivos[cod] = motivos.get(cod, 0) + 1
+    top_motivos = []
+    if motivos:
+        rows = (await db.execute(
+            select(GlosaMotivo).where(GlosaMotivo.codigo.in_(list(motivos.keys())))
+        )).scalars().all()
+        desc = {m.codigo: m.descricao for m in rows}
+        top_motivos = sorted(
+            [{"codigo": c, "descricao": desc.get(c, ""), "n": n} for c, n in motivos.items()],
+            key=lambda x: -x["n"],
+        )
+
+    return {
+        "total": total,
+        "com_desfecho": len(com_desfecho),
+        "pendentes": total - len(com_desfecho),
+        "aprovados": aprovados,
+        "glosados": glosados,
+        "parciais": parciais,
+        "taxa_aprovacao": taxa,
+        "calibracao_score": calibracao,
+        "por_especialidade": _group(lambda r: r.especialidade),
+        "por_operadora": _group(lambda r: r.health_plan),
+        "top_motivos_glosa": top_motivos,
+    }
+
+
+@router.patch("/{report_id}/outcome")
+async def mark_outcome(
+    report_id: UUID,
+    body: OutcomeIn,
+    user_id: str = Depends(require_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """Registra o desfecho real do laudo na operadora (aprovado/glosado/parcial)."""
+    outcome = (body.outcome or "").strip().lower()
+    if outcome not in _VALID_OUTCOMES:
+        raise HTTPException(status_code=422, detail=f"Desfecho inválido. Use: {sorted(_VALID_OUTCOMES)}")
+
+    result = await db.execute(
+        select(Report).where(Report.id == report_id, Report.user_id == UUID(user_id))
+    )
+    report = result.scalar_one_or_none()
+    if not report:
+        raise HTTPException(status_code=404, detail="Relatório não encontrado")
+
+    # Valida o motivo de glosa contra a Tabela 38 (se informado)
+    motivo_codigo = (body.motivo_codigo or "").strip() or None
+    if motivo_codigo:
+        exists = (await db.execute(
+            select(GlosaMotivo.codigo).where(GlosaMotivo.codigo == motivo_codigo)
+        )).scalar_one_or_none()
+        if not exists:
+            raise HTTPException(status_code=422, detail=f"Motivo de glosa '{motivo_codigo}' não consta na Tabela 38 TISS")
+
+    old = getattr(report, "outcome", None) or "pendente"
+    report.outcome = outcome
+    report.outcome_at = datetime.now(_BR_TZ) if outcome != "pendente" else None
+    report.outcome_motivo_codigo = motivo_codigo if outcome in ("glosado", "parcial") else None
+    report.outcome_notes = (body.notes or "").strip() or None
+
+    await audit_log(
+        db, AuditAction.UPDATE, "report",
+        resource_id=str(report.id), user_id=user_id,
+        changes={"outcome": {"old": old, "new": outcome}},
+        metadata={"motivo_codigo": motivo_codigo} if motivo_codigo else None,
+        justification="Registro de desfecho na operadora (loop de prova de valor)",
+    )
+    await db.commit()
+    return {
+        "id": str(report.id),
+        "outcome": report.outcome,
+        "outcome_at": report.outcome_at.isoformat() if report.outcome_at else None,
+        "outcome_motivo_codigo": report.outcome_motivo_codigo,
     }
 
 
@@ -118,6 +275,11 @@ async def get_report(
         "health_plan": r.health_plan,
         "created_at": r.created_at.isoformat() if r.created_at else "",
         "inconsistencies": r.inconsistencies or [],
+        "outcome": getattr(r, "outcome", None) or "pendente",
+        "outcome_at": r.outcome_at.isoformat() if getattr(r, "outcome_at", None) else None,
+        "outcome_motivo_codigo": getattr(r, "outcome_motivo_codigo", None),
+        "outcome_notes": getattr(r, "outcome_notes", None),
+        "approval_score": getattr(r, "approval_score", None),
     }
 
 

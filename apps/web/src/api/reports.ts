@@ -8,11 +8,29 @@ export type ReportCreatePayload = {
   health_plan?: string;
 };
 
+export type Outcome = 'pendente' | 'aprovado' | 'glosado' | 'parcial';
+
 export type Report = {
   id: string;
   status: string;
   created_at: string;
   patient_diagnosis?: string;
+  health_plan?: string;
+  outcome?: Outcome;
+};
+
+export type ApprovalStats = {
+  total: number;
+  com_desfecho: number;
+  pendentes: number;
+  aprovados: number;
+  glosados: number;
+  parciais: number;
+  taxa_aprovacao: number | null;
+  calibracao_score: { faixa: string; n: number; aprovados: number; taxa: number | null }[];
+  por_especialidade: { chave: string; n: number; taxa: number | null }[];
+  por_operadora: { chave: string; n: number; taxa: number | null }[];
+  top_motivos_glosa: { codigo: string; descricao: string; n: number }[];
 };
 
 export type PaginatedReports = {
@@ -54,6 +72,18 @@ export const reportsApi = {
       method: 'POST',
       body: JSON.stringify(payload),
     });
+  },
+
+  /** Registra o desfecho real do laudo na operadora (loop de prova de valor) */
+  markOutcome(id: string, outcome: Outcome, motivo_codigo?: string, notes?: string) {
+    return apiRequest<{ id: string; outcome: Outcome; outcome_at: string | null }>(
+      `/reports/${id}/outcome`,
+      { method: 'PATCH', body: JSON.stringify({ outcome, motivo_codigo, notes }) }
+    );
+  },
+
+  approvalStats() {
+    return apiRequest<ApprovalStats>('/reports/stats/approval');
   },
 
   sign(id: string) {

@@ -22,7 +22,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { FiArrowLeft, FiDownload, FiFileText, FiEdit3, FiShield, FiCheckCircle } from 'react-icons/fi';
-import { reportsApi } from '../api/reports';
+import { reportsApi, type Outcome } from '../api/reports';
 
 type ReportDetail = {
   id: string;
@@ -38,6 +38,7 @@ type ReportDetail = {
   medico_nome?: string;
   medico_crm?: string;
   medico_crm_uf?: string;
+  outcome?: Outcome;
 };
 
 const buttonTransition = 'all 0.3s cubic-bezier(0.65, 0.05, 0, 1)';
@@ -56,9 +57,24 @@ export default function ReportReview() {
     medico_crm_uf: string;
   } | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [savingOutcome, setSavingOutcome] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  const handleOutcome = async (outcome: Outcome) => {
+    if (!id) return;
+    setSavingOutcome(true);
+    try {
+      await reportsApi.markOutcome(id, outcome);
+      setReport((r) => (r ? { ...r, outcome } : r));
+      toast({ title: `Desfecho registrado: ${outcome}`, status: 'success', duration: 2500 });
+    } catch {
+      toast({ title: 'Erro ao registrar desfecho', status: 'error' });
+    } finally {
+      setSavingOutcome(false);
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -320,6 +336,43 @@ export default function ReportReview() {
             ) : null}
           </HStack>
         </Box>
+
+        {/* Desfecho na operadora (loop de prova de valor) — só após assinado */}
+        {report.status === 'signed' && (
+          <Box bg="surface" borderRadius="xl" border="1px solid" borderColor="border.subtle" p={6} shadow="sm">
+            <Text fontSize="xs" fontWeight="600" color="text.muted" textTransform="uppercase" letterSpacing="wider" mb={1}>
+              Desfecho na operadora
+            </Text>
+            <Text fontSize="sm" color="text.muted" mb={4}>
+              Quando o convênio responder, registre o resultado. Isso alimenta sua taxa de aprovação.
+            </Text>
+            <HStack gap={3} flexWrap="wrap">
+              {(['aprovado', 'glosado', 'parcial'] as Outcome[]).map((o) => {
+                const active = (report.outcome || 'pendente') === o;
+                const scheme = o === 'aprovado' ? 'green' : o === 'glosado' ? 'red' : 'orange';
+                return (
+                  <Button
+                    key={o}
+                    size="sm"
+                    borderRadius="lg"
+                    colorScheme={scheme}
+                    variant={active ? 'solid' : 'outline'}
+                    isLoading={savingOutcome}
+                    onClick={() => handleOutcome(o)}
+                    textTransform="capitalize"
+                    transition={buttonTransition}
+                    _hover={buttonHover}
+                  >
+                    {o}
+                  </Button>
+                );
+              })}
+              {report.outcome && report.outcome !== 'pendente' && (
+                <Badge alignSelf="center" colorScheme="gray">registrado</Badge>
+              )}
+            </HStack>
+          </Box>
+        )}
       </VStack>
 
       {/* Modal de Assinatura */}

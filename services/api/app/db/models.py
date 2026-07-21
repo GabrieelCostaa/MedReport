@@ -183,6 +183,12 @@ class Report(Base):
     approval_score_details = Column(JSON, nullable=True)
     compliance_mode = Column(String(50), nullable=True)  # rol_dut | fora_do_rol | cobertura_direta
     compliance_texto = Column(Text, nullable=True)  # seção "Adequação Rol/DUT" do PDF
+    # Desfecho real na operadora (loop de prova de valor) — capturado semanas
+    # após o envio; cruzado com approval_score prova que o score prediz aprovação.
+    outcome = Column(String(20), default="pendente")  # pendente | aprovado | glosado | parcial
+    outcome_at = Column(DateTime(timezone=True), nullable=True)
+    outcome_motivo_codigo = Column(String(10), nullable=True)  # TISS Tabela 38 (quando glosado)
+    outcome_notes = Column(Text, nullable=True)
     # Assinatura
     signed_at = Column(DateTime(timezone=True), nullable=True)
     # Snapshot dos dados do médico no momento da assinatura
