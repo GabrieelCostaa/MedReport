@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     OPENAI_MODEL_RESEARCHER: str = "gpt-4o"
     OPENAI_MODEL_WRITER: str = "gpt-4o"
     OPENAI_MODEL_AUDITOR: str = "gpt-4o"
+    # Tradutor barato p/ CID→MeSH na cauda longa de diagnósticos (fora do dict).
+    OPENAI_MODEL_TRANSLATOR: str = "gpt-4o-mini"
     INGEST_API_KEY: str = ""  # Token para RPA/robôs enviarem cotações (opcional)
     API_BASE_URL: str = "http://localhost:8000"  # URL base para links de verificação (override em produção)
 

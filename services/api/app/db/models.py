@@ -407,6 +407,8 @@ class AnvisaProduct(Base):
     dados_json = Column(JSON, nullable=True)
     nome_tecnico = Column(String(500), nullable=True)
     modelos_descricao = Column(Text, nullable=True)
+    # Busca sem acento em nome comercial + fabricante + nome técnico (indexado via pg_trgm)
+    search_normalized = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 

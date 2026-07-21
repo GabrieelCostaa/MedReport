@@ -66,6 +66,25 @@ async def _auto_etl_if_empty():
                 except Exception as e:
                     logging.getLogger("startup").warning("Auto-ETL ANVISA falhou: %s", e)
             tasks.append(_load_anvisa())
+        else:
+            # Base já populada: garante que search_normalized existe nos legados
+            # (o ETL só re-roda se a tabela estiver vazia). Backfill idempotente.
+            async def _backfill_anvisa_search():
+                try:
+                    async with AsyncSessionLocal() as db:
+                        pending = (await db.execute(
+                            select(func.count(AnvisaProduct.id))
+                            .where(AnvisaProduct.search_normalized.is_(None))
+                        )).scalar()
+                        if pending and pending > 0:
+                            from scripts.etl.download_anvisa import backfill_search_normalized
+                            logging.getLogger("startup").info(
+                                "ANVISA: backfill de search_normalized em %d registros...", pending)
+                            r = await backfill_search_normalized(db)
+                            logging.getLogger("startup").info("ANVISA backfill: %s", r)
+                except Exception as e:
+                    logging.getLogger("startup").warning("Backfill ANVISA falhou: %s", e)
+            tasks.append(_backfill_anvisa_search())
 
         if glosa_motivos_count < 10:
             logging.getLogger("startup").info(

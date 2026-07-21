@@ -121,6 +121,38 @@ def semantic_rerank(
         return evidences[:top_k]
 
 
+def lexical_rerank(
+    query: str,
+    evidences: list[dict],
+    top_k: int = 10,
+    text_field: str = "snippet",
+) -> list[dict]:
+    """Rerank léxico com rapidfuzz — substituto leve do PubMedBERT.
+
+    Usa token_set_ratio entre a query clínica e (titulo + snippet) de cada
+    evidência. Sem modelo pesado (cabe no Render 512MB); rapidfuzz já é dep.
+    Adiciona "rerank_score" (0-100). Fail-soft: retorna original em erro.
+    """
+    if not evidences:
+        return evidences
+    try:
+        from rapidfuzz import fuzz
+        scored = []
+        for ev in evidences:
+            text = ev.get(text_field, "") or ev.get("snippet", "") or ""
+            titulo = ev.get("titulo", "") or ev.get("title", "") or ""
+            combined = f"{titulo}. {text}" if titulo else text
+            score = fuzz.token_set_ratio(query, combined)
+            ev_copy = ev.copy()
+            ev_copy["rerank_score"] = round(float(score), 2)
+            scored.append(ev_copy)
+        scored.sort(key=lambda e: e["rerank_score"], reverse=True)
+        return scored[:top_k]
+    except Exception as e:
+        logger.warning("Lexical rerank falhou, mantendo ordem original: %s", e)
+        return evidences[:top_k]
+
+
 def cross_encoder_rerank(
     query: str,
     evidences: list[dict],

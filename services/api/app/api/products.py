@@ -14,6 +14,7 @@ from app.db.session import get_db, AsyncSessionLocal
 from app.db.models import Product, AnvisaProduct, ProductTussMapping, TussMaterial
 from app.core.security import get_current_user_id, require_current_user_id
 from app.services.ifu_enrichment import enrich_product_from_ifu
+from app.services.glosa_service import normalize_search, _strip_accents
 
 logger = logging.getLogger(__name__)
 
@@ -35,15 +36,28 @@ async def list_products(
 ):
     """Lista produtos: primeiro catálogo interno, depois base ANVISA."""
 
-    # 1) Busca no catálogo interno (products)
+    # 1) Busca no catálogo interno (products) — sem acento, por palavra
     query = select(Product)
     if q:
+        # catálogo é pequeno e curado: filtro amplo no SQL, refino sem acento em memória
         query = query.where(
             Product.nome.ilike(f"%{q}%") | Product.linha.ilike(f"%{q}%")
         )
-    query = query.order_by(Product.nome).limit(20)
+    query = query.order_by(Product.nome).limit(60 if q else 20)
     result = await db.execute(query)
-    catalog_products = result.scalars().all()
+    catalog_products = list(result.scalars().all())
+
+    if q:
+        words = [normalize_search(w) for w in q.split() if len(w.strip()) >= 2]
+        if words:
+            def _match(p) -> bool:
+                blob = normalize_search(f"{p.nome or ''} {p.linha or ''}")
+                return all(w in blob for w in words)
+            filtered = [p for p in catalog_products if _match(p)]
+            # se o refino sem acento zerar (ex.: acento divergente), mantém o SQL amplo
+            catalog_products = (filtered or catalog_products)[:20]
+        else:
+            catalog_products = catalog_products[:20]
 
     items = [
         {
@@ -59,18 +73,28 @@ async def list_products(
         for p in catalog_products
     ]
 
-    # 2) Se tem busca e poucos resultados internos, busca na base ANVISA
+    # 2) Se tem busca e poucos resultados internos, busca na base ANVISA (~111k)
     if q and len(items) < 10:
         anvisa_limit = 20 - len(items)
-        # Quebra a query em palavras para busca mais flexível
-        words = [w.strip() for w in q.split() if len(w.strip()) >= 2]
+        # Palavras normalizadas (sem acento) — TODAS devem casar
+        words = [normalize_search(w) for w in q.split() if len(w.strip()) >= 2]
 
         if words:
-            # Todas as palavras devem aparecer no nome comercial
-            conditions = [AnvisaProduct.nome_comercial.ilike(f"%{w}%") for w in words]
+            # Busca primária: coluna search_normalized (nome comercial + fabricante +
+            # nome técnico, sem acento; indexada por pg_trgm). Fallback por-palavra em
+            # ilike dos campos originais cobre registros ainda sem backfill.
+            conditions = []
+            for w in words:
+                like = f"%{w}%"
+                conditions.append(or_(
+                    AnvisaProduct.search_normalized.contains(w),
+                    AnvisaProduct.nome_comercial.ilike(like),
+                    AnvisaProduct.nome_tecnico.ilike(like),
+                    AnvisaProduct.fabricante.ilike(like),
+                ))
             anvisa_query = (
                 select(AnvisaProduct)
-                .where(*conditions)
+                .where(*conditions)  # AND entre palavras
                 .where(AnvisaProduct.status == "ativo")
                 .order_by(AnvisaProduct.nome_comercial)
                 .limit(anvisa_limit)

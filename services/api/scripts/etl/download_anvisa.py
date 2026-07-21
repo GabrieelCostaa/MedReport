@@ -20,6 +20,8 @@ from sqlalchemy import select, text
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
+from app.services.glosa_service import normalize_search  # noqa: E402
+
 ANVISA_CSV_URL = "https://dados.anvisa.gov.br/dados/TA_PRODUTO_SAUDE_SITE.csv"
 
 # Mapeamento das colunas do CSV para nosso modelo
@@ -90,9 +92,15 @@ def _parse_row(row: dict) -> dict | None:
     nome_comercial = (row.get("NOME_COMERCIAL") or "").strip() or None
     fabricante = (row.get("DETENTOR_REGISTRO_CADASTRO") or "").strip() or None
     classe_risco = (row.get("CLASSE_RISCO") or "").strip() or None
+    nome_tecnico = (row.get("NOME_TECNICO") or "").strip() or None
 
     # dados_json com todos os campos originais para auditoria
     dados_json = {k: (v or "").strip() for k, v in row.items() if v}
+
+    # Campo de busca sem acento (nome comercial + fabricante + nome técnico)
+    search_normalized = normalize_search(
+        " ".join(p for p in (nome_comercial, fabricante, nome_tecnico) if p)
+    )
 
     return {
         "registro": registro,
@@ -101,7 +109,9 @@ def _parse_row(row: dict) -> dict | None:
         "status": status,
         "data_validade": data_validade,
         "classe_risco": classe_risco,
+        "nome_tecnico": nome_tecnico,
         "dados_json": dados_json,
+        "search_normalized": search_normalized,
     }
 
 
@@ -188,7 +198,9 @@ async def run_etl(db_session=None, batch_size: int = 1000):
                 "data_validade": row["data_validade"],
                 "classe_risco": row["classe_risco"],
                 "data_consulta": now,
+                "nome_tecnico": row.get("nome_tecnico"),
                 "dados_json": row["dados_json"],  # dict nativo → JSON via ORM
+                "search_normalized": row.get("search_normalized"),
             })
 
         try:
@@ -202,7 +214,9 @@ async def run_etl(db_session=None, batch_size: int = 1000):
                     "data_validade": stmt.excluded.data_validade,
                     "classe_risco": stmt.excluded.classe_risco,
                     "data_consulta": stmt.excluded.data_consulta,
+                    "nome_tecnico": stmt.excluded.nome_tecnico,
                     "dados_json": stmt.excluded.dados_json,
+                    "search_normalized": stmt.excluded.search_normalized,
                     "updated_at": now,
                 },
             )
@@ -222,6 +236,39 @@ async def run_etl(db_session=None, batch_size: int = 1000):
 
     print(f"[ANVISA CSV] Concluído: {upserted} registros upserted, {errors} erros")
     return {"upserted": upserted, "errors": errors, "total": len(rows)}
+
+
+async def backfill_search_normalized(db_session, batch_size: int = 2000) -> dict:
+    """Popula search_normalized nos registros ANVISA já existentes (idempotente).
+
+    Necessário porque o auto-ETL só re-baixa o CSV se a tabela estiver vazia
+    (count < 100) — os ~111k registros legados nunca ganhariam o campo de busca
+    sem este backfill. Processa apenas linhas com search_normalized NULL, em
+    lotes, para não travar em bases grandes.
+    """
+    from app.db.models import AnvisaProduct
+
+    updated = 0
+    while True:
+        result = await db_session.execute(
+            select(AnvisaProduct)
+            .where(AnvisaProduct.search_normalized.is_(None))
+            .limit(batch_size)
+        )
+        batch = result.scalars().all()
+        if not batch:
+            break
+        for ap in batch:
+            partes = [p for p in (ap.nome_comercial, ap.fabricante, ap.nome_tecnico) if p]
+            # nome_tecnico pode estar só no dados_json em registros antigos
+            if not ap.nome_tecnico and isinstance(ap.dados_json, dict):
+                nt = (ap.dados_json.get("NOME_TECNICO") or "").strip()
+                if nt:
+                    partes.append(nt)
+            ap.search_normalized = normalize_search(" ".join(partes)) or ""
+            updated += 1
+        await db_session.commit()
+    return {"backfilled": updated}
 
 
 if __name__ == "__main__":

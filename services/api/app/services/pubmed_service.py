@@ -297,27 +297,127 @@ def _get_product_terms(product_name: str) -> tuple[str, str]:
     return "", ""
 
 
-def _build_cascade_queries(cid: str, product_name: str = "", diagnostico: str = "") -> list[str]:
+async def _llm_cid_to_mesh(cid: str, diagnostico: str) -> Optional[tuple[str, str]]:
+    """Traduz diagnóstico PT + CID → (descrição EN, fragmento de query MeSH) via LLM barato.
+
+    Só usado na CAUDA LONGA (CID fora de CID_DESCRIPTIONS). Custo ~irrisório
+    (gpt-4o-mini). Retorna None em qualquer falha → o chamador cai no heurístico.
+    """
+    if not settings.OPENAI_API_KEY or not diagnostico:
+        return None
+    try:
+        import json as _json
+        import openai
+        client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        prompt = (
+            "You map a Brazilian ICD-10 (CID-10) diagnosis to PubMed search terms.\n"
+            f"CID-10: {cid}\nDiagnóstico (PT): {diagnostico[:200]}\n\n"
+            'Return STRICT JSON: {"desc_en": "<short English disease name>", '
+            '"mesh": "<a PubMed query fragment, prefer an official MeSH term like '
+            '\\"Heart Failure\\"[mh], else free-text[tiab]>"}. No prose.'
+        )
+        resp = await client.chat.completions.create(
+            model=settings.OPENAI_MODEL_TRANSLATOR,
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+            temperature=0.0,
+            max_tokens=120,
+        )
+        data = _json.loads(resp.choices[0].message.content)
+        desc_en = (data.get("desc_en") or "").strip()
+        mesh = (data.get("mesh") or "").strip()
+        if desc_en and mesh:
+            logger.info("CID %s traduzido via LLM: '%s' → %s", cid, desc_en, mesh)
+            return desc_en, mesh
+    except Exception as e:
+        logger.debug("LLM CID→MeSH falhou para %s: %s", cid, e)
+    return None
+
+
+async def _resolve_cid_terms(
+    db: Optional[AsyncSession], cid: str, diagnostico: str
+) -> tuple[Optional[str], Optional[str]]:
+    """Resolve (desc_text, mesh_term) para um CID.
+
+    Ordem: dict estático → cache DB (MedicalConcept ICD10) → LLM (persiste) →
+    heurístico PT→EN. Só chama o LLM na cauda longa e cacheia o resultado.
+    """
+    cid_upper = cid.strip().upper()
+    entry = CID_DESCRIPTIONS.get(cid_upper)
+    if entry:
+        return entry[0], entry[1]
+
+    # Cache persistente em MedicalConcept (name = desc_en, name_en = mesh)
+    if db is not None:
+        try:
+            from app.db.models import MedicalConcept
+            row = (await db.execute(
+                select(MedicalConcept).where(
+                    MedicalConcept.code == cid_upper,
+                    MedicalConcept.code_system == "ICD10",
+                )
+            )).scalar_one_or_none()
+            if row and row.name_en:
+                return (row.name or cid_upper), row.name_en
+        except Exception as e:
+            logger.debug("Cache CID lookup falhou: %s", e)
+
+    # LLM (cauda longa) → persiste
+    llm = await _llm_cid_to_mesh(cid_upper, diagnostico)
+    if llm:
+        desc_en, mesh = llm
+        if db is not None:
+            try:
+                from app.db.models import MedicalConcept
+                db.add(MedicalConcept(
+                    code=cid_upper, code_system="ICD10",
+                    name=desc_en, name_en=mesh,
+                ))
+                await db.commit()
+            except Exception:
+                try:
+                    await db.rollback()
+                except Exception:
+                    pass
+        return desc_en, mesh
+
+    # Heurístico final (comportamento legado)
+    translated = _translate_diagnosis_to_english(diagnostico)
+    if translated:
+        return translated, f'"{translated}"[tiab]'
+    fallback = diagnostico[:80] if diagnostico else cid_upper
+    return fallback, f'"{fallback}"[tiab]'
+
+
+def _build_cascade_queries(
+    cid: str, product_name: str = "", diagnostico: str = "",
+    resolved: Optional[tuple] = None,
+) -> list[str]:
     """
     Constrói lista de queries do mais específico ao mais amplo.
     A busca para na primeira query que retornar resultados.
+    `resolved` = (desc_text, mesh_term) já resolvido (dict/cache/LLM); se None,
+    resolve sincronamente pelo dict + heurístico (sem LLM).
     """
     cid_upper = cid.strip().upper()
-    cid_entry = CID_DESCRIPTIONS.get(cid_upper)
 
-    if cid_entry:
-        desc_text, mesh_term = cid_entry
+    if resolved is not None:
+        desc_text, mesh_term = resolved
     else:
-        # CID desconhecido: traduz diagnóstico PT→EN para buscar no PubMed
-        translated = _translate_diagnosis_to_english(diagnostico)
-        if translated:
-            desc_text = translated
-            mesh_term = f'"{translated}"[tiab]'
-            logger.info("CID %s not in dict, translated diagnosis: '%s' → '%s'", cid_upper, diagnostico[:60], translated)
+        cid_entry = CID_DESCRIPTIONS.get(cid_upper)
+        if cid_entry:
+            desc_text, mesh_term = cid_entry
         else:
-            desc_text = diagnostico[:80] if diagnostico else cid_upper
-            mesh_term = f'"{desc_text}"[tiab]'
-            logger.warning("CID %s not in dict and no translation available for: %s", cid_upper, diagnostico[:60])
+            # CID desconhecido: traduz diagnóstico PT→EN para buscar no PubMed
+            translated = _translate_diagnosis_to_english(diagnostico)
+            if translated:
+                desc_text = translated
+                mesh_term = f'"{translated}"[tiab]'
+                logger.info("CID %s not in dict, translated diagnosis: '%s' → '%s'", cid_upper, diagnostico[:60], translated)
+            else:
+                desc_text = diagnostico[:80] if diagnostico else cid_upper
+                mesh_term = f'"{desc_text}"[tiab]'
+                logger.warning("CID %s not in dict and no translation available for: %s", cid_upper, diagnostico[:60])
 
     specific_product, generic_product = _get_product_terms(product_name)
 
@@ -627,15 +727,21 @@ async def _search_europe_pmc(query: str, max_results: int = 10) -> list[dict]:
         return []
 
 
-def _build_europe_pmc_query(cid: str, product_name: str = "", diagnostico: str = "") -> str:
+def _build_europe_pmc_query(
+    cid: str, product_name: str = "", diagnostico: str = "",
+    resolved: Optional[tuple] = None,
+) -> str:
     """Constrói query para Europe PMC (sintaxe diferente do PubMed)."""
     cid_upper = cid.strip().upper()
-    cid_entry = CID_DESCRIPTIONS.get(cid_upper)
 
-    if cid_entry:
-        desc_text = cid_entry[0]
+    if resolved is not None and resolved[0]:
+        desc_text = resolved[0]
     else:
-        desc_text = diagnostico[:80] if diagnostico else ""
+        cid_entry = CID_DESCRIPTIONS.get(cid_upper)
+        if cid_entry:
+            desc_text = cid_entry[0]
+        else:
+            desc_text = diagnostico[:80] if diagnostico else ""
 
     specific_product, _ = _get_product_terms(product_name)
 
@@ -739,12 +845,13 @@ async def _cascade_search(
     product_name: str = "",
     diagnostico: str = "",
     max_results: int = 10,
+    resolved: Optional[tuple] = None,
 ) -> tuple[list[dict], str]:
     """
     Busca em cascata: tenta queries do mais específico ao mais amplo.
     Retorna (artigos, query_usada).
     """
-    queries = _build_cascade_queries(cid, product_name, diagnostico)
+    queries = _build_cascade_queries(cid, product_name, diagnostico, resolved=resolved)
     all_pmids = []
     used_query = ""
 
@@ -793,11 +900,35 @@ async def _europe_pmc_fallback(
     product_name: str = "",
     diagnostico: str = "",
     max_results: int = 10,
+    resolved: Optional[tuple] = None,
 ) -> tuple[list[dict], str]:
     """Fallback para Europe PMC quando PubMed não retorna resultados."""
-    query = _build_europe_pmc_query(cid, product_name, diagnostico)
+    query = _build_europe_pmc_query(cid, product_name, diagnostico, resolved=resolved)
     articles = await _search_europe_pmc(query, max_results=max_results)
     return articles, f"[EuropePMC] {query}"
+
+
+def _rerank_evidences(cid: str, product_name: str, diagnostico: str, evidence_dicts: list[dict]) -> list[dict]:
+    """Reordena por relevância clínica. Usa PubMedBERT se disponível (txtai),
+    senão rerank léxico com rapidfuzz (sempre disponível, cabe no Render).
+    Fail-soft: em qualquer erro retorna a lista original."""
+    if not evidence_dicts:
+        return evidence_dicts
+    try:
+        from app.services.semantic_search import build_clinical_query, semantic_rerank, lexical_rerank
+        clinical_query = build_clinical_query(cid, product_name, diagnostico)
+        top_k = settings.PUBMED_MAX_RESULTS
+        try:
+            from app.services.semantic_search import _get_embeddings
+            has_txtai = _get_embeddings() is not None
+        except Exception:
+            has_txtai = False
+        if has_txtai:
+            return semantic_rerank(clinical_query, evidence_dicts, top_k=top_k, text_field="snippet")
+        return lexical_rerank(clinical_query, evidence_dicts, top_k=top_k, text_field="snippet")
+    except Exception as e:
+        logger.debug("Rerank pulado: %s", e)
+        return evidence_dicts
 
 
 # ---------------------------------------------------------------------------
@@ -828,49 +959,40 @@ async def get_evidences_for_cid(
     if not cid:
         return []
 
-    # 1. Verificar cache
+    # 1. Verificar cache (agora com rerank também no hit — rapidfuzz é barato)
     cached_rows, is_fresh = await _get_cached(db, cid)
     if cached_rows and is_fresh:
         logger.info("PubMed cache HIT for CID %s (%d articles)", cid, len(cached_rows))
-        return _cache_to_evidence_dicts(cached_rows)
+        return _rerank_evidences(cid, product_name, diagnostico, _cache_to_evidence_dicts(cached_rows))
+
+    # 1.5 Resolve termos de busca (dict → cache DB → LLM barato na cauda longa)
+    resolved = await _resolve_cid_terms(db, cid, diagnostico)
 
     # 2. Busca em cascata PubMed + ELink
     articles, used_query = await _cascade_search(
-        cid, product_name, diagnostico, max_results=settings.PUBMED_MAX_RESULTS
+        cid, product_name, diagnostico, max_results=settings.PUBMED_MAX_RESULTS, resolved=resolved,
     )
 
     # 3. Europe PMC fallback se PubMed não encontrou nada
     if not articles:
         logger.info("PubMed cascade empty for CID %s, trying Europe PMC...", cid)
         articles, used_query = await _europe_pmc_fallback(
-            cid, product_name, diagnostico, max_results=settings.PUBMED_MAX_RESULTS
+            cid, product_name, diagnostico, max_results=settings.PUBMED_MAX_RESULTS, resolved=resolved,
         )
 
-    # 4. Salvar resultados no cache
+    # 4. Salvar resultados no cache + rerank
     if articles:
         await _save_to_cache(db, cid, used_query, articles)
         refreshed_rows, _ = await _get_cached(db, cid)
-        evidence_dicts = _cache_to_evidence_dicts(refreshed_rows)
-
-        # 4.5 Semantic reranking — reorder by clinical relevance
-        try:
-            from app.services.semantic_search import semantic_rerank, build_clinical_query
-            clinical_query = build_clinical_query(cid, product_name, diagnostico)
-            evidence_dicts = semantic_rerank(
-                clinical_query, evidence_dicts,
-                top_k=settings.PUBMED_MAX_RESULTS,
-                text_field="snippet",
-            )
-            logger.info("Semantic rerank applied for CID %s (%d evidences)", cid, len(evidence_dicts))
-        except Exception as e:
-            logger.debug("Semantic rerank skipped: %s", e)
-
+        evidence_dicts = _rerank_evidences(
+            cid, product_name, diagnostico, _cache_to_evidence_dicts(refreshed_rows)
+        )
         return evidence_dicts
 
     # 5. Cache stale como último recurso
     if cached_rows:
         logger.info("All searches empty, using stale cache for CID %s", cid)
-        return _cache_to_evidence_dicts(cached_rows)
+        return _rerank_evidences(cid, product_name, diagnostico, _cache_to_evidence_dicts(cached_rows))
 
     logger.warning("No evidence found for CID %s (all sources exhausted)", cid)
     return []

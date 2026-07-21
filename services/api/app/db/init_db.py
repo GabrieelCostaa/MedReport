@@ -50,6 +50,12 @@ CLINICAL_EVIDENCE_NEW_COLUMNS = [
     ("doi", "VARCHAR(255)"),
 ]
 
+ANVISA_NEW_COLUMNS = [
+    ("nome_tecnico", "VARCHAR(500)"),
+    ("modelos_descricao", "TEXT"),
+    ("search_normalized", "TEXT"),
+]
+
 
 async def _add_missing_columns(table: str, columns: list[tuple[str, str]]) -> None:
     """Adiciona colunas novas UMA POR TRANSAÇÃO.
@@ -71,6 +77,26 @@ async def _add_missing_columns(table: str, columns: list[tuple[str, str]]) -> No
             pass  # coluna já existe
 
 
+async def _ensure_anvisa_search_index() -> None:
+    """Índice pg_trgm para busca por substring rápida em anvisa_products (~111k linhas).
+
+    Postgres-only: em SQLite/dev os comandos falham e são engolidos (a busca
+    ainda funciona, só varre a tabela). Idempotente via IF NOT EXISTS.
+    """
+    stmts = [
+        "CREATE EXTENSION IF NOT EXISTS pg_trgm",
+        "CREATE INDEX IF NOT EXISTS ix_anvisa_search_trgm "
+        "ON anvisa_products USING gin (search_normalized gin_trgm_ops)",
+    ]
+    for stmt in stmts:
+        try:
+            async with engine.begin() as conn:
+                await conn.execute(text(stmt))
+            logger.info("pg_trgm: %s", stmt.split(" ON ")[0][:40])
+        except Exception:
+            pass  # SQLite/dev ou extensão indisponível — busca funciona sem índice
+
+
 async def create_tables():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -78,6 +104,8 @@ async def create_tables():
     await _add_missing_columns("reports", REPORT_NEW_COLUMNS)
     await _add_missing_columns("clinical_evidences", CLINICAL_EVIDENCE_NEW_COLUMNS)
     await _add_missing_columns("users", USER_NEW_COLUMNS)
+    await _add_missing_columns("anvisa_products", ANVISA_NEW_COLUMNS)
+    await _ensure_anvisa_search_index()
 
 
 PRODUCTS_SEED = [
