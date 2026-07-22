@@ -242,7 +242,11 @@ def build_guia_pdf(report: Report) -> bytes:
         from weasyprint import HTML
         pdf_bytes = HTML(string=html).write_pdf()
         return pdf_bytes
-    except ImportError:
+    except Exception:
+        # ImportError (lib ausente) OU OSError (WeasyPrint importa mas as
+        # libs nativas — libgobject/pango — faltam no sistema). Em ambos os
+        # casos o fallback ReportLab abaixo resolve (mesma estratégia do
+        # pdf_generator.py).
         pass
 
     try:

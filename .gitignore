@@ -22,3 +22,6 @@ es_data/
 # Large data files (TISS/TUSS ZIPs)
 services/api/data/ans/tiss/
 .worktrees/
+
+# Saídas do harness de experimentação (textos de laudo gerados, regeneráveis)
+services/api/scripts/test_output_experiment/

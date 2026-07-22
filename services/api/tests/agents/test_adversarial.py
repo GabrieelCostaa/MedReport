@@ -16,8 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
 from tests.conftest import MockProduct, MockTemplate
 
-SKIP_LLM = not os.environ.get("OPENAI_API_KEY")
-skip_reason = "OPENAI_API_KEY não configurada"
+from tests.conftest import SKIP_LLM, SKIP_LLM_REASON as skip_reason  # noqa: E402
 
 
 class TestPromptInjection:

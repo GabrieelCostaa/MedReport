@@ -12,7 +12,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock
 
-SKIP_LLM = not os.environ.get("OPENAI_API_KEY")
+from tests.conftest import SKIP_LLM  # noqa: E402
 
 try:
     from deepeval import assert_test, evaluate

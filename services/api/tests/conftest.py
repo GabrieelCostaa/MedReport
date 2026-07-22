@@ -14,6 +14,82 @@ if not os.environ.get("SECRET_KEY") or len(os.environ.get("SECRET_KEY", "")) < 3
     os.environ["SECRET_KEY"] = "chave-de-teste-para-pytest-nao-usar-em-producao-64chars!!"
 
 
+# ─── Testes que chamam a OpenAI de verdade ──────────────────────────────────
+# Antes o guard era `not os.environ.get("OPENAI_API_KEY")`. Como o load_dotenv()
+# acima carrega a chave real do .env, ele NUNCA pulava na máquina de quem
+# desenvolve: `pytest tests/` disparava o pipeline completo contra a API,
+# gastando dinheiro e travando sem timeout. Agora é opt-in explícito:
+#   pytest tests/                    → offline, grátis, determinístico
+#   RUN_LLM_TESTS=1 pytest tests/    → inclui os testes que gastam
+RUN_LLM_TESTS = os.environ.get("RUN_LLM_TESTS", "").lower() in ("1", "true", "yes")
+SKIP_LLM = not RUN_LLM_TESTS
+SKIP_LLM_REASON = "Teste que chama a OpenAI de verdade — habilite com RUN_LLM_TESTS=1"
+
+
+# Teto de tempo por teste. Vale sobretudo para RUN_LLM_TESTS=1: uma chamada
+# lenta ou throttled da OpenAI pendura o teste indefinidamente (o SDK tem
+# timeout próprio alto + retries). Usa signal.alarm da stdlib em vez de
+# pytest-timeout para não adicionar dependência de teste ao projeto.
+TEST_TIMEOUT_SECONDS = int(os.environ.get("TEST_TIMEOUT_SECONDS", "180" if RUN_LLM_TESTS else "60"))
+
+
+@pytest.fixture(autouse=True)
+def _timeout_por_teste():
+    import signal
+
+    if not hasattr(signal, "SIGALRM"):  # Windows
+        yield
+        return
+
+    def _estourou(signum, frame):
+        raise TimeoutError(
+            f"Teste excedeu {TEST_TIMEOUT_SECONDS}s — provavelmente travado em rede. "
+            "Ajuste com TEST_TIMEOUT_SECONDS."
+        )
+
+    anterior = signal.signal(signal.SIGALRM, _estourou)
+    signal.alarm(TEST_TIMEOUT_SECONDS)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, anterior)
+
+
+_EXIT_STATUS = {"code": 0}
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """Guarda o código de saída para o encerramento forçado do unconfigure."""
+    _EXIT_STATUS["code"] = int(exitstatus)
+
+
+@pytest.hookimpl(trylast=True)
+def pytest_unconfigure(config):
+    """Encerra o processo à força no fim de tudo (resumo já impresso).
+
+    Os testes rodam inteiros em ~15s, mas o pytest ficava pendurado
+    indefinidamente DEPOIS de imprimir o relatório: alguma biblioteca de
+    terceiros (bibliotecas de avaliação/telemetria importadas pelos testes)
+    deixa uma thread não-daemon parada em accept() de socket, e o interpretador
+    espera por ela para sempre. Já vimos a suíte "rodar" por 50 minutos assim.
+
+    Não há como fechar essa thread de fora, então saímos explicitamente com o
+    código que o pytest apurou. É feito no `unconfigure` (e não no
+    `sessionfinish`) porque o resumo final — "N passed in Xs" — é escrito por
+    um hookwrapper do terminal que só retoma DEPOIS dos hooks comuns: sair
+    antes disso engoliria o relatório.
+
+    Desative com KEEP_PYTEST_ALIVE=1 se precisar depurar o teardown.
+    """
+    if os.environ.get("KEEP_PYTEST_ALIVE"):
+        return
+    import sys
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(_EXIT_STATUS["code"])
+
+
 @dataclass
 class MockProduct:
     """Produto mock para testes sem banco de dados."""

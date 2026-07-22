@@ -40,10 +40,24 @@ class TestResolveCidTerms:
         assert calls["n"] == 0  # CID no dict → não chama LLM
 
     async def test_llm_translation_is_cached(self, monkeypatch):
-        """Cauda longa: 1ª chamada usa LLM e persiste; 2ª usa cache (sem LLM)."""
+        """Cauda longa: 1ª chamada usa LLM e persiste; 2ª usa cache (sem LLM).
+
+        Usa SQLite em memória (mesmo padrão de tests/api/conftest.py): antes
+        este teste importava o engine real de app.db.session e só passava com
+        um Postgres de verdade rodando na porta local — falhava na máquina de
+        quem não tivesse o banco de pé.
+        """
         import app.services.pubmed_service as ps
-        from app.db.session import engine, Base, AsyncSessionLocal
+        from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+        from app.db.session import Base
         import app.db.models  # noqa
+
+        # cache compartilhado: sem isso cada conexão do pool abriria um banco
+        # :memory: próprio e o cache do MedicalConcept não seria visto na 2ª sessão
+        engine = create_async_engine(
+            "sqlite+aiosqlite:///file:testdb_cidcache?mode=memory&cache=shared&uri=true"
+        )
+        SessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
         async with engine.begin() as c:
             await c.run_sync(Base.metadata.create_all)
@@ -55,17 +69,17 @@ class TestResolveCidTerms:
             return ("Heart Failure", '"Heart Failure"[mh]')
         monkeypatch.setattr(ps, "_llm_cid_to_mesh", _fake_llm)
 
-        async with AsyncSessionLocal() as db:
-            d1, m1 = await ps._resolve_cid_terms(db, "I50.0", "insuficiência cardíaca")
-            assert m1 == '"Heart Failure"[mh]'
-            assert calls["n"] == 1
-        async with AsyncSessionLocal() as db:
-            d2, m2 = await ps._resolve_cid_terms(db, "I50.0", "insuficiência cardíaca")
-            assert m2 == '"Heart Failure"[mh]'
-            assert calls["n"] == 1  # veio do cache MedicalConcept
-
-        async with engine.begin() as c:
-            await c.run_sync(Base.metadata.drop_all)
+        try:
+            async with SessionLocal() as db:
+                d1, m1 = await ps._resolve_cid_terms(db, "I50.0", "insuficiência cardíaca")
+                assert m1 == '"Heart Failure"[mh]'
+                assert calls["n"] == 1
+            async with SessionLocal() as db:
+                d2, m2 = await ps._resolve_cid_terms(db, "I50.0", "insuficiência cardíaca")
+                assert m2 == '"Heart Failure"[mh]'
+                assert calls["n"] == 1  # veio do cache MedicalConcept
+        finally:
+            await engine.dispose()
 
     async def test_fallback_when_llm_none(self, monkeypatch):
         import app.services.pubmed_service as ps
