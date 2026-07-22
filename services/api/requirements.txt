@@ -16,7 +16,10 @@ reportlab==4.0.7
 lxml==5.1.0
 weasyprint>=60.0
 jinja2>=3.1.0
-openai>=1.0.0
+# Teto de major obrigatório: com `>=1.0.0` o build já resolvia para a 2.x.
+# Se o SDK migrar o default para a Responses API (input_tokens/output_tokens),
+# extract_usage devolve ZERO em silêncio e o custo reportado vira R$0,00.
+openai>=2.29.0,<3.0.0
 qrcode[pil]>=7.4
 python-docx>=1.1.0
 openpyxl>=3.1.0
@@ -27,7 +30,9 @@ slowapi>=0.1.9
 # Logging
 structlog>=24.0.0
 # AI & Structured Outputs
-instructor>=1.0.0
+# Teto de major: a v2.0 remove instructor.hooks e pode mudar o modo default,
+# o que quebraria a agregação de usage dos retries sem erro visível.
+instructor>=1.14.5,<2.0.0
 # Search & NLP
 rapidfuzz>=3.6.0
 networkx>=3.2

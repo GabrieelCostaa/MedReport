@@ -101,6 +101,13 @@ class Product(Base):
     # Referências
     bula_url = Column(String(500), nullable=True)
     referencias_bibliograficas = Column(JSON, nullable=True)
+    # Proveniência dos campos de ficha técnica acima: quais foram gerados por
+    # LLM, extraídos de bula em PDF ou copiados da ANVISA — e quando. Sem isto
+    # é impossível distinguir dado oficial de texto que a própria IA escreveu,
+    # e o Auditor acaba validando o laudo contra a saída de outro modelo.
+    # NULL = origem desconhecida/legado (NUNCA interpretar como "revisado").
+    # Ver app/services/provenance.py.
+    campos_gerados_ia = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
 
@@ -189,6 +196,20 @@ class Report(Base):
     outcome_at = Column(DateTime(timezone=True), nullable=True)
     outcome_motivo_codigo = Column(String(10), nullable=True)  # TISS Tabela 38 (quando glosado)
     outcome_notes = Column(Text, nullable=True)
+    # Sinais de geração (antes computados e descartados) — custo, tokens por
+    # agente e raciocínio do Auditor; alimentam análise de qualidade e custo.
+    token_cost_usd = Column(Float, nullable=True)
+    token_usage_json = Column(JSON, nullable=True)
+    auditor_cot = Column(Text, nullable=True)
+    # Verificador de fidelidade (decompose-then-verify) — modo "flag": mede e
+    # anota, nunca altera o texto. score = afirmações sustentadas / verificáveis.
+    faithfulness_score = Column(Float, nullable=True)
+    faithfulness_flags = Column(JSON, nullable=True)
+    # Métricas de qualidade RAGAS-style (juiz LLM barato)
+    quality_faithfulness = Column(Float, nullable=True)
+    quality_relevancy = Column(Float, nullable=True)
+    quality_citation = Column(Float, nullable=True)
+    quality_details = Column(JSON, nullable=True)
     # Assinatura
     signed_at = Column(DateTime(timezone=True), nullable=True)
     # Snapshot dos dados do médico no momento da assinatura

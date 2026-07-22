@@ -13,7 +13,7 @@ import json
 import logging
 from typing import Optional
 
-from sqlalchemy import select, text as sql_text
+from sqlalchemy import select, update as sql_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -150,7 +150,7 @@ async def _generate_enrichment(product: Product, anvisa_ctx: dict, pubmed_ctx: s
     client = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
     response = await client.chat.completions.create(
-        model="gpt-4o",
+        model=settings.OPENAI_MODEL_ENRICHMENT,
         messages=[
             {"role": "system", "content": prompt},
             {"role": "user", "content": "Gere a ficha técnica completa deste produto médico."},
@@ -218,21 +218,60 @@ async def enrich_product(
             logger.info("Nenhum campo para enriquecer em %s", product.nome)
             return False
 
-        # Aplicar updates via SQL (product pode não estar na mesma session)
-        set_clauses = ", ".join(f"{k} = :{k}" for k in updates)
-        updates["product_id"] = str(product.id)
-        await db.execute(
-            sql_text(f"UPDATE products SET {set_clauses} WHERE id = :product_id"),
-            updates,
+        enriched_fields = list(updates.keys())
+        valores_anteriores = {k: getattr(product, k, None) for k in enriched_fields}
+
+        # Marca de proveniência: este texto foi ESCRITO POR UM MODELO, e o
+        # prompt permite "conhecimento médico estabelecido" — não é dado
+        # oficial. Sem esta marca, o Auditor recebe tudo como "verdade
+        # absoluta" e valida o laudo contra a saída de outro modelo.
+        from app.services.provenance import build_provenance, ORIGEM_LLM
+        marcas = build_provenance(
+            getattr(product, "campos_gerados_ia", None),
+            enriched_fields,
+            origem=ORIGEM_LLM,
+            modelo=settings.OPENAI_MODEL_ENRICHMENT,
         )
+        updates["campos_gerados_ia"] = marcas
+
+        # UPDATE tipado pelo model (e não SQL cru como antes): a coluna nova é
+        # JSON e cada driver serializa dict de um jeito — o construtor do
+        # SQLAlchemy resolve isso para SQLite e Postgres. Continua não exigindo
+        # que `product` esteja anexado a esta session.
+        await db.execute(
+            sql_update(Product).where(Product.id == product.id).values(**updates)
+        )
+
+        # Trilha de auditoria: guarda o valor ANTERIOR de cada campo, que é o
+        # que torna esta escrita reversível (antes não havia rollback algum).
+        try:
+            from app.services.audit_service import audit_log
+            from app.db.models import AuditAction
+            await audit_log(
+                db,
+                AuditAction.GENERATE,
+                resource_type="product",
+                resource_id=str(product.id),
+                changes={
+                    campo: {"old": valores_anteriores.get(campo), "new": updates.get(campo)}
+                    for campo in enriched_fields
+                },
+                justification="Ficha técnica gerada por LLM (auto-enriquecimento de produto incompleto)",
+                metadata={
+                    "origem": ORIGEM_LLM,
+                    "modelo": settings.OPENAI_MODEL_ENRICHMENT,
+                    "cid_contexto": cid,
+                    "produto_nome": product.nome,
+                },
+            )
+        except Exception as e:  # nunca bloqueia o enriquecimento
+            logger.warning("AuditLog do enriquecimento falhou (non-blocking): %s", e)
+
         await db.commit()
 
-        # Atualizar objeto em memória
+        # Atualizar objeto em memória (o mesmo laudo em curso já usa a ficha)
         for k, v in updates.items():
-            if k != "product_id":
-                setattr(product, k, v)
-
-        enriched_fields = [k for k in updates if k != "product_id"]
+            setattr(product, k, v)
         logger.info(
             "Produto enriquecido: %s — campos: %s",
             product.nome, ", ".join(enriched_fields),

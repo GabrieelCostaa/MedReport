@@ -14,11 +14,17 @@ from .writer import write_justification, DraftReport
 from .auditor import audit, AuditResult
 from .checklist import ReportChecklist
 from .validator import validate_technical_data, ValidationResult
-from .token_tracker import PipelineUsage
+from .token_tracker import PipelineUsage, coletar_uso_auxiliar
 from app.core.config import settings
 from app.services.observability import create_pipeline_trace
 
 logger = logging.getLogger(__name__)
+
+# Quantos outros produtos entram na detecção de contaminação cruzada. Com a
+# projeção de 4 colunas o custo por laudo é baixo, então o teto é generoso;
+# se o catálogo crescer além disso, os produtos fora da janela ficam invisíveis
+# para a detecção — e o log abaixo avisa quando isso passa a acontecer.
+_CONTAMINATION_PRODUCT_CAP = 500
 
 
 # Patterns to infer evidence level from PubMed snippets
@@ -129,6 +135,7 @@ class PipelineSession:
     usage: PipelineUsage = field(default_factory=PipelineUsage)
     compliance_context: object = None  # ComplianceContext when available
     tuss_selection: object = None  # TussSelection when available
+    dynamic_examples: list = field(default_factory=list)  # few-shot dinâmico (edits aprovados)
     other_products: list = field(default_factory=list)  # p/ detecção cross-produto
     # Campos administrativos (carteirinha, guia etc.) que NÃO entram no prompt,
     # apenas são persistidos no Report ao final (fluxo com perguntas A/B/C).
@@ -209,12 +216,32 @@ class ReportPipeline:
             try:
                 from sqlalchemy import select as _select
                 from app.db.models import Product as _Product
+                # ORDER BY é obrigatório: sem ele o Postgres não garante QUAIS
+                # 200 produtos vêm, então o mesmo laudo podia bloquear numa
+                # execução e passar na seguinte — a detecção cruzada era
+                # silenciosamente não-reprodutível.
+                # Projeta só as colunas do fingerprint (antes trazia as linhas
+                # inteiras, com os Text de ficha técnica, 200 por laudo).
                 others = await db.execute(
-                    _select(_Product).where(_Product.id != product.id).limit(200)
+                    _select(
+                        _Product.id, _Product.nome,
+                        _Product.registro_anvisa, _Product.codigo_tuss_sugerido,
+                    )
+                    .where(_Product.id != product.id)
+                    .order_by(_Product.nome, _Product.id)
+                    .limit(_CONTAMINATION_PRODUCT_CAP)
                 )
-                session.other_products = list(others.scalars().all())
+                session.other_products = list(others.all())
+                if len(session.other_products) >= _CONTAMINATION_PRODUCT_CAP:
+                    logger.warning(
+                        "Detecção de contaminação limitada a %d produtos — o catálogo "
+                        "excede o teto e os demais não são comparados",
+                        _CONTAMINATION_PRODUCT_CAP,
+                    )
             except Exception as e:
-                logger.debug("Falha ao carregar outros produtos p/ contaminação: %s", e)
+                # WARNING, não DEBUG: em produção "detector quebrado" e
+                # "nenhuma contaminação" eram indistinguíveis nos logs.
+                logger.warning("Falha ao carregar outros produtos p/ contaminação: %s", e)
 
         async def _emit(step, label):
             if on_progress:
@@ -259,7 +286,28 @@ class ReportPipeline:
             await _emit("researching", "Nenhuma evidência interna pré-validada para este CID")
 
         await _emit("researching", "Pesquisando artigos indexados no PubMed...")
-        session.pubmed_evidences = await _fetch_pubmed_evidences(db, cid, product.nome, diagnostico)
+        # A busca dispara chamadas auxiliares de LLM (tradutor CID→MeSH e filtro
+        # de relevância PT, ambos dentro do pubmed_service). Elas eram cobradas
+        # e não apareciam em conta nenhuma; o coletor as traz para o total.
+        with coletar_uso_auxiliar(session.usage):
+            session.pubmed_evidences = await _fetch_pubmed_evidences(db, cid, product.nome, diagnostico)
+
+        # Evidence discipline: menos evidência, melhor ranqueada. A pesquisa é
+        # clara — contexto em excesso degrada o raciocínio ("context rot") e o
+        # Writer é obrigado a citar TODAS; melhor 6 fortes que 10 com cauda
+        # fraca. As PT (europepmc_pt, cap 2) são preservadas no corte: vêm no
+        # fim da lista mas são diferencial perante auditor brasileiro.
+        cut = settings.EVIDENCE_RERANK_CUT
+        if cut and cut > 0 and len(session.pubmed_evidences) > cut:
+            pt_evs = [e for e in session.pubmed_evidences if e.get("source") == "europepmc_pt"]
+            main_evs = [e for e in session.pubmed_evidences if e.get("source") != "europepmc_pt"]
+            keep_main = max(1, cut - len(pt_evs))
+            session.pubmed_evidences = main_evs[:keep_main] + pt_evs
+            logger.info(
+                "Evidence cut: %d→%d artigos (%d PT preservados)",
+                len(main_evs) + len(pt_evs), len(session.pubmed_evidences), len(pt_evs),
+            )
+
         n_pubmed = len(session.pubmed_evidences)
         if n_pubmed > 0:
             await _emit("researching", f"{n_pubmed} artigo(s) científico(s) relevante(s) identificado(s)")
@@ -310,8 +358,24 @@ class ReportPipeline:
             logger.warning("Compliance layer unavailable: %s", e)
             session.compliance_context = None
 
+        # Few-shot dinâmico: laudo aprovado na operadora + pouco editado pelo
+        # médico vira exemplar extra do Redator (buscado aqui porque só o
+        # start() tem db; a geração pode acontecer depois, no answer()).
+        if settings.DYNAMIC_FEWSHOT_ENABLED and db is not None:
+            try:
+                from app.services.edit_learning import get_dynamic_examples
+                esp = medico_inputs.get("especialidade", "") or ""
+                if esp:
+                    session.dynamic_examples = await get_dynamic_examples(db, esp)
+            except Exception as e:
+                logger.debug("Few-shot dinâmico falhou (seguindo sem): %s", e)
+
         await _emit("researching", "Analisando contexto clínico e identificando lacunas...")
-        research_result = await research(product, diagnostico, cid, template, db=db)
+        research_result = await research(
+            product, diagnostico, cid, template, db=db,
+            clinical_evidences=session.clinical_evidences,
+            pubmed_evidences=session.pubmed_evidences,
+        )
         session.research_result = research_result
         session.medico_inputs["cid"] = cid
         session.medico_inputs["diagnostico"] = diagnostico
@@ -395,6 +459,33 @@ class ReportPipeline:
 
         trace = session.medico_inputs.get("_trace")
 
+        # A especialidade seleciona o few-shot do Redator. Quando o médico não a
+        # informa (fluxo comum), a detectada pelo Pesquisador assume o lugar —
+        # antes disso o exemplo específico simplesmente não disparava.
+        if settings.ESPECIALIDADE_AUTOFILL_ENABLED and not session.medico_inputs.get("especialidade"):
+            detectada = getattr(session.research_result, "especialidade_detectada", None)
+            if detectada:
+                session.medico_inputs["especialidade"] = detectada
+                logger.info("Especialidade preenchida pelo Pesquisador: %s", detectada)
+
+        # Enquadramento regulatório apurado no start(): critérios DUT que o
+        # paciente atende, modo fora do Rol (checklist STF) e alertas ANVISA.
+        writer_compliance, auditor_compliance = "", ""
+        if settings.COMPLIANCE_PROMPT_ENABLED and session.compliance_context:
+            try:
+                from app.services.compliance_layer import (
+                    build_writer_dut_prompt, build_auditor_compliance_instructions,
+                )
+                writer_compliance = build_writer_dut_prompt(session.compliance_context)
+                auditor_compliance = build_auditor_compliance_instructions(session.compliance_context)
+                if writer_compliance:
+                    logger.info(
+                        "Compliance injetado no Redator: modo=%s, %d chars",
+                        session.compliance_context.mode, len(writer_compliance),
+                    )
+            except Exception as e:
+                logger.warning("Compliance não injetado no prompt (seguindo sem): %s", e)
+
         session.step = "writing"
         n_ev = len(session.clinical_evidences) + len(session.pubmed_evidences)
         await _emit("writing", f"Redigindo justificativa técnica para {session.product.nome}...")
@@ -414,6 +505,8 @@ class ReportPipeline:
             medico_inputs=session.medico_inputs,
             clinical_evidences=session.clinical_evidences,
             pubmed_evidences=session.pubmed_evidences,
+            compliance_prompt=writer_compliance,
+            dynamic_examples=session.dynamic_examples or None,
         )
         session.draft = draft
         if draft.token_usage:
@@ -447,6 +540,7 @@ class ReportPipeline:
             draft, session.product,
             clinical_evidences=session.clinical_evidences,
             pubmed_evidences=session.pubmed_evidences,
+            compliance_instructions=auditor_compliance,
         )
         session.audit_result = audit_result
         if audit_result.token_usage:
@@ -530,6 +624,78 @@ class ReportPipeline:
                         f"O valor oficial é '{issue.valor_oficial}'."
                     )
 
+        # ── Verificador de fidelidade (modo "flag": mede, nunca altera) ──
+        faithfulness_data: dict = {}
+        if settings.FAITHFULNESS_GATE_ENABLED:
+            try:
+                from .faithfulness import verify_faithfulness
+                await _emit("validating", "Verificando fidelidade das afirmações à evidência...")
+                fres = await verify_faithfulness(
+                    audit_result.texto_corrigido,
+                    session.product,
+                    clinical_evidences=session.clinical_evidences,
+                    pubmed_evidences=session.pubmed_evidences,
+                    medico_inputs=session.medico_inputs,
+                )
+                if fres.token_usage:
+                    session.usage.add(fres.token_usage)
+                if fres.score is not None:
+                    faithfulness_data = {
+                        "faithfulness_score": fres.score,
+                        "faithfulness_flags": fres.flags() or None,
+                        # Score sem cobertura engana: 1,0 sobre 6 afirmações de
+                        # um laudo de 60 não é o mesmo que 1,0 sobre 50.
+                        "faithfulness_cobertura": fres.cobertura,
+                        "faithfulness_por_origem": fres.por_origem or None,
+                    }
+                    for flag in fres.flags():
+                        audit_log.append({
+                            "tipo": "alerta_faithfulness",
+                            "campo": flag.get("tipo", ""),
+                            "original": flag.get("afirmacao", ""),
+                            "corrigido": "",
+                            "motivo": "Afirmação verificável sem sustentação no bundle de evidência (sinalizada, texto preservado).",
+                        })
+                    if trace:
+                        trace.score(
+                            "faithfulness", fres.score,
+                            f"{fres.grounded_claims}/{fres.verifiable_claims} sustentadas, "
+                            f"cobertura {fres.cobertura}",
+                        )
+            except Exception as e:
+                logger.warning("Verificação de fidelidade falhou (non-blocking): %s", e)
+
+        # ── Métricas de qualidade (RAGAS-style; alimentam o approval_score) ──
+        quality_result = None
+        if settings.QUALITY_METRICS_ENABLED:
+            try:
+                from app.services.quality_metrics import compute_quality_metrics
+                # Fontes legítimas além de clinical/pubmed: ficha do produto e
+                # evidências do Pesquisador (Regra #11 permite citá-las).
+                extra_refs = list(getattr(session.product, "referencias_bibliograficas", None) or [])
+                if session.research_result:
+                    extra_refs += [
+                        e.referencia for e in session.research_result.evidencias if e.referencia
+                    ]
+                    extra_refs += list(session.research_result.referencias or [])
+                quality_result = await compute_quality_metrics(
+                    audit_result.texto_corrigido,
+                    cid=session.medico_inputs.get("cid", ""),
+                    diagnostico=session.medico_inputs.get("diagnostico", ""),
+                    product_name=session.product.nome,
+                    clinical_evidences=session.clinical_evidences,
+                    pubmed_evidences=session.pubmed_evidences,
+                    faithfulness_score=faithfulness_data.get("faithfulness_score"),
+                    extra_references=extra_refs,
+                )
+                if quality_result.token_usage:
+                    session.usage.add(quality_result.token_usage)
+                if trace and quality_result.mean() is not None:
+                    trace.score("quality_mean", quality_result.mean(), str(quality_result.to_dict()))
+            except Exception as e:
+                logger.warning("Métricas de qualidade falharam (non-blocking): %s", e)
+                quality_result = None
+
         # ── Contamination detection ────────────────────────────────────
         try:
             from app.services.contamination_detector import check_contamination
@@ -582,6 +748,11 @@ class ReportPipeline:
                     ),
                     compliance_mode=session.compliance_context.mode,
                     stf_checklist=getattr(session.compliance_context, "stf_checklist", None),
+                    quality_scores={
+                        "faithfulness": quality_result.faithfulness,
+                        "relevancy": quality_result.relevancy,
+                        "citation": quality_result.citation,
+                    } if quality_result is not None else None,
                 )
                 compliance_data = {
                     "approval_score": final_score.score,
@@ -655,8 +826,19 @@ class ReportPipeline:
             "risco_nao_realizacao": draft.risco_nao_realizacao,
             "base_legal": draft.base_legal,
             "usage": session.usage.to_dict(),
+            "especialidade": session.medico_inputs.get("especialidade") or None,
+            # Sinais persistidos no Report (antes eram computados e descartados)
+            "auditor_cot": audit_result.chain_of_thought or None,
+            "inconsistencies": [
+                {"campo": i.campo, "tipo": i.tipo, "severidade": i.severidade,
+                 "valor_no_texto": i.valor_no_texto, "valor_oficial": i.valor_oficial}
+                for i in validation.issues
+            ] or None,
         }
         result.update(compliance_data)
+        result.update(faithfulness_data)
+        if quality_result is not None:
+            result["quality_metrics"] = quality_result.to_dict()
         return result
 
     @classmethod

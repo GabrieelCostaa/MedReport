@@ -38,34 +38,63 @@ class ContaminationResult:
 
 @dataclass
 class ProductFingerprint:
+    """Identidade de um produto para detecção de contaminação cruzada.
+
+    Só campos OFICIAIS entram aqui. `diferenciais_clinicos` foi removido: ele
+    pode ter sido escrito pelo próprio LLM (ver product_enrichment.py), então
+    usá-lo como impressão digital fazia o detector de contaminação de IA ser
+    alimentado por texto de IA. Alimentava apenas o ramo de `alerta`, que o
+    pipeline descarta — perda operacional zero, circularidade eliminada.
+
+    `peso_molecular`, `viscosidade` e `concentracao` também saíram: eram
+    gravados e NUNCA lidos por check_cross_product_contamination.
+    """
     product_id: str
     product_name: str
     registro_anvisa: str
-    peso_molecular: str
-    viscosidade: str
-    concentracao: str
-    unique_terms: list[str] = field(default_factory=list)
+    codigo_tuss: str = ""
 
 
 def build_fingerprint(product) -> ProductFingerprint:
-    unique = []
-    nome = getattr(product, "nome", "") or ""
-    if nome:
-        unique.append(nome)
-    diferenciais = getattr(product, "diferenciais_clinicos", "") or ""
-    if diferenciais:
-        terms = [t.strip() for t in diferenciais.split(",") if len(t.strip()) > 5]
-        unique.extend(terms[:3])
-
     return ProductFingerprint(
         product_id=str(getattr(product, "id", "")),
-        product_name=nome,
+        product_name=getattr(product, "nome", "") or "",
         registro_anvisa=getattr(product, "registro_anvisa", "") or "",
-        peso_molecular=getattr(product, "peso_molecular", "") or "",
-        viscosidade=getattr(product, "viscosidade", "") or "",
-        concentracao=getattr(product, "concentracao", "") or "",
-        unique_terms=unique,
+        codigo_tuss=getattr(product, "codigo_tuss_sugerido", "") or "",
     )
+
+
+def _nome_aparece_no_texto(nome: str, texto_lower: str) -> bool:
+    """Match de nome de produto com fronteira de palavra.
+
+    O `in` cru bloqueava laudo legítimo de família de produtos: gerar o laudo
+    de "Synvisc-One" cita o nome, que CONTÉM "Synvisc" — e disparava um
+    bloqueante acusando contaminação pelo produto irmão.
+    """
+    if not nome:
+        return False
+    return re.search(rf"(?<![\w-]){re.escape(nome.lower())}(?![\w-])", texto_lower) is not None
+
+
+def _registro_aparece_no_texto(registro: str, texto: str) -> bool:
+    """Match de registro ANVISA tolerante a formatação, mas não a colisão.
+
+    Dois modos de falha a evitar ao mesmo tempo:
+
+    - FALSO POSITIVO (o comportamento antigo): o texto INTEIRO virava uma
+      string de dígitos contígua e a busca era por substring, então datas,
+      CIDs e quantidades colavam entre si e casavam com registro alheio.
+    - FALSO NEGATIVO: o registro raramente aparece "limpo" no laudo — vem como
+      "80.030.810/0056", com espaços, ou colado a um ano ("...0056/2024").
+
+    A regex permite UM separador entre dígitos e exige que o número não esteja
+    encostado em outro dígito, o que satisfaz os dois lados.
+    """
+    limpo = re.sub(r"\D", "", registro or "")
+    if len(limpo) < 6:  # curto demais para identificar com segurança
+        return False
+    padrao = r"(?<!\d)" + r"[.\-/ ]?".join(limpo) + r"(?!\d)"
+    return re.search(padrao, texto or "") is not None
 
 
 def check_cross_product_contamination(
@@ -75,12 +104,21 @@ def check_cross_product_contamination(
 ) -> list[ContaminationIssue]:
     issues = []
     text_lower = text.lower()
+    nome_atual = (current_product.product_name or "").lower()
+    registro_atual = re.sub(r"\D", "", current_product.registro_anvisa or "")
 
     for other in all_products:
         if other.product_id == current_product.product_id:
             continue
 
-        if other.product_name and other.product_name.lower() in text_lower:
+        # NOTA: NÃO existe aqui um "skip de família" por substring de nome.
+        # Uma versão anterior deste PR tinha um, e ele era pior que inútil:
+        # a fronteira de palavra de _nome_aparece_no_texto já resolve o caso
+        # ("Synvisc-One" não casa com "Synvisc" e vice-versa), enquanto o skip
+        # desligava a comparação inteira — nome E registro — para qualquer par
+        # cujo nome fosse substring do outro. Um produto cadastrado como "Kit"
+        # apagava a checagem de todos os "Kit *" do catálogo.
+        if _nome_aparece_no_texto(other.product_name, text_lower):
             issues.append(ContaminationIssue(
                 tipo="cross_product",
                 descricao=f"Nome '{other.product_name}' encontrado no relatório de '{current_product.product_name}'",
@@ -88,25 +126,15 @@ def check_cross_product_contamination(
                 severidade="bloqueante",
             ))
 
-        if other.registro_anvisa:
-            anvisa_clean = re.sub(r"\D", "", other.registro_anvisa)
-            if anvisa_clean and anvisa_clean in re.sub(r"\D", "", text):
+        outro_registro = re.sub(r"\D", "", other.registro_anvisa or "")
+        if outro_registro and outro_registro != registro_atual:
+            if _registro_aparece_no_texto(other.registro_anvisa, text):
                 issues.append(ContaminationIssue(
                     tipo="fingerprint",
                     descricao=f"ANVISA {other.registro_anvisa} pertence a '{other.product_name}'",
                     trecho=other.registro_anvisa,
                     severidade="bloqueante",
                 ))
-
-        for term in other.unique_terms:
-            if len(term) >= 6 and term.lower() in text_lower:
-                if term.lower() not in " ".join(current_product.unique_terms).lower():
-                    issues.append(ContaminationIssue(
-                        tipo="cross_product",
-                        descricao=f"Termo '{term}' é exclusivo de '{other.product_name}'",
-                        trecho=term,
-                        severidade="alerta",
-                    ))
 
     return issues
 

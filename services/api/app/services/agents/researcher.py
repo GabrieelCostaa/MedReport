@@ -139,15 +139,35 @@ async def _fetch_pubmed_evidences(db: Optional[AsyncSession], cid: str, product_
         return []
 
 
-async def research(product, diagnostico: str, cid: str, template=None, db: Optional[AsyncSession] = None) -> ResearchResult:
+async def research(
+    product,
+    diagnostico: str,
+    cid: str,
+    template=None,
+    db: Optional[AsyncSession] = None,
+    clinical_evidences: Optional[list[dict]] = None,
+    pubmed_evidences: Optional[list[dict]] = None,
+) -> ResearchResult:
     """
     Executa pesquisa sobre a patologia e o produto.
     Retorna evidências, referências e lacunas que precisam de input do médico.
+
+    `clinical_evidences`/`pubmed_evidences` permitem reaproveitar buscas já
+    feitas pelo pipeline — sem elas, a mesma consulta (incluindo o filtro de
+    relevância em PT, que custa uma chamada de LLM) rodaria duas vezes.
     """
     product_context = _build_product_context(product)
 
-    db_evidences = await _fetch_clinical_evidences(db, cid, product.id)
-    pubmed_evidences = await _fetch_pubmed_evidences(db, cid, product.nome, diagnostico)
+    db_evidences = (
+        clinical_evidences
+        if clinical_evidences is not None
+        else await _fetch_clinical_evidences(db, cid, product.id)
+    )
+    pubmed_evidences = (
+        pubmed_evidences
+        if pubmed_evidences is not None
+        else await _fetch_pubmed_evidences(db, cid, product.nome, diagnostico)
+    )
 
     # Knowledge Graph context (Tier 1-3)
     graph_context = ""

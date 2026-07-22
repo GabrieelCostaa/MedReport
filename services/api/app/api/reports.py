@@ -188,6 +188,38 @@ async def approval_stats(
             key=lambda x: -x["n"],
         )
 
+    # Qualidade medida × desfecho: laudo com fidelidade/relevância alta aprova
+    # mais? Fecha o loop entre as métricas automáticas e a glosa real.
+    def _quality_by_outcome():
+        buckets: dict[str, dict] = {}
+        for r in com_desfecho:
+            metrics = {
+                "faithfulness": getattr(r, "quality_faithfulness", None)
+                    if getattr(r, "quality_faithfulness", None) is not None
+                    else getattr(r, "faithfulness_score", None),
+                "relevancy": getattr(r, "quality_relevancy", None),
+                "citation": getattr(r, "quality_citation", None),
+            }
+            if all(v is None for v in metrics.values()):
+                continue
+            b = buckets.setdefault(_out(r), {"n": 0, "somas": {}, "contagens": {}})
+            b["n"] += 1
+            for k, v in metrics.items():
+                if v is not None:
+                    b["somas"][k] = b["somas"].get(k, 0.0) + v
+                    b["contagens"][k] = b["contagens"].get(k, 0) + 1
+        return [
+            {
+                "desfecho": outcome,
+                "n": b["n"],
+                **{
+                    f"media_{k}": round(b["somas"][k] / b["contagens"][k], 3)
+                    for k in b["somas"]
+                },
+            }
+            for outcome, b in sorted(buckets.items())
+        ]
+
     return {
         "total": total,
         "com_desfecho": len(com_desfecho),
@@ -200,7 +232,22 @@ async def approval_stats(
         "por_especialidade": _group(lambda r: r.especialidade),
         "por_operadora": _group(lambda r: r.health_plan),
         "top_motivos_glosa": top_motivos,
+        "qualidade_por_desfecho": _quality_by_outcome(),
     }
+
+
+@router.get("/stats/edits")
+async def edit_stats(
+    user_id: str = Depends(require_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """KPI de edição: quanto o médico precisou consertar nos laudos gerados.
+
+    Cruzado com o desfecho (laudo muito editado glosa mais?), aponta onde a
+    geração está falhando por especialidade.
+    """
+    from app.services.edit_learning import get_edit_stats
+    return await get_edit_stats(db, UUID(user_id))
 
 
 @router.patch("/{report_id}/outcome")

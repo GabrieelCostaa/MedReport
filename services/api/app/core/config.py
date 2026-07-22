@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     OPENAI_MODEL_AUDITOR: str = "gpt-4o"
     # Tradutor barato p/ CID→MeSH na cauda longa de diagnósticos (fora do dict).
     OPENAI_MODEL_TRANSLATOR: str = "gpt-4o-mini"
+    # Geração da ficha técnica do produto (product_enrichment). Precisa ser um
+    # setting próprio: o modelo é registrado na proveniência do campo, e usar o
+    # do Redator faria o registro mentir se um dos dois fosse trocado.
+    OPENAI_MODEL_ENRICHMENT: str = "gpt-4o"
     INGEST_API_KEY: str = ""  # Token para RPA/robôs enviarem cotações (opcional)
     API_BASE_URL: str = "http://localhost:8000"  # URL base para links de verificação (override em produção)
 
@@ -62,6 +66,27 @@ class Settings(BaseSettings):
     # Modo teste: relaxa validações de cadastro/login para facilitar
     # testes com médicos. NUNCA habilitar em produção com dados reais.
     TESTING_MODE: bool = False
+
+    # ─── Qualidade da geração (algoritmo de LLM) ─────────────────────────
+    # Injeta o enquadramento regulatório (DUT/fora-do-Rol/STF/ANVISA) nos
+    # prompts do Redator e do Auditor. Sem isso o laudo é escrito sem saber
+    # quais critérios precisa demonstrar. Custo: só prompt, sem chamada extra.
+    COMPLIANCE_PROMPT_ENABLED: bool = True
+    # Usa a especialidade detectada pelo Pesquisador quando o médico não a
+    # informou — é o que dispara o few-shot específico da especialidade.
+    ESPECIALIDADE_AUTOFILL_ENABLED: bool = True
+    # Corta e ordena as evidências por relevância antes de injetar no prompt
+    # (0 = comportamento legado, 10 fixas sem reordenar).
+    EVIDENCE_RERANK_CUT: int = 6
+    # Verificador de fidelidade (decompose-then-verify). "flag" só anota;
+    # nunca altera nem bloqueia o texto.
+    FAITHFULNESS_GATE_ENABLED: bool = False
+    FAITHFULNESS_MODE: str = "flag"
+    # Métricas de qualidade RAGAS-style (juiz gpt-4o-mini) por laudo.
+    QUALITY_METRICS_ENABLED: bool = False
+    # Few-shot dinâmico a partir de laudos aprovados e pouco editados.
+    DYNAMIC_FEWSHOT_ENABLED: bool = False
+    OPENAI_MODEL_JUDGE: str = "gpt-4o-mini"
 
     class Config:
         env_file = ".env"

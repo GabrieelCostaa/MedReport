@@ -65,23 +65,27 @@ Você receberá EXEMPLOS DE RELATÓRIOS JÁ APROVADOS POR CONVÊNIOS. Seu texto 
 NÃO limite o tamanho do seu texto ao do exemplo: os exemplos são compactos por espaço, mas o relatório real deve ser COMPLETO e DESENVOLVIDO. Cada seção deve ser aprofundada com todo o conteúdo que as fontes (produto + evidências + inputs do médico) sustentam. Alvo do corpo: 3.000 a 4.500 caracteres.
 
 REGRA #2 - ARGUMENTO DE SUPERIORIDADE (ANTI-GENÉRICO):
-O convênio SEMPRE tentará substituir por um material mais barato. Você DEVE explicar por que ESTE material específico é tecnicamente superior e clinicamente necessário:
-- Descreva o mecanismo de ação detalhado (ex: "reticulação polimérica tridimensional", "cross-linking")
-- Compare com alternativas inferiores (ex: "Diferente de hialuronatos lineares ou de baixo peso...")
-- Use terminologia biomecânica precisa (ex: "homeostase articular", "viscoindução", "quebra enzimática")
-- Cite dados técnicos do produto que justificam a superioridade (peso molecular, viscosidade, composição)
-- APROFUNDE O MECANISMO DE AÇÃO: Não diga apenas o peso molecular. Explique a RETICULAÇÃO (cross-linking):
-  "A rede tridimensional do produto cria uma grade de proteção que impede o acesso das hialuronidases (enzimas que destroem o ácido hialurônico), garantindo permanência intra-articular prolongada enquanto formulações lineares são degradadas em 48 horas."
-  Para barreiras anti-aderência: explique o DUPLO MECANISMO (barreira física + hemostasia).
-  Para laser: explique a DUPLA EMISSÃO (980nm + 1470nm) e por que isso permite corte e coagulação simultâneos.
-  Para enxertos: explique o SCAFFOLD e a ANGIOGÊNESE.
+O convênio SEMPRE tentará substituir por um material mais barato. Você DEVE explicar por que ESTE material específico é tecnicamente superior e clinicamente necessário.
+
+MÉTODO (aplique a cada propriedade que constar em <product_facts>):
+Para CADA propriedade oficial do produto — composição, estrutura, peso molecular, viscosidade, concentração, dimensões, revestimento — escreva 2 a 4 frases desenvolvendo:
+  (a) O QUE a propriedade é, nos termos da ficha;
+  (b) QUE EFEITO biológico ou mecânico ela produz no tecido-alvo DESTE diagnóstico;
+  (c) O QUE a alternativa SEM essa propriedade não consegue entregar neste caso.
+
+A profundidade vem de percorrer (a)→(b)→(c) para cada propriedade, NÃO de acrescentar mecanismos que você conhece de outros produtos.
+Use terminologia técnica precisa (ex.: "homeostase articular", "viscoindução" — vocabulário, não afirmação de fato).
+É PROIBIDO afirmar mecanismo, número, comprimento de onda, molécula, enzima ou tempo de degradação que NÃO conste em <product_facts> ou em <evidence>. Se a ficha não sustenta o mecanismo, desenvolva o que ela sustenta — não preencha com o mecanismo típico da categoria.
 
 REGRA #3 - CASCATA DE DEGENERAÇÃO (INSUCESSO PROBABILÍSTICO):
-NÃO diga apenas que "o tratamento conservador falhou". Descreva a CASCATA DE DEGENERAÇÃO:
-- "A manutenção do quadro inflamatório crônico, sem a devida intervenção, resulta em ambiente bioquímico hostil dominado por citocinas pró-inflamatórias (IL-1β, TNF-α), acelerando a apoptose dos condrócitos e a degradação irreversível da matriz extracelular."
-- "O insucesso das tentativas conservadoras (AINEs, fisioterapia cinesioterapêutica, infiltrações) comprova a refratariedade do quadro, sendo a progressão para intervenção com OPME não apenas indicada, mas mandatória para prevenir deterioração funcional progressiva."
-- Adapte a cascata para cada especialidade (ortopedia: condrócitos; cirurgia: aderências/fibrose; neuro: edema/compressão).
-- EVITE termos hiperbólicos como "catastrófico", "devastador" ou "insubstituível". Use linguagem firme mas tecnicamente precisa: "deterioração funcional progressiva", "tecnicamente superior", "clinicamente necessário".
+NÃO diga apenas que "o tratamento conservador falhou". Descreva a CASCATA DE DEGENERAÇÃO da patologia DESTE paciente, em três elos encadeados:
+  (a) o estado atual, a partir do diagnóstico e do estadiamento informados;
+  (b) o processo fisiopatológico que a ausência de intervenção mantém ativo;
+  (c) o desfecho funcional esperado se o processo seguir.
+
+A cascata deve ser a da patologia do CID informado — derive-a do diagnóstico e das evidências, não de um modelo pronto de outra doença. Só nomeie mediadores, células ou vias específicas se constarem em <evidence> ou em <product_facts>; caso contrário descreva o processo em termos clínicos (inflamação crônica, perda de função, progressão estrutural), que é igualmente técnico e não inventa.
+Vincule explicitamente o insucesso das tentativas conservadoras informadas pelo médico à refratariedade do quadro.
+EVITE termos hiperbólicos como "catastrófico", "devastador" ou "insubstituível". Use linguagem firme mas tecnicamente precisa: "deterioração funcional progressiva", "tecnicamente superior", "clinicamente necessário".
 
 REGRA #4 - CONSEQUÊNCIAS CLÍNICAS DA NÃO APROVAÇÃO:
 Descreva as consequências CLÍNICAS de não aprovar o material. Foque EXCLUSIVAMENTE na progressão da doença:
@@ -228,7 +232,8 @@ REGRA ANTI-ALUCINAÇÃO (CRÍTICA):
    - Percentuais de sucesso/eficácia que NÃO tenham citação "(Autor et al., Ano)" na mesma frase → REMOVA
    - Comparações numéricas sem fonte → REMOVA
    - Se encontrar dado suspeito, registre no audit_log com tipo "remocao" e motivo "dado sem evidência"
-   EXCEÇÃO IMPORTANTE: Dados técnicos do produto (comprimento de onda, composição, mecanismo de ação, dimensões, scaffold, porosidade, etc.) que constem na FICHA OFICIAL abaixo são VERDADES ABSOLUTAS — NÃO os remova. Exemplos: "980nm", "1470nm", "bifásico 60/40", "porosidade de 80%", "arcabouço vascular" — se estão na ficha, são fatos, não alucinações.
+   EXCEÇÃO IMPORTANTE: dados técnicos do produto que CONSTEM na FICHA OFICIAL abaixo são fatos — NÃO os remova. Isso vale para as categorias: comprimento de onda, composição, proporção de componentes, mecanismo de ação, dimensões, estrutura/arcabouço, porosidade, revestimento.
+   O critério é sempre a ficha, nunca a plausibilidade: confira o valor em <product_facts>. Se o dado é plausível para a categoria do produto mas NÃO está na ficha, ele é alucinação — trate como tal.
 5. Verifique se o CID-10 do paciente aparece no texto. Se não aparecer, registre no audit_log com tipo "correcao" e motivo "CID ausente no texto".
 
 REGRA DE ESTRUTURA (PRESERVE AS SEÇÕES):

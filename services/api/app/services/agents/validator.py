@@ -407,6 +407,24 @@ def _check_product_indication(diagnosis: str, product) -> list[ValidationIssue]:
                         return issues
 
     # No match found at all — likely off-label
+    # INSTRUMENTAÇÃO (não altera a decisão): registra quando este bloqueio se
+    # apoia num campo `indicacoes` que foi ESCRITO POR IA ou raspado de PDF.
+    # Bloquear um laudo legítimo com base em texto que o próprio sistema gerou
+    # é o risco concreto da falta de proveniência — o log dá o número que
+    # fundamenta a decisão de rebaixar para alerta num próximo passo.
+    try:
+        from app.services.provenance import campo_nao_verificado, origem_do_campo
+        if campo_nao_verificado(product, "indicacoes"):
+            logger.warning(
+                "[PROVENIENCIA] Bloqueio off-label baseado em 'indicacoes' de origem '%s' "
+                "(produto=%s, diagnóstico=%r) — campo não verificado",
+                origem_do_campo(product, "indicacoes"),
+                getattr(product, "nome", "?"),
+                diagnosis[:60],
+            )
+    except Exception:
+        pass  # instrumentação nunca interfere na validação
+
     issues.append(ValidationIssue(
         campo="indicacao_off_label",
         valor_no_texto=diagnosis[:100],

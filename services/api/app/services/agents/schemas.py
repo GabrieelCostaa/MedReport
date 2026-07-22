@@ -80,6 +80,34 @@ class WriterOutput(BaseModel):
     )
 
 
+def build_writer_output_model(evidence_count: int) -> type[WriterOutput]:
+    """Mínimos por seção CONFORME a evidência disponível.
+
+    Forçar 500 chars de "evidência científica" com 1 artigo em mãos obriga o
+    modelo a encher linguiça — e padding induzido é onde a alucinação nasce
+    (texto longo alucina mais no fim). Com evidência rica, mantém os mínimos
+    plenos; com evidência escassa, a seção de evidência encolhe em vez de
+    inventar. As demais seções não dependem do volume de artigos (produto +
+    inputs do médico) e mantêm seus mínimos.
+    """
+    if evidence_count >= 3:
+        return WriterOutput
+
+    min_len = 250 if evidence_count >= 1 else 120
+
+    class WriterOutputLeanEvidence(WriterOutput):
+        evidencia_cientifica: str = Field(
+            description=(
+                "SEÇÃO 4 — Evidência científica: síntese APENAS das evidências fornecidas, "
+                "CADA afirmação com citação (Autor et al., Ano). Evidência escassa neste caso: "
+                f"NÃO invente estudos para alongar a seção. MÍNIMO {min_len} caracteres."
+            ),
+            min_length=min_len,
+        )
+
+    return WriterOutputLeanEvidence
+
+
 # ─── Auditor (Agente C) ──────────────────────────────────────────────────────
 
 class AuditLogEntry(BaseModel):

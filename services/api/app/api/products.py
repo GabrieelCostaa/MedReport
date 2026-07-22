@@ -279,13 +279,26 @@ async def create_from_anvisa(
     if not ap:
         raise HTTPException(status_code=404, detail="Registro ANVISA não encontrado")
 
-    # Cria produto no catálogo com dados técnicos da ANVISA
+    # Cria produto no catálogo com dados técnicos da ANVISA.
+    # Marca a origem: estes dois campos vêm do registro oficial, não de IA —
+    # a distinção importa porque o enriquecimento por LLM pode sobrescrever
+    # campos vazios depois, e sem a marca tudo fica indistinguível.
+    from app.services.provenance import build_provenance, ORIGEM_ANVISA
+    campos_anvisa = [
+        campo for campo, valor in (
+            ("descricao_tecnica", ap.nome_tecnico),
+            ("indicacoes", ap.modelos_descricao),
+        ) if valor
+    ]
     product = Product(
         nome=ap.nome_comercial or f"Produto ANVISA {ap.registro}",
         linha=ap.fabricante,
         registro_anvisa=ap.registro,
         descricao_tecnica=ap.nome_tecnico,
         indicacoes=ap.modelos_descricao,
+        campos_gerados_ia=build_provenance(
+            None, campos_anvisa, origem=ORIGEM_ANVISA, detalhe=ap.registro,
+        ) or None,
     )
     db.add(product)
     await db.flush()
@@ -392,6 +405,8 @@ async def get_product(
         for m in tuss_result.scalars().all()
     ]
 
+    from app.services.provenance import resumo_origens
+
     return {
         "id": str(p.id),
         "nome": p.nome,
@@ -400,6 +415,9 @@ async def get_product(
         "diferenciais_clinicos": p.diferenciais_clinicos,
         "indicacoes": p.indicacoes,
         "contraindicacoes": p.contraindicacoes,
+        # Origem de cada campo da ficha (llm | ifu_pdf | anvisa | seed).
+        # Campo ausente = origem desconhecida (produto legado).
+        "origem_campos": resumo_origens(p),
         "viscosidade": p.viscosidade,
         "peso_molecular": p.peso_molecular,
         "concentracao": p.concentracao,

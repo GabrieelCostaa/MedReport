@@ -40,6 +40,16 @@ REPORT_NEW_COLUMNS = [
     ("outcome_at", "TIMESTAMP"),
     ("outcome_motivo_codigo", "VARCHAR(10)"),
     ("outcome_notes", "TEXT"),
+    # Sinais de geração + qualidade (algoritmo de LLM)
+    ("token_cost_usd", "FLOAT"),
+    ("token_usage_json", "JSON"),
+    ("auditor_cot", "TEXT"),
+    ("faithfulness_score", "FLOAT"),
+    ("faithfulness_flags", "JSON"),
+    ("quality_faithfulness", "FLOAT"),
+    ("quality_relevancy", "FLOAT"),
+    ("quality_citation", "FLOAT"),
+    ("quality_details", "JSON"),
 ]
 
 USER_NEW_COLUMNS = [
@@ -59,6 +69,14 @@ ANVISA_NEW_COLUMNS = [
     ("nome_tecnico", "VARCHAR(500)"),
     ("modelos_descricao", "TEXT"),
     ("search_normalized", "TEXT"),
+]
+
+# ATENÇÃO: até este commit a tabela `products` NÃO tinha lista de colunas novas
+# nem chamada de _add_missing_columns — só nascia completa em banco novo, via
+# create_all. Adicionar coluna ao model sem registrar aqui E na create_tables()
+# faz todo SELECT products quebrar em produção (foi o incidente do b909dac).
+PRODUCT_NEW_COLUMNS = [
+    ("campos_gerados_ia", "JSON"),
 ]
 
 
@@ -110,6 +128,7 @@ async def create_tables():
     await _add_missing_columns("clinical_evidences", CLINICAL_EVIDENCE_NEW_COLUMNS)
     await _add_missing_columns("users", USER_NEW_COLUMNS)
     await _add_missing_columns("anvisa_products", ANVISA_NEW_COLUMNS)
+    await _add_missing_columns("products", PRODUCT_NEW_COLUMNS)
     await _ensure_anvisa_search_index()
 
 
@@ -742,9 +761,19 @@ async def seed():
             t = TussTerm(code=code, term=term, table_source="procedimentos")
             db.add(t)
 
+        # Produtos do seed são curados à mão — marca-os como tal para que
+        # `origem == seed` signifique algo, em vez de todo o catálogo ficar
+        # NULL (=origem desconhecida) e o vocabulário virar letra morta.
+        from app.services.provenance import build_provenance, ORIGEM_SEED, CAMPOS_FICHA
+
         product_map = {}
         for pdata in PRODUCTS_SEED:
             p = Product(**pdata)
+            campos_preenchidos = [c for c in CAMPOS_FICHA if pdata.get(c)]
+            if campos_preenchidos:
+                p.campos_gerados_ia = build_provenance(
+                    None, campos_preenchidos, origem=ORIGEM_SEED,
+                )
             db.add(p)
             await db.flush()
             product_map[pdata["nome"]] = p.id

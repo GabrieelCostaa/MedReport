@@ -136,6 +136,24 @@ Acesse `http://localhost:3000`.
 | `test_generate.py` | Gera relatórios de teste em lote |
 | `test_pubmed_unit.py` | Testes unitários do PubMed |
 | `test_pubmed_integration.py` | Testes de integração do pipeline com PubMed |
+| `run_experiment.py` | Experimento A/B do algoritmo de LLM (mede fidelidade, relevância, citação, custo) |
+
+## Testes
+
+```bash
+cd services/api
+pytest tests/ -q                    # offline, grátis, ~16s — o padrão
+RUN_LLM_TESTS=1 pytest tests/ -q    # inclui os que chamam a OpenAI de verdade (custa)
+```
+
+Os testes de LLM são **opt-in**. Antes o guard era a presença de `OPENAI_API_KEY`,
+que o `load_dotenv()` do conftest sempre carregava do `.env` — na prática eles
+rodavam de verdade em toda execução local, gastando dinheiro sem aviso.
+
+Outras variáveis de teste: `TEST_TIMEOUT_SECONDS` (teto por teste, default 60s
+offline / 180s com LLM) e `KEEP_PYTEST_ALIVE=1` (desliga o encerramento forçado —
+só para depurar o teardown; sem ele o pytest fica pendurado após o relatório por
+causa de uma thread não-daemon de biblioteca de terceiros).
 
 ## Variáveis de Ambiente
 

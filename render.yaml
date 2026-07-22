@@ -35,6 +35,15 @@ services:
         value: https://medreport-api-07t9.onrender.com
       - key: PUBMED_ENABLED
         value: "true"
+      # Qualidade da geração — validado pelo smoke test de 2026-07-21
+      # (baseline vs all, 8 casos: fidelidade 0.86→0.93+, claims sem
+      # sustentação −62%, contaminação 0, custo/laudo até menor).
+      # Modo "flag": mede e anota, NUNCA altera nem bloqueia o texto.
+      # Custo extra: ~R$0,01/laudo (gpt-4o-mini). Rollback = trocar p/ "false".
+      - key: FAITHFULNESS_GATE_ENABLED
+        value: "true"
+      - key: QUALITY_METRICS_ENABLED
+        value: "true"
 
 databases:
   - name: medreport-db

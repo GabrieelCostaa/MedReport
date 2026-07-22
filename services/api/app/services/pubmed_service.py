@@ -324,6 +324,8 @@ async def _llm_cid_to_mesh(cid: str, diagnostico: str) -> Optional[tuple[str, st
             temperature=0.0,
             max_tokens=120,
         )
+        from app.services.agents.token_tracker import registrar_uso_auxiliar
+        registrar_uso_auxiliar(resp, "Tradutor CID→MeSH", settings.OPENAI_MODEL_TRANSLATOR)
         data = _json.loads(resp.choices[0].message.content)
         desc_en = (data.get("desc_en") or "").strip()
         mesh = (data.get("mesh") or "").strip()
@@ -1094,6 +1096,8 @@ async def _llm_filter_relevant_pt(diagnostico: str, evidences: list[dict]) -> li
             temperature=0.0,
             max_tokens=60,
         )
+        from app.services.agents.token_tracker import registrar_uso_auxiliar
+        registrar_uso_auxiliar(resp, "Filtro relevância PT", settings.OPENAI_MODEL_TRANSLATOR)
         idxs = _json.loads(resp.choices[0].message.content).get("relevantes", [])
         if isinstance(idxs, list):
             keep = [evidences[i] for i in idxs if isinstance(i, int) and 0 <= i < len(evidences)]

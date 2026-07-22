@@ -19,7 +19,7 @@ from typing import Optional
 
 import httpx
 
-from sqlalchemy import text as sql_text
+from sqlalchemy import update as sql_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Product
@@ -384,20 +384,53 @@ async def enrich_product_from_ifu(
             updates[db_field] = new_value
 
     if updates:
-        set_clauses = ", ".join(f"{k} = :{k}" for k in updates)
-        updates["product_id"] = str(product.id)
+        enriched_fields = list(updates.keys())
+        valores_anteriores = {k: getattr(product, k, None) for k in enriched_fields}
+
+        # Proveniência: texto extraído de bula em PDF. Não é gerado por LLM,
+        # mas também não é dado verificado — o PDF é localizado por busca na
+        # web e parseado por regex. `bula_url` fica de fora da marcação: é a
+        # própria referência da fonte, não conteúdo de ficha.
+        from app.services.provenance import build_provenance, ORIGEM_IFU_PDF, CAMPOS_FICHA
+        campos_marcaveis = [c for c in enriched_fields if c in CAMPOS_FICHA]
+        if campos_marcaveis:
+            updates["campos_gerados_ia"] = build_provenance(
+                getattr(product, "campos_gerados_ia", None),
+                campos_marcaveis,
+                origem=ORIGEM_IFU_PDF,
+                detalhe=pdf_url or "",
+            )
+
+        # UPDATE tipado pelo model: a coluna de proveniência é JSON e o SQL cru
+        # não serializa dict de forma portátil entre SQLite e Postgres.
         await db.execute(
-            sql_text(f"UPDATE products SET {set_clauses} WHERE id = :product_id"),
-            updates,
+            sql_update(Product).where(Product.id == product.id).values(**updates)
         )
+
+        try:
+            from app.services.audit_service import audit_log
+            from app.db.models import AuditAction
+            await audit_log(
+                db,
+                AuditAction.UPDATE,
+                resource_type="product",
+                resource_id=str(product.id),
+                changes={
+                    campo: {"old": valores_anteriores.get(campo), "new": updates.get(campo)}
+                    for campo in enriched_fields
+                },
+                justification="Ficha técnica extraída de bula (IFU) em PDF",
+                metadata={"origem": ORIGEM_IFU_PDF, "pdf_url": pdf_url, "produto_nome": product.nome},
+            )
+        except Exception as e:
+            logger.warning("AuditLog do enriquecimento IFU falhou (non-blocking): %s", e)
+
         await db.commit()
 
         # Update in-memory object
         for k, v in updates.items():
-            if k != "product_id":
-                setattr(product, k, v)
+            setattr(product, k, v)
 
-        enriched_fields = [k for k in updates if k != "product_id"]
         logger.info(
             "Produto enriquecido via IFU: %s — campos: %s",
             product.nome, ", ".join(enriched_fields),

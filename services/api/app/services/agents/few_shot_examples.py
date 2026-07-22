@@ -511,6 +511,77 @@ EXAMPLES = {
 }
 
 # Aliases para variações de nome de especialidade
+# Exemplo neutro usado quando a especialidade não mapeia para nenhum dos 10
+# exemplares acima. Propositalmente SEM mecanismo de ação de categoria alguma:
+# ensina a estrutura das 6 seções, o encadeamento (propriedade → efeito →
+# limitação da alternativa) e o padrão de citação, deixando o conteúdo técnico
+# vir da ficha do produto e das evidências do caso.
+_FALLBACK_KEY = "_generico"
+
+EXAMPLES[_FALLBACK_KEY] = {
+    "user": (
+        "Diagnóstico: [patologia do paciente com estadiamento]\n"
+        "CID: [código]\n"
+        "Material: [produto solicitado]\n"
+    ),
+    "assistant": {
+        "quadro_clinico": (
+            "O paciente apresenta diagnóstico de [patologia] (CID [código]), em estágio "
+            "[estadiamento conforme classificação aplicável], confirmado por [exame informado pelo médico]. "
+            "O quadro cursa com [manifestações clínicas relatadas], com repercussão funcional "
+            "documentada em [limitação descrita pelo médico]. A condição encontra-se em curso há "
+            "[tempo informado], período em que houve progressão [do achado objetivo relatado]. "
+            "A ausência de intervenção mantém ativo o processo [fisiopatológico próprio desta patologia, "
+            "descrito em termos clínicos], cuja evolução esperada é a perda funcional progressiva do "
+            "segmento acometido, com repercussão sobre [atividade funcional pertinente ao caso]."
+        ),
+        "falha_terapeutica": (
+            "Foram esgotadas as alternativas conservadoras aplicáveis a este quadro. O paciente foi "
+            "submetido a [tratamentos informados pelo médico], pelo período de [duração informada], "
+            "sem obtenção de [desfecho esperado]. A ausência de resposta após [tempo] de conduta "
+            "conservadora bem conduzida caracteriza refratariedade, e não insuficiência de tempo de "
+            "tratamento. Mantida a conduta atual, não há expectativa de modificação do curso natural "
+            "da doença, o que fundamenta a indicação da intervenção proposta."
+        ),
+        "justificativa_tecnica": (
+            "O material solicitado apresenta [propriedade constante da ficha técnica], característica "
+            "que determina [efeito biológico ou mecânico dessa propriedade no tecido-alvo deste "
+            "diagnóstico]. Essa propriedade é o que permite [função clínica pretendida no caso]. "
+            "Alternativas que não dispõem dessa característica não asseguram [função correspondente], "
+            "o que neste paciente implicaria [consequência clínica concreta]. "
+            "Adicionalmente, [segunda propriedade da ficha] confere [efeito correspondente], relevante "
+            "porque [razão ligada ao quadro do paciente]. O conjunto dessas características define a "
+            "adequação técnica do material a esta indicação específica, e não a uma categoria genérica."
+        ),
+        "evidencia_cientifica": (
+            "A literatura disponível sustenta a indicação. [Achado do estudo fornecido] "
+            "([Autor] et al., [ano]). O mesmo desfecho foi observado em [descrição do segundo estudo] "
+            "([Autor] et al., [ano]). Os resultados são consistentes com o perfil do paciente descrito "
+            "acima, no que se refere a [característica clínica comum]. Cada afirmação desta seção "
+            "corresponde a uma evidência efetivamente fornecida, com autor e ano explícitos."
+        ),
+        "risco_nao_realizacao": (
+            "A não realização do procedimento mantém o paciente exposto à progressão natural da "
+            "patologia. Espera-se [evolução clínica esperada para esta condição], com agravamento de "
+            "[manifestação atual] e perda funcional adicional. A progressão para estágio mais avançado "
+            "tende a exigir procedimento de maior porte e morbidade, com recuperação mais prolongada e "
+            "resultado funcional inferior ao esperado na intervenção realizada no momento atual."
+        ),
+        "conclusao": (
+            "Pelo exposto, a indicação do material está fundamentada no quadro clínico documentado, na "
+            "refratariedade ao tratamento conservador e nas propriedades técnicas do produto aplicáveis "
+            "a esta condição. A substituição deste material por opção de menor desempenho técnico "
+            "transfere à operadora de saúde a responsabilidade integral por eventuais complicações "
+            "clínicas, reoperações ou insucesso do desfecho cirúrgico, conforme responsabilidade civil "
+            "profissional. Certos de vossa presteza, aguardamos a liberação."
+        ),
+        "diagnostico_resumo": "[Patologia com estadiamento e lateralidade, conforme informado]",
+        "base_legal": _BASE_LEGAL_PADRAO,
+        "referencias": ["[Autor] et al., [ano]"],
+    },
+}
+
+
 _SPECIALTY_ALIASES = {
     "ortopedia": "ortopedia",
     "traumatologia": "ortopedia",
@@ -567,7 +638,11 @@ def get_few_shot_messages(especialidade: str = "") -> list[dict]:
                 break
 
     if not key or key not in EXAMPLES:
-        return []
+        # Sem exemplo da especialidade, o Redator ficava SEM nenhum modelo de
+        # profundidade — e é justamente aí que a seção longa vira padding
+        # genérico. O fallback ensina a ESTRUTURA e o registro de linguagem sem
+        # plantar mecanismo de nenhuma especialidade específica.
+        key = _FALLBACK_KEY
 
     example = EXAMPLES[key]
     assistant_content = example["assistant"]

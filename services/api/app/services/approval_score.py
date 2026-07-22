@@ -47,6 +47,7 @@ def compute_approval_score(
     compliance_mode: str = "",
     stf_checklist: dict | None = None,
     operadora_glosa=None,  # OperadoraGlosaSummary — INFORMATIVO, não altera o score
+    quality_scores: dict | None = None,  # {"faithfulness": .., "relevancy": .., "citation": ..}
 ) -> ApprovalScore:
     """Calcula score de completude documental estimada."""
 
@@ -143,17 +144,39 @@ def compute_approval_score(
     components["completude_tiss_tuss"] = round(tiss_score, 1)
 
     # 3. Qualidade da justificativa (0-20)
-    just_score = 0.0
-    if has_justification:
-        just_score += 10.0
+    # Com métricas medidas (fidelidade/relevância/citação, cada uma em [0,1]),
+    # os 20 pts refletem a qualidade REAL do texto. Sem elas, fallback ao
+    # booleano legado ("texto existe" + CID consistente).
+    quality_vals = [
+        v for v in (quality_scores or {}).values()
+        if isinstance(v, (int, float)) and 0.0 <= v <= 1.0
+    ]
+    if quality_vals:
+        just_score = 20.0 * (sum(quality_vals) / len(quality_vals))
+        if not has_justification:
+            just_score = 0.0
+            gaps.append("Justificativa não gerada")
+        if not cid_procedure_consistent:
+            just_score = min(just_score, 10.0)
+            gaps.append("Inconsistência entre CID e procedimento solicitado")
+            alerts.append("CID pode não ser compatível com o procedimento")
+        f = (quality_scores or {}).get("faithfulness")
+        if isinstance(f, (int, float)) and f < 0.7:
+            alerts.append(
+                f"Fidelidade à evidência abaixo do esperado ({f:.0%}) — revise afirmações sinalizadas"
+            )
     else:
-        gaps.append("Justificativa não gerada")
+        just_score = 0.0
+        if has_justification:
+            just_score += 10.0
+        else:
+            gaps.append("Justificativa não gerada")
 
-    if cid_procedure_consistent:
-        just_score += 10.0
-    else:
-        gaps.append("Inconsistência entre CID e procedimento solicitado")
-        alerts.append("CID pode não ser compatível com o procedimento")
+        if cid_procedure_consistent:
+            just_score += 10.0
+        else:
+            gaps.append("Inconsistência entre CID e procedimento solicitado")
+            alerts.append("CID pode não ser compatível com o procedimento")
 
     components["qualidade_justificativa"] = round(just_score, 1)
 

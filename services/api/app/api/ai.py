@@ -883,6 +883,7 @@ async def _save_report(db, user_id, product, body, pipeline_result, request: Req
         compliance_mode=pipeline_result.get("compliance_mode"),
         compliance_texto=pipeline_result.get("compliance_texto"),
         operadora_registro_ans=pipeline_result.get("operadora_registro_ans"),
+        **_generation_signals(pipeline_result),
     )
     db.add(report)
     await db.flush()
@@ -939,12 +940,35 @@ async def _save_report_from_session(db, user_id, session, pipeline_result) -> Re
         compliance_mode=pipeline_result.get("compliance_mode"),
         compliance_texto=pipeline_result.get("compliance_texto"),
         operadora_registro_ans=pipeline_result.get("operadora_registro_ans"),
+        **_generation_signals(pipeline_result),
     )
     db.add(report)
     await db.flush()
     await db.refresh(report)
     await db.commit()
     return report
+
+
+def _generation_signals(pipeline_result: dict) -> dict:
+    """Sinais de geração persistidos no Report (custo, tokens, CoT, issues).
+
+    Antes eram computados pelo pipeline e descartados na gravação.
+    """
+    usage = pipeline_result.get("usage") or {}
+    totals = usage.get("totals") or {}
+    quality = pipeline_result.get("quality_metrics") or {}
+    return {
+        "token_cost_usd": totals.get("cost_usd"),
+        "token_usage_json": usage or None,
+        "auditor_cot": pipeline_result.get("auditor_cot"),
+        "inconsistencies": pipeline_result.get("inconsistencies"),
+        "faithfulness_score": pipeline_result.get("faithfulness_score"),
+        "faithfulness_flags": pipeline_result.get("faithfulness_flags"),
+        "quality_faithfulness": quality.get("faithfulness"),
+        "quality_relevancy": quality.get("relevancy"),
+        "quality_citation": quality.get("citation"),
+        "quality_details": quality.get("details") or None,
+    }
 
 
 def _update_report_from_result(report, pipeline_result):
@@ -956,4 +980,18 @@ def _update_report_from_result(report, pipeline_result):
     report.referencias_bib = pipeline_result.get("referencias", report.referencias_bib)
     report.agent_audit_log = pipeline_result.get("audit_log", report.agent_audit_log)
     report.checklist_status = pipeline_result.get("checklist", report.checklist_status)
+    # Regeneração antes perdia o compliance recalculado — score/mode/texto
+    # ficavam da geração anterior, dessincronizados do texto novo.
+    if pipeline_result.get("approval_score") is not None:
+        report.approval_score = pipeline_result["approval_score"]
+        report.approval_score_details = pipeline_result.get("approval_componentes")
+    if pipeline_result.get("compliance_mode"):
+        report.compliance_mode = pipeline_result["compliance_mode"]
+    if pipeline_result.get("compliance_texto"):
+        report.compliance_texto = pipeline_result["compliance_texto"]
+    if pipeline_result.get("operadora_registro_ans"):
+        report.operadora_registro_ans = pipeline_result["operadora_registro_ans"]
+    for field_name, value in _generation_signals(pipeline_result).items():
+        if value is not None:
+            setattr(report, field_name, value)
     report.updated_at = datetime.utcnow()

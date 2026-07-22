@@ -27,7 +27,17 @@ async def audit_log(
     justification: Optional[str] = None,
     metadata: Optional[dict] = None,
 ):
-    """Log an audit event. Fire-and-forget — never blocks the main flow."""
+    """Log an audit event. Fire-and-forget — never blocks the main flow.
+
+    O SAVEPOINT (`begin_nested`) é o que torna a promessa de "non-blocking"
+    verdadeira. Antes, `db.add()` + `db.flush()` rodavam na transação do
+    chamador: um flush que falhasse (payload não serializável, constraint,
+    enum fora de sync) deixava a Session em pending-rollback, e o
+    `db.commit()` seguinte do chamador levantava PendingRollbackError —
+    descartando a escrita que o log deveria apenas *acompanhar*. Capturar a
+    exceção aqui não resolvia, porque o dano é o estado da sessão, não a
+    exceção. Com o savepoint, a falha reverte só o INSERT do log.
+    """
     try:
         entry = AuditLog(
             action=action,
@@ -40,7 +50,8 @@ async def audit_log(
             justification=justification,
             metadata_=metadata,
         )
-        db.add(entry)
-        await db.flush()
+        async with db.begin_nested():
+            db.add(entry)
+            await db.flush()
     except Exception as e:
         logger.warning("Audit log failed (non-blocking): %s", e)
