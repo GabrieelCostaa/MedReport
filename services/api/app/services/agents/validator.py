@@ -18,7 +18,7 @@ _LEGAL_CONTEXT = re.compile(
 
 
 def _is_legal_context(text: str, match_start: int) -> bool:
-    """Verifica se o número encontrado faz parte de um termo normativo (RN 395, Art. 11, etc.)."""
+    """Verifica se o número encontrado faz parte de um termo normativo (RN 623, Art. 11, etc.)."""
     window = text[max(0, match_start - 20):match_start + 5]
     return bool(_LEGAL_CONTEXT.search(window))
 

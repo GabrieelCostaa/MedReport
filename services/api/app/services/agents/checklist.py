@@ -2,13 +2,14 @@
 Checklist de saída obrigatório.
 O relatório só é "Aprovado para PDF" se contiver todos os 6 itens.
 """
+from app.services.legal_basis import has_legal_basis
 
 REQUIRED_SECTIONS = {
     "diagnostico": "Diagnóstico do paciente",
     "justificativa_tecnica": "Justificativa técnica com diferenciais do material",
     "falha_terapeutica": "Falha terapêutica prévia (tratamentos anteriores)",
     "risco_nao_realizacao": "Risco da não realização do procedimento",
-    "base_legal_ans": "Base legal ANS (RN 395, 424, 428, 465)",
+    "base_legal_ans": "Base legal (RN 424, 465, 623 da ANS; Res. CFM 2.318/2022)",
     "referencia_bibliografica": "Referência bibliográfica científica",
 }
 
@@ -39,7 +40,7 @@ class ReportChecklist:
                 "label": REQUIRED_SECTIONS["risco_nao_realizacao"],
             },
             "base_legal_ans": {
-                "ok": bool(report.base_legal_ans) or "rn 395" in text or "resolução" in text,
+                "ok": bool(report.base_legal_ans) or has_legal_basis(text, accept_bare_ans=False) or "resolução" in text,
                 "label": REQUIRED_SECTIONS["base_legal_ans"],
             },
             "referencia_bibliografica": {

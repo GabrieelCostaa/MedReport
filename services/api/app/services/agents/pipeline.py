@@ -794,10 +794,31 @@ class ReportPipeline:
         # is persisted via _save_report_from_session — otherwise the caller
         # would get None back from get_session() and skip the save.
 
+        # Camada determinística de normas: o LLM tende a citar normas revogadas
+        # (ex.: RN 395/2016 → RN 623/2024). Troca pela vigente e registra no log.
+        from app.services.legal_basis import modernize_citations
+        legal_fields = {
+            "justificativa": audit_result.texto_corrigido,
+            "base_legal": draft.base_legal,
+            "falha_terapeutica": draft.falha_terapeutica,
+            "risco_nao_realizacao": draft.risco_nao_realizacao,
+        }
+        for campo, valor in list(legal_fields.items()):
+            corrigido, correcoes = modernize_citations(valor)
+            legal_fields[campo] = corrigido
+            for c in correcoes:
+                audit_log.append({
+                    "tipo": "correcao",
+                    "campo": campo,
+                    "original": c.trecho_original,
+                    "corrigido": c.substituida_por,
+                    "motivo": f"Norma revogada ({c.norma_revogada}) substituída pela vigente ({c.substituida_por})",
+                })
+
         result = {
             "session_id": session.session_id,
             "step": "done",
-            "justificativa": audit_result.texto_corrigido,
+            "justificativa": legal_fields["justificativa"],
             "aprovado": final_approved,
             "motivo_bloqueio": motivos_bloqueio if motivos_bloqueio else None,
             "checklist": audit_result.checklist,
@@ -822,9 +843,9 @@ class ReportPipeline:
             },
             "referencias": enriched_refs,
             "diagnostico_resumo": draft.diagnostico_resumo,
-            "falha_terapeutica": draft.falha_terapeutica,
-            "risco_nao_realizacao": draft.risco_nao_realizacao,
-            "base_legal": draft.base_legal,
+            "falha_terapeutica": legal_fields["falha_terapeutica"],
+            "risco_nao_realizacao": legal_fields["risco_nao_realizacao"],
+            "base_legal": legal_fields["base_legal"],
             "usage": session.usage.to_dict(),
             "especialidade": session.medico_inputs.get("especialidade") or None,
             # Sinais persistidos no Report (antes eram computados e descartados)

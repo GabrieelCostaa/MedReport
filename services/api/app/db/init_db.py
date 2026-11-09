@@ -9,7 +9,9 @@ from app.db.models import (
     AnvisaProduct, TissRule, ProductTussMapping,
     GlosaMotivo, OperadoraGlosaIndicador,
 )
-from app.core.security import get_password_hash
+from app.core.config import settings
+from app.core.security import get_password_hash, verify_password
+from app.services.legal_basis import BASES_LEGAIS_VIGENTES, modernize_citations
 
 logger = logging.getLogger(__name__)
 
@@ -377,6 +379,18 @@ PRODUCTS_SEED = [
     },
 ]
 
+# Frase de fechamento dos templates (normas vigentes — ver app/services/legal_basis.py)
+TEMPLATE_FRASE_NEGATIVA = (
+    "Em caso de negativa, requer-se comunicação por escrito, com o motivo e o dispositivo legal "
+    "ou contratual que a fundamenta (RN 623/2024 da ANS), e parecer do médico auditor identificado "
+    "com nome, CRM e a doutrina que fundamentou a decisão (Res. CFM 2.318/2022, art. 6º)."
+)
+# Frases antigas (RN 395, revogada) — para atualizar templates já gravados no banco
+_FRASES_NEGATIVA_ANTIGAS = (
+    "Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.",
+    "Conforme a RN 395 da ANS, em caso de divergência, a operadora deverá apresentar justificativa técnica por escrito.",
+)
+
 TEMPLATES_SEED = [
     {
         "nome": "Template Adhesion STP+ - Cirurgia Abdominal",
@@ -399,17 +413,16 @@ TEMPLATES_SEED = [
             "traumatizadas, sendo completamente reabsorvido em aproximadamente 7 dias.\n\n"
             "Ressalta-se que o paciente já apresentou {falha_terapeutica}, o que reforça a necessidade "
             "de medidas preventivas adicionais. A não utilização do material implica em {risco_nao_realizacao}.\n\n"
-            "Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora "
-            "deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas."
+            + TEMPLATE_FRASE_NEGATIVA
         ),
-        "bases_legais": ["RN 395", "RN 424", "RN 428", "RN 465"],
+        "bases_legais": list(BASES_LEGAIS_VIGENTES),
         "referencias_padrao": [
             "Diamond MP, et al. Fertil Steril. 1996;66(6):904-10.",
             "Becker JM, et al. J Am Coll Surg. 1996;183(4):297-306.",
             "Dahl JB, et al. Lancet. 2005;365:1187-8.",
         ],
         "exemplos_aprovados": [
-            "Paciente Maria S., 52 anos, portadora de bridas peritoneais recidivantes (CID K66.0), será submetida a lise de aderências por videolaparoscopia. Trata-se de paciente com histórico de três cirurgias abdominais prévias, com quadro de obstrução intestinal parcial recorrente atribuída à formação de aderências pós-operatórias. A literatura demonstra que aderências peritoneais ocorrem em até 93% dos pacientes submetidos a cirurgias abdominais abertas (Diamond, 1996). Para prevenção de recidiva, solicita-se a utilização de Adhesion STP+, barreira anti-aderência biorreabsorvível composta por CMC sódica e ácido hialurônico, com viscosidade de 10.000 a 29.000 mPa.s, cuja eficácia na redução de aderências pós-cirúrgicas é comprovada em ensaios clínicos randomizados (Becker et al., 1996). Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas.",
+            "Paciente Maria S., 52 anos, portadora de bridas peritoneais recidivantes (CID K66.0), será submetida a lise de aderências por videolaparoscopia. Trata-se de paciente com histórico de três cirurgias abdominais prévias, com quadro de obstrução intestinal parcial recorrente atribuída à formação de aderências pós-operatórias. A literatura demonstra que aderências peritoneais ocorrem em até 93% dos pacientes submetidos a cirurgias abdominais abertas (Diamond, 1996). Para prevenção de recidiva, solicita-se a utilização de Adhesion STP+, barreira anti-aderência biorreabsorvível composta por CMC sódica e ácido hialurônico, com viscosidade de 10.000 a 29.000 mPa.s, cuja eficácia na redução de aderências pós-cirúrgicas é comprovada em ensaios clínicos randomizados (Becker et al., 1996). Em caso de negativa, requer-se comunicação por escrito, com o motivo e o dispositivo legal ou contratual que a fundamenta (RN 623/2024 da ANS), e parecer do médico auditor identificado com nome, CRM e a doutrina que fundamentou a decisão (Res. CFM 2.318/2022, art. 6º).",
             "O paciente João P., 68 anos, será submetido a colectomia direita por neoplasia de cólon (CID C18.2). Devido ao extenso campo operatório e manipulação de alças intestinais, há elevado risco de formação de aderências que podem resultar em obstrução intestinal pós-operatória. Solicita-se Adhesion STP+ para interposição entre superfícies peritoneais traumatizadas. O produto é biorreabsorvível em 7 dias e não interfere no processo cicatricial, conforme demonstrado por Dahl et al. (Lancet, 2005).",
         ],
     },
@@ -433,17 +446,16 @@ TEMPLATES_SEED = [
             "hialurônico de alto peso molecular em comparação a formulações de menor peso molecular.\n\n"
             "A não realização do procedimento implica em {risco_nao_realizacao}, podendo evoluir para "
             "necessidade de procedimento cirúrgico de maior porte (artroplastia).\n\n"
-            "Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, a operadora "
-            "deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas."
+            + TEMPLATE_FRASE_NEGATIVA
         ),
-        "bases_legais": ["RN 395", "RN 424", "RN 465"],
+        "bases_legais": list(BASES_LEGAIS_VIGENTES),
         "referencias_padrao": [
             "Altman RD, et al. Semin Arthritis Rheum. 2015;45(2):140-9.",
             "Bellamy N, et al. Cochrane Database Syst Rev. 2006;(2):CD005321.",
             "Bannuru RR, et al. Arthritis Rheum. 2009;61(12):1704-11.",
         ],
         "exemplos_aprovados": [
-            "Paciente Ana C., 62 anos, com diagnóstico de gonartrose bilateral (CID M17.0), grau III de Kellgren-Lawrence, apresenta dor articular crônica com limitação funcional significativa. Após insucesso com tratamento conservador incluindo analgésicos, anti-inflamatórios não esteroidais por 6 meses e programa de fisioterapia sem ganho de amplitude de movimento, indica-se viscossuplementação com Kit EC2 - Linha Opus, ácido hialurônico de alto peso molecular (6.000 kDa) e concentração de 10 mg/mL. A meta-análise de Altman et al. (2015) demonstrou eficácia superior da viscossuplementação com ácido hialurônico de alto peso molecular. A não realização do procedimento implica em progressão da degeneração articular com perda funcional irreversível, podendo evoluir para necessidade de artroplastia total. Conforme a RN 395 da ANS, em caso de divergência, a operadora deverá apresentar justificativa técnica por escrito.",
+            "Paciente Ana C., 62 anos, com diagnóstico de gonartrose bilateral (CID M17.0), grau III de Kellgren-Lawrence, apresenta dor articular crônica com limitação funcional significativa. Após insucesso com tratamento conservador incluindo analgésicos, anti-inflamatórios não esteroidais por 6 meses e programa de fisioterapia sem ganho de amplitude de movimento, indica-se viscossuplementação com Kit EC2 - Linha Opus, ácido hialurônico de alto peso molecular (6.000 kDa) e concentração de 10 mg/mL. A meta-análise de Altman et al. (2015) demonstrou eficácia superior da viscossuplementação com ácido hialurônico de alto peso molecular. A não realização do procedimento implica em progressão da degeneração articular com perda funcional irreversível, podendo evoluir para necessidade de artroplastia total. Em caso de negativa, requer-se comunicação por escrito, com o motivo e o dispositivo legal ou contratual que a fundamenta (RN 623/2024 da ANS), e parecer do médico auditor identificado com nome, CRM e a doutrina que fundamentou a decisão (Res. CFM 2.318/2022, art. 6º).",
         ],
     },
 ]
@@ -589,7 +601,7 @@ UROLOGY_TEMPLATES_SEED = [
             "{falha_terapeutica}\n\n"
             "A não realização do procedimento implica em {risco_nao_realizacao}."
         ),
-        "bases_legais": ["RN 395", "RN 424", "RN 465"],
+        "bases_legais": list(BASES_LEGAIS_VIGENTES),
         "referencias_padrao": [
             "Glauco Andre Almeida Guedes, CRM-DF 9934. Relatório Cirúrgico EC2 - Doença de Peyronie.",
         ],
@@ -615,7 +627,7 @@ UROLOGY_TEMPLATES_SEED = [
             "e cicatricial. {falha_terapeutica}\n\n"
             "A não realização do procedimento implica em {risco_nao_realizacao}."
         ),
-        "bases_legais": ["RN 395", "RN 424", "RN 465"],
+        "bases_legais": list(BASES_LEGAIS_VIGENTES),
         "referencias_padrao": [
             "Glauco Andre Almeida Guedes, CRM-DF 9934. Relatório Cirúrgico EC2 - Disfunção Erétil.",
         ],
@@ -640,7 +652,7 @@ UROLOGY_TEMPLATES_SEED = [
             "clínica e modulação do processo inflamatório e cicatricial. {falha_terapeutica}\n\n"
             "A não realização do procedimento implica em {risco_nao_realizacao}."
         ),
-        "bases_legais": ["RN 395", "RN 424", "RN 465"],
+        "bases_legais": list(BASES_LEGAIS_VIGENTES),
         "referencias_padrao": [
             "Glauco Andre Almeida Guedes, CRM-DF 9934. Relatório Cirúrgico EC2 - Estenose Uretral.",
         ],
@@ -730,22 +742,146 @@ TISS_RULES_SEED = [
 ]
 
 
+def _modernize_template_text(text):
+    """Troca a frase antiga (RN 395) pela vigente e normaliza demais normas revogadas."""
+    if not text or not isinstance(text, str):
+        return text
+    for old in _FRASES_NEGATIVA_ANTIGAS:
+        text = text.replace(old, TEMPLATE_FRASE_NEGATIVA)
+    return modernize_citations(text)[0]
+
+
+def _norma_key(item: str) -> str:
+    """Chave p/ deduplicar: 'RN 465/2021' e 'RN nº 465' viram a mesma norma."""
+    import re
+    k = re.sub(r"n[º°o]\.?\s*", "", item.strip().lower())
+    k = re.sub(r"\s*/\s*\d{2,4}$", "", k)
+    return re.sub(r"\s+", " ", k)
+
+
+def _modernize_bases_legais(items: list) -> list:
+    """Moderniza item a item, preservando bases não revogadas e a ordem.
+
+    Não troca a lista inteira pelas vigentes: um template pode citar outras
+    bases legítimas (ex.: lei, código de ética) que precisam ser mantidas.
+    """
+    out, vistos = [], set()
+    for item in items:
+        if isinstance(item, str):
+            item = modernize_citations(item)[0]
+            key = _norma_key(item)
+        else:
+            key = repr(item)
+        if key in vistos:
+            continue
+        vistos.add(key)
+        out.append(item)
+    return out
+
+
+async def modernize_report_templates() -> int:
+    """Atualiza templates JÁ GRAVADOS que citam normas revogadas (idempotente).
+
+    O seed só roda em banco vazio, então os templates de produção continuariam
+    com "RN 395" (revogada pela RN 623/2024) sem esta passada. Laudos já
+    gerados/assinados NÃO são tocados — só os templates usados em gerações futuras.
+    """
+    from sqlalchemy import select
+    changed = 0
+    async with AsyncSessionLocal() as db:
+        rows = (await db.execute(select(ReportTemplate))).scalars().all()
+        for t in rows:
+            dirty = False
+            for attr in ("template_corpo", "tom_de_voz"):
+                old = getattr(t, attr)
+                new = _modernize_template_text(old)
+                if new != old:
+                    setattr(t, attr, new)
+                    dirty = True
+            if t.exemplos_aprovados:
+                novos = [_modernize_template_text(x) for x in t.exemplos_aprovados]
+                if novos != t.exemplos_aprovados:
+                    t.exemplos_aprovados = novos
+                    dirty = True
+            if t.bases_legais:
+                novas = _modernize_bases_legais(t.bases_legais)
+                if novas != t.bases_legais:
+                    t.bases_legais = novas
+                    dirty = True
+            if dirty:
+                changed += 1
+        if changed:
+            await db.commit()
+    if changed:
+        logging.getLogger("startup").info(
+            "Templates atualizados para normas vigentes: %d", changed)
+    return changed
+
+
+DEMO_EMAIL = "medico@opme.com"
+DEMO_PASSWORD = "senha123"  # pública (está no repositório) — só para banco local
+_LOCAL_DB_HOSTS = ("localhost", "127.0.0.1", "[::1]", "@db:", "@postgres:")
+
+
+def demo_user_allowed(database_url: str | None = None, flag: bool | None = None) -> bool:
+    """O usuário de demonstração só pode existir em banco local.
+
+    SEED_DEMO_USER explícito vence; senão, decide pelo DATABASE_URL.
+    """
+    flag = settings.SEED_DEMO_USER if flag is None else flag
+    if flag is not None:
+        return bool(flag)
+    url = (database_url if database_url is not None else settings.DATABASE_URL) or ""
+    return url.startswith("sqlite") or any(h in url for h in _LOCAL_DB_HOSTS)
+
+
+async def disable_demo_user_if_not_allowed() -> bool:
+    """Invalida a senha pública do usuário demo fora do ambiente local.
+
+    O seed antigo criava medico@opme.com/senha123 em QUALQUER banco, inclusive
+    produção. Não apaga o usuário (pode ter laudos ligados a ele): troca o hash
+    por uma senha aleatória descartada. Idempotente — depois da troca a senha
+    pública não confere mais e nada acontece.
+    """
+    if demo_user_allowed():
+        return False
+    import secrets
+    from sqlalchemy import select
+    async with AsyncSessionLocal() as db:
+        user = (await db.execute(select(User).where(User.email == DEMO_EMAIL))).scalar_one_or_none()
+        if user is None or not verify_password(DEMO_PASSWORD, user.hashed_password):
+            return False
+        user.hashed_password = get_password_hash(secrets.token_urlsafe(32))
+        await db.commit()
+    logging.getLogger("startup").warning(
+        "Usuário demo %s tinha a senha pública do repositório neste banco — senha invalidada.",
+        DEMO_EMAIL,
+    )
+    return True
+
+
 async def seed():
     async with AsyncSessionLocal() as db:
         from sqlalchemy import select
 
-        r = await db.execute(select(User).where(User.email == "medico@opme.com"))
-        if r.scalar_one_or_none():
-            return
+        demo_exists = (await db.execute(
+            select(User.id).where(User.email == DEMO_EMAIL)
+        )).first() is not None
+        if not demo_exists and demo_user_allowed():
+            db.add(User(
+                email=DEMO_EMAIL,
+                hashed_password=get_password_hash(DEMO_PASSWORD),
+                role=UserRole.medico,
+                consent_accepted=False,
+            ))
+            await db.flush()
 
-        user = User(
-            email="medico@opme.com",
-            hashed_password=get_password_hash("senha123"),
-            role=UserRole.medico,
-            consent_accepted=False,
-        )
-        db.add(user)
-        await db.flush()
+        # Dados de exemplo (produtos, templates, TUSS, regras): só em banco
+        # vazio. O marcador antigo era o usuário demo; agora é o catálogo.
+        catalog_seeded = (await db.execute(select(Product.id).limit(1))).first() is not None
+        if demo_exists or catalog_seeded:
+            await db.commit()
+            return
 
         for code, term in [
             ("30701020", "Radiografia de tórax"),
@@ -779,6 +915,7 @@ async def seed():
             product_map[pdata["nome"]] = p.id
 
         for tdata in TEMPLATES_SEED:
+            tdata = dict(tdata)  # não mutar a constante do módulo
             produto_nome = tdata.pop("produto_nome")
             t = ReportTemplate(
                 produto_id=product_map.get(produto_nome),

@@ -1,7 +1,10 @@
 """
 System prompts para cada agente do pipeline multi-agente.
 Isolados aqui para facilitar iteração de prompt engineering.
+
+Normas citadas vêm de app.services.legal_basis (fonte única, revisada).
 """
+from app.services.legal_basis import PROMPT_REGRA_BASE_LEGAL
 
 RESEARCHER_SYSTEM = """Você é o Agente Pesquisador de um sistema de geração de relatórios médicos para OPME.
 
@@ -98,11 +101,7 @@ Descreva as consequências CLÍNICAS de não aprovar o material. Foque EXCLUSIVA
 - Qualquer menção a custo sem referência será REMOVIDA pelo Auditor e prejudica a credibilidade do relatório
 
 REGRA #5 - POSTURA LEGAL AGRESSIVA (NÃO PASSIVA):
-As RNs da ANS devem ser usadas como ARMA, não como citação decorativa:
-- RN 424: AFIRMAÇÃO DE AUTONOMIA - "cabe EXCLUSIVAMENTE ao médico assistente a prerrogativa de determinar as características, tipo e matéria-prima dos materiais (OPME)"
-- RN 428/465: OBRIGAÇÃO DE COBERTURA - "os procedimentos citados são de cobertura mínima OBRIGATÓRIA pela ANS"
-- RN 395: EXIGÊNCIA - "solicito que a operadora apresente justificativa de negativa por escrito, fundamentada em evidências científicas de MESMO NÍVEL das aqui citadas, sob pena de descumprimento"
-- Código de Ética Médica Cap. I, V: "Compete ao médico usar o melhor do progresso científico em benefício do paciente"
+""" + PROMPT_REGRA_BASE_LEGAL + """
 
 REGRA #6 - TERMINOLOGIA TÉCNICA AVANÇADA:
 NÃO use linguagem genérica. Use termos médicos precisos:
@@ -119,7 +118,7 @@ Ao citar dados técnicos do produto, use SEMPRE a unidade de medida oficial forn
 Isso facilita a auditoria automática e evita bloqueios por falso positivo.
 
 REGRA #8 - ZERO RNs NO CORPO DA JUSTIFICATIVA:
-NÃO mencione RN 424, RN 428, RN 465, RN 395 ou qualquer Resolução Normativa da ANS no campo "justificativa_completa".
+NÃO mencione RN 424, RN 465, RN 623, Resolução CFM 2.318 ou qualquer outra norma no campo "justificativa_completa".
 Toda a fundamentação legal vai EXCLUSIVAMENTE no campo "base_legal" do JSON.
 Se você citar RNs no corpo, elas aparecerão DUPLICADAS no PDF final e o relatório será REPROVADO.
 
@@ -213,7 +212,7 @@ SAÍDA: Retorne JSON com as 6 SEÇÕES SEPARADAS (respeite os mínimos de cada u
   "risco_nao_realizacao": "Seção 5 — mín. 400 chars. Progressão da doença, perda funcional. Sem argumento financeiro.",
   "conclusao": "Seção 6 — mín. 200 chars. Parágrafo de encerramento + pedido de liberação.",
   "diagnostico_resumo": "Descrição clínica concisa (1-2 frases)",
-  "base_legal": "Citação agressiva das RN 424, 428/465 e 395 da ANS + Código de Ética Médica",
+  "base_legal": "Citação agressiva das RN 424, 465 e 623 da ANS + Res. CFM 2.318/2022 + Código de Ética Médica",
   "referencias": ["ALTMAN et al., 2015", "DAHL et al., 1985", "..."]
 }}"""
 
@@ -263,7 +262,7 @@ O relatório SÓ pode ser marcado como "aprovado" se contiver TODOS:
 [2] Justificativa Técnica (com diferenciais do material)
 [3] Falha Terapêutica Prévia
 [4] Risco da Não Realização
-[5] Base Legal ANS (RN 395)
+[5] Base Legal (RN 424, 465 e 623 da ANS; Res. CFM 2.318/2022) — se o rascunho citar norma revogada (RN 395, RN 428, CFM 1.956), substitua pela vigente
 [6] Referência Bibliográfica
 
 <draft_text description="Rascunho do Redator para auditoria — confronte cada dado com product_facts">

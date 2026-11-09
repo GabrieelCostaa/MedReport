@@ -182,7 +182,8 @@ cd services/api
 pip install -r requirements.txt
 # Copiar .env com DATABASE_URL, OPENAI_API_KEY, etc.
 uvicorn main:app --reload --port 8000
-# Na inicialização: cria tabelas + seed (user medico@opme.com / senha123)
+# Na inicialização: cria tabelas + seed. Usuário demo medico@opme.com / senha123
+# só é criado em banco LOCAL (ver SEED_DEMO_USER no .env.example)
 ```
 
 ### Frontend

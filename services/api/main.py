@@ -13,7 +13,9 @@ setup_logging()
 
 from app.api import auth, reports, tuss, quotes, ai, erp_mock, notifications, products, glosas
 from app.core.config import settings
-from app.db.init_db import create_tables, seed
+from app.db.init_db import (
+    create_tables, seed, modernize_report_templates, disable_demo_user_if_not_allowed,
+)
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -136,6 +138,14 @@ async def _auto_etl_if_empty():
 async def lifespan(app: FastAPI):
     await create_tables()
     await seed()
+    try:
+        await disable_demo_user_if_not_allowed()
+    except Exception as e:  # nunca bloqueia o startup
+        logging.getLogger("startup").warning("Checagem do usuário demo falhou: %s", e)
+    try:
+        await modernize_report_templates()
+    except Exception as e:  # nunca bloqueia o startup
+        logging.getLogger("startup").warning("Atualização de normas nos templates falhou: %s", e)
     # Auto-populate regulatory data in background if empty
     # Skip on low-memory environments (Render free tier = 512MB)
     import os

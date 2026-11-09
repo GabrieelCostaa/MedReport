@@ -7,6 +7,7 @@ evidencia_cientifica, risco_nao_realizacao, conclusao) plus diagnostico_resumo,
 base_legal and referencias. The assistant example is serialized as JSON so the
 Writer mimics BOTH the sectioned structure and the technical depth/length.
 """
+from app.services.legal_basis import BASE_LEGAL_PADRAO
 import json
 import logging
 from typing import Optional
@@ -25,14 +26,8 @@ _CONCLUSAO_PADRAO = (
     "profissional. Certos de vossa presteza, aguardamos a liberação."
 )
 
-_BASE_LEGAL_PADRAO = (
-    "Nos termos da RN 424/2017 da ANS, cabe exclusivamente ao médico assistente a "
-    "prerrogativa de determinar as características e a matéria-prima dos materiais (OPME). "
-    "Os procedimentos indicados são de cobertura mínima obrigatória (RN 465/2021 e "
-    "atualizações). Em caso de negativa, requer-se, com fundamento na RN 395/2016, "
-    "justificativa técnica por escrito fundamentada em evidência científica de mesmo nível. "
-    "Aplica-se ainda o Código de Ética Médica (Cap. I, item V)."
-)
+# Fonte única das normas (revisada) — ver app/services/legal_basis.py
+_BASE_LEGAL_PADRAO = BASE_LEGAL_PADRAO
 
 
 # ─── Specialty examples ───────────────────────────────────────────────────────

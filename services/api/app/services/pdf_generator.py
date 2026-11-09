@@ -10,6 +10,8 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
+from app.services.legal_basis import DECLARACAO_USO_IA
+
 logger = logging.getLogger(__name__)
 
 TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"
@@ -229,6 +231,7 @@ def _generate_weasyprint(**kwargs) -> bytes:
         qr_b64 = base64.b64encode(_generate_qr_png(verification_url)).decode()
 
     html_content = template.render(
+        declaracao_uso_ia=DECLARACAO_USO_IA,
         paciente_nome=kwargs.get("paciente_nome") or "Não informado",
         cid=kwargs.get("cid") or "",
         diagnostico_resumo=kwargs.get("diagnostico_resumo") or "",
@@ -572,7 +575,7 @@ def _generate_reportlab(**kwargs) -> bytes:
     story.append(HRFlowable(width="100%", thickness=0.5, color=HexColor("#eeeeee"), spaceAfter=4))
     story.append(Paragraph(
         f"Documento gerado em {data_emissao} • Protocolo {protocolo} • "
-        f"Informações médicas confidenciais (LGPD Art. 11)",
+        f"Informações médicas confidenciais (LGPD Art. 11)<br/>{DECLARACAO_USO_IA}",
         s_footer,
     ))
 

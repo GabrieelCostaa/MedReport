@@ -889,7 +889,7 @@ function Compliance() {
   ];
   const items = [
     { code: 'RN 465/2021', label: 'Rol de Procedimentos', desc: '161 DUTs + 74.000+ TUSS + 96.000+ registros ANVISA' },
-    { code: 'RN 452/2020', label: 'Padrao TISS', desc: 'Guias XML conforme padrao obrigatorio da ANS' },
+    { code: 'RN 501/2022', label: 'Padrao TISS', desc: 'Guias XML conforme padrao obrigatorio da ANS' },
     { code: 'Lei 13.709', label: 'LGPD', desc: 'Tratamento de dados sensiveis em conformidade' },
     { code: 'ANVISA', label: 'Registro de Produtos', desc: 'Validacao automatica do registro de cada OPME' },
   ];
@@ -1046,7 +1046,7 @@ function Testimonial() {
               </HStack>
               <VStack align={{ base: 'start', md: 'end' }} gap={1}>
                 <Text fontSize="xs" color="white">
-                  ANS (RN 465) | TISS (RN 452) | LGPD (Lei 13.709) | ANVISA
+                  ANS (RN 465) | TISS (RN 501) | LGPD (Lei 13.709) | ANVISA
                 </Text>
                 <Text fontSize="xs" color="whiteAlpha.700">
                   {new Date().getFullYear()} MedReport. Todos os direitos reservados.
@@ -1348,7 +1348,7 @@ function FAQ() {
     },
     {
       q: 'O sistema funciona com qualquer convênio?',
-      a: 'Sim. As justificativas são geradas em conformidade com as normas da ANS (RN 395, RN 465, padrão TISS/TUSS) que são universais para todos os convênios. O formato de exportação XML segue o padrão TISS.',
+      a: 'Sim. As justificativas são geradas em conformidade com as normas da ANS (RN 424, RN 465, RN 623, padrão TISS/TUSS) e do CFM (Res. 2.318/2022) que são universais para todos os convênios. O formato de exportação XML segue o padrão TISS.',
     },
     {
       q: 'Posso testar antes de pagar?',
