@@ -70,7 +70,8 @@ class WriterOutput(BaseModel):
     )
     base_legal: str = Field(
         description=(
-            "Citação das RN 424, 428/465 e 395 da ANS + Código de Ética Médica. "
+            "Citação das RN 424, 465 e 623 da ANS + Res. CFM 2.318/2022 + Código de Ética Médica "
+            "(nunca normas revogadas: RN 395, RN 428, CFM 1.956). "
             "Toda fundamentação legal vai EXCLUSIVAMENTE aqui, NUNCA nas seções acima."
         ),
     )
@@ -125,7 +126,7 @@ class AuditorChecklist(BaseModel):
     justificativa_tecnica: bool = Field(description="Justificativa técnica com diferenciais do material")
     falha_terapeutica: bool = Field(description="Falha terapêutica prévia descrita")
     risco_nao_realizacao: bool = Field(description="Risco da não realização descrito")
-    base_legal_ans: bool = Field(description="Base legal ANS (RN 395) presente")
+    base_legal_ans: bool = Field(description="Base legal (RN 424/465/623 da ANS, Res. CFM 2.318/2022) presente")
     referencia_bibliografica: bool = Field(description="Referência bibliográfica presente")
 
 

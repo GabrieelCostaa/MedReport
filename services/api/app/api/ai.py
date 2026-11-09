@@ -26,6 +26,7 @@ from app.services.agents.pipeline import ReportPipeline
 from app.services.agents.checklist import ReportChecklist
 from app.services.pdf_generator import generate_pdf_bytes
 from app.services.audit_service import audit_log
+from app.services.legal_basis import has_legal_basis
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
@@ -652,8 +653,8 @@ async def quick_checklist(
             "label": "Risco da não realização",
         },
         "base_legal_ans": {
-            "ok": bool(body.base_legal_ans) or "rn 395" in text or "resolução" in text or "ans" in text,
-            "label": "Base legal ANS (RN 395)",
+            "ok": bool(body.base_legal_ans) or has_legal_basis(text) or "resolução" in text,
+            "label": "Base legal (RN 424, 465, 623; Res. CFM 2.318/2022)",
         },
         "referencia_bibliografica": {
             "ok": bool(body.referencias_bib and len(body.referencias_bib) > 0),

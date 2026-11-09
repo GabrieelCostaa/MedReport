@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from app.core.config import settings
+from app.services.legal_basis import BASE_LEGAL_PADRAO
 from .prompts import WRITER_SYSTEM
 from .researcher import ResearchResult
 from .token_tracker import TokenUsage, extract_usage, usage_from_exception
@@ -300,10 +301,7 @@ async def write_justification(
         # Tentativas esgotadas também são faturadas — recupera o custo para não
         # sumir da conta justamente no caso mais caro.
         usage_falha = usage_from_exception(e, "Redator", model=settings.OPENAI_MODEL_WRITER)
-        base_legal = (
-            "Conforme a RN 395 da ANS, em caso de divergência quanto à indicação do material, "
-            "a operadora deverá apresentar justificativa técnica por escrito, fundamentada em evidências científicas."
-        )
+        base_legal = BASE_LEGAL_PADRAO
         return DraftReport(
             justificativa_completa=(
                 f"Paciente com diagnóstico de {medico_inputs.get('diagnostico', '[diagnóstico]')} "

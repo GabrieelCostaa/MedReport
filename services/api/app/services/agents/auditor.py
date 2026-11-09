@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from app.core.config import settings
+from app.services.legal_basis import has_legal_basis
 from .prompts import AUDITOR_SYSTEM
 from .writer import DraftReport
 from .token_tracker import TokenUsage, extract_usage, usage_from_exception
@@ -310,7 +311,7 @@ async def audit(
         # Fix: base_legal in separate field should satisfy checklist item 5
         if not checklist.get("base_legal_ans", False) and draft.base_legal:
             base_legal_lower = draft.base_legal.lower()
-            if any(term in base_legal_lower for term in ("rn 395", "rn 424", "rn 428", "rn 465", "resolução normativa", "ans")):
+            if has_legal_basis(base_legal_lower):
                 checklist["base_legal_ans"] = True
                 audit_log_entries.append(AuditEntry(
                     tipo="validacao",
@@ -675,6 +676,6 @@ def _local_checklist(draft: DraftReport) -> dict:
         "justificativa_tecnica": len(text) > 100,
         "falha_terapeutica": bool(draft.falha_terapeutica),
         "risco_nao_realizacao": bool(draft.risco_nao_realizacao),
-        "base_legal_ans": any(term in combined_legal for term in ("rn 395", "rn 424", "rn 428", "rn 465", "ans")),
+        "base_legal_ans": has_legal_basis(combined_legal),
         "referencia_bibliografica": len(draft.referencias) > 0,
     }

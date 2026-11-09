@@ -2,7 +2,7 @@
 
 Plataforma SaaS B2B para geração automatizada de justificativas técnicas de OPME (Órteses, Próteses e Materiais Especiais), com inteligência artificial multi-agente que minimiza glosas de convênios médicos.
 
-O sistema gera relatórios técnicos persuasivos, fundamentados em evidências científicas verificadas e conformes com a legislação vigente (RN 395/ANS), reduzindo o tempo de elaboração de horas para minutos.
+O sistema gera relatórios técnicos persuasivos, fundamentados em evidências científicas verificadas e conformes com a legislação vigente (RN 424, 465 e 623 da ANS; Res. CFM 2.318/2022), reduzindo o tempo de elaboração de horas para minutos.
 
 ## Arquitetura
 

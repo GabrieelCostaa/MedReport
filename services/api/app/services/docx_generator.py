@@ -13,6 +13,8 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 
+from app.services.legal_basis import DECLARACAO_USO_IA
+
 logger = logging.getLogger(__name__)
 
 # ── Color palette ──
@@ -344,6 +346,9 @@ def generate_docx_bytes(
     p_footer = doc.add_paragraph()
     p_footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
     _add_run(p_footer, f"Documento gerado em {datetime.now().strftime('%d/%m/%Y')} • Protocolo {protocolo} • Informações médicas confidenciais", size=8, color=LIGHT_GRAY)
+    p_ia = doc.add_paragraph()
+    p_ia.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    _add_run(p_ia, DECLARACAO_USO_IA, size=8, color=LIGHT_GRAY)
 
     buffer = io.BytesIO()
     doc.save(buffer)
