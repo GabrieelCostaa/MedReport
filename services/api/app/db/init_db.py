@@ -9,7 +9,8 @@ from app.db.models import (
     AnvisaProduct, TissRule, ProductTussMapping,
     GlosaMotivo, OperadoraGlosaIndicador,
 )
-from app.core.security import get_password_hash
+from app.core.config import settings
+from app.core.security import get_password_hash, verify_password
 from app.services.legal_basis import BASES_LEGAIS_VIGENTES, find_revoked_citations, modernize_citations
 
 logger = logging.getLogger(__name__)
@@ -789,22 +790,70 @@ async def modernize_report_templates() -> int:
     return changed
 
 
+DEMO_EMAIL = "medico@opme.com"
+DEMO_PASSWORD = "senha123"  # pública (está no repositório) — só para banco local
+_LOCAL_DB_HOSTS = ("localhost", "127.0.0.1", "[::1]", "@db:", "@postgres:")
+
+
+def demo_user_allowed(database_url: str | None = None, flag: bool | None = None) -> bool:
+    """O usuário de demonstração só pode existir em banco local.
+
+    SEED_DEMO_USER explícito vence; senão, decide pelo DATABASE_URL.
+    """
+    flag = settings.SEED_DEMO_USER if flag is None else flag
+    if flag is not None:
+        return bool(flag)
+    url = (database_url if database_url is not None else settings.DATABASE_URL) or ""
+    return url.startswith("sqlite") or any(h in url for h in _LOCAL_DB_HOSTS)
+
+
+async def disable_demo_user_if_not_allowed() -> bool:
+    """Invalida a senha pública do usuário demo fora do ambiente local.
+
+    O seed antigo criava medico@opme.com/senha123 em QUALQUER banco, inclusive
+    produção. Não apaga o usuário (pode ter laudos ligados a ele): troca o hash
+    por uma senha aleatória descartada. Idempotente — depois da troca a senha
+    pública não confere mais e nada acontece.
+    """
+    if demo_user_allowed():
+        return False
+    import secrets
+    from sqlalchemy import select
+    async with AsyncSessionLocal() as db:
+        user = (await db.execute(select(User).where(User.email == DEMO_EMAIL))).scalar_one_or_none()
+        if user is None or not verify_password(DEMO_PASSWORD, user.hashed_password):
+            return False
+        user.hashed_password = get_password_hash(secrets.token_urlsafe(32))
+        await db.commit()
+    logging.getLogger("startup").warning(
+        "Usuário demo %s tinha a senha pública do repositório neste banco — senha invalidada.",
+        DEMO_EMAIL,
+    )
+    return True
+
+
 async def seed():
     async with AsyncSessionLocal() as db:
         from sqlalchemy import select
 
-        r = await db.execute(select(User).where(User.email == "medico@opme.com"))
-        if r.scalar_one_or_none():
-            return
+        demo_exists = (await db.execute(
+            select(User.id).where(User.email == DEMO_EMAIL)
+        )).first() is not None
+        if not demo_exists and demo_user_allowed():
+            db.add(User(
+                email=DEMO_EMAIL,
+                hashed_password=get_password_hash(DEMO_PASSWORD),
+                role=UserRole.medico,
+                consent_accepted=False,
+            ))
+            await db.flush()
 
-        user = User(
-            email="medico@opme.com",
-            hashed_password=get_password_hash("senha123"),
-            role=UserRole.medico,
-            consent_accepted=False,
-        )
-        db.add(user)
-        await db.flush()
+        # Dados de exemplo (produtos, templates, TUSS, regras): só em banco
+        # vazio. O marcador antigo era o usuário demo; agora é o catálogo.
+        catalog_seeded = (await db.execute(select(Product.id).limit(1))).first() is not None
+        if demo_exists or catalog_seeded:
+            await db.commit()
+            return
 
         for code, term in [
             ("30701020", "Radiografia de tórax"),
@@ -838,6 +887,7 @@ async def seed():
             product_map[pdata["nome"]] = p.id
 
         for tdata in TEMPLATES_SEED:
+            tdata = dict(tdata)  # não mutar a constante do módulo
             produto_nome = tdata.pop("produto_nome")
             t = ReportTemplate(
                 produto_id=product_map.get(produto_nome),

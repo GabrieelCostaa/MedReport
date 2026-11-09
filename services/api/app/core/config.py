@@ -1,7 +1,8 @@
 import sys
 from urllib.parse import urlparse
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
-from typing import List
+from typing import List, Optional
 
 _WEAK_KEYS = {"dev-secret-change-in-production", "secret", "changeme", ""}
 
@@ -66,6 +67,18 @@ class Settings(BaseSettings):
     # Modo teste: relaxa validações de cadastro/login para facilitar
     # testes com médicos. NUNCA habilitar em produção com dados reais.
     TESTING_MODE: bool = False
+
+    # Usuário de demonstração (medico@opme.com / senha conhecida).
+    # None = automático: só em banco LOCAL (localhost/127.0.0.1/sqlite).
+    # Em qualquer outro banco ele não é criado e, se já existir com a senha
+    # conhecida, a senha é invalidada no startup. Forçar com true/false.
+    SEED_DEMO_USER: Optional[bool] = None
+
+    @field_validator("SEED_DEMO_USER", mode="before")
+    @classmethod
+    def _vazio_e_automatico(cls, v):
+        # "SEED_DEMO_USER=" no .env não pode derrubar o startup
+        return None if isinstance(v, str) and not v.strip() else v
 
     # ─── Qualidade da geração (algoritmo de LLM) ─────────────────────────
     # Injeta o enquadramento regulatório (DUT/fora-do-Rol/STF/ANVISA) nos
