@@ -11,7 +11,7 @@ from app.db.models import (
 )
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
-from app.services.legal_basis import BASES_LEGAIS_VIGENTES, find_revoked_citations, modernize_citations
+from app.services.legal_basis import BASES_LEGAIS_VIGENTES, modernize_citations
 
 logger = logging.getLogger(__name__)
 
@@ -751,6 +751,34 @@ def _modernize_template_text(text):
     return modernize_citations(text)[0]
 
 
+def _norma_key(item: str) -> str:
+    """Chave p/ deduplicar: 'RN 465/2021' e 'RN nº 465' viram a mesma norma."""
+    import re
+    k = re.sub(r"n[º°o]\.?\s*", "", item.strip().lower())
+    k = re.sub(r"\s*/\s*\d{2,4}$", "", k)
+    return re.sub(r"\s+", " ", k)
+
+
+def _modernize_bases_legais(items: list) -> list:
+    """Moderniza item a item, preservando bases não revogadas e a ordem.
+
+    Não troca a lista inteira pelas vigentes: um template pode citar outras
+    bases legítimas (ex.: lei, código de ética) que precisam ser mantidas.
+    """
+    out, vistos = [], set()
+    for item in items:
+        if isinstance(item, str):
+            item = modernize_citations(item)[0]
+            key = _norma_key(item)
+        else:
+            key = repr(item)
+        if key in vistos:
+            continue
+        vistos.add(key)
+        out.append(item)
+    return out
+
+
 async def modernize_report_templates() -> int:
     """Atualiza templates JÁ GRAVADOS que citam normas revogadas (idempotente).
 
@@ -775,11 +803,11 @@ async def modernize_report_templates() -> int:
                 if novos != t.exemplos_aprovados:
                     t.exemplos_aprovados = novos
                     dirty = True
-            if t.bases_legais and any(
-                isinstance(b, str) and find_revoked_citations(b) for b in t.bases_legais
-            ):
-                t.bases_legais = list(BASES_LEGAIS_VIGENTES)
-                dirty = True
+            if t.bases_legais:
+                novas = _modernize_bases_legais(t.bases_legais)
+                if novas != t.bases_legais:
+                    t.bases_legais = novas
+                    dirty = True
             if dirty:
                 changed += 1
         if changed:

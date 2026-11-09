@@ -154,5 +154,23 @@ async def test_modernize_report_templates_atualiza_banco_existente(monkeypatch):
         assert init_db.TEMPLATE_FRASE_NEGATIVA in t.template_corpo
         assert init_db.TEMPLATE_FRASE_NEGATIVA in t.exemplos_aprovados[0]
         assert t.exemplos_aprovados[1] == "Sem norma."
-        assert t.bases_legais == BASES_LEGAIS_VIGENTES
+        # item a item: revogadas viram vigentes, duplicata (RN 465) some, ordem mantida
+        assert t.bases_legais == ["RN 623/2024", "RN 424", "RN 465/2021"]
     await engine.dispose()
+
+
+class TestModernizeBasesLegais:
+    def test_preserva_bases_nao_relacionadas(self):
+        from app.db.init_db import _modernize_bases_legais
+        entrada = ["RN 395", "Lei 9.656/1998", "Código de Ética Médica"]
+        assert _modernize_bases_legais(entrada) == [
+            "RN 623/2024", "Lei 9.656/1998", "Código de Ética Médica",
+        ]
+
+    def test_lista_sem_revogadas_fica_igual(self):
+        from app.db.init_db import _modernize_bases_legais
+        assert _modernize_bases_legais(list(BASES_LEGAIS_VIGENTES)) == BASES_LEGAIS_VIGENTES
+
+    def test_deduplica_mesma_norma_com_e_sem_ano(self):
+        from app.db.init_db import _modernize_bases_legais
+        assert _modernize_bases_legais(["RN 428", "RN 465"]) == ["RN 465/2021"]
